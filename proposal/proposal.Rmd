@@ -7,6 +7,7 @@ output: github_document
 ```{r load-packages, message = FALSE}
 library(tidyverse)
 library(broom)
+library(readr)
 ```
 
 ## 1. Introduction
@@ -15,6 +16,16 @@ library(broom)
 
 ## 2. Data
 
+```{r read-files}
+airline <- read_csv("/cloud/project/data/airline.csv")
+airport <- read_csv("/cloud/project/data/airport.csv")
+lounge <- read_csv("/cloud/project/data/lounge.csv")
+seat <- read_csv("/cloud/project/data/seat.csv")
+glimpse(airline)
+glimpse(airport)
+glimpse(lounge)
+glimpse(seat)
+```
 
 
 ## 3. Data analysis plan
