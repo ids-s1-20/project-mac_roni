@@ -1,6 +1,6 @@
 ---
 title: "Project proposal"
-author: "Team name"
+author: "macaRoni"
 output: github_document
 ---
 
@@ -11,7 +11,7 @@ library(readr)
 ```
 
 ## 1. Introduction
-
+The dataset is a Skytrax User Reviews Dataset (published August 2nd, 2015) at https://github.com/quankiquanki/skytrax-reviews-dataset .  
 
 
 ## 2. Data

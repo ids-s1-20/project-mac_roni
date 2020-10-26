@@ -1,6 +1,6 @@
 Project proposal
 ================
-Team name
+macaRoni
 
 ``` r
 library(tidyverse)
@@ -9,6 +9,10 @@ library(readr)
 ```
 
 ## 1\. Introduction
+
+The dataset is a Skytrax User Reviews Dataset (published August 2nd,
+2015) at <https://github.com/quankiquanki/skytrax-reviews-dataset> . The
+dataset is made up from 4 different data frames.
 
 ## 2\. Data
 
