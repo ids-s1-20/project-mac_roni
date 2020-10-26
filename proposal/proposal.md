@@ -1,6 +1,6 @@
 Project proposal
 ================
-Team macRoni
+macRoni
 
 ``` r
 library(tidyverse)
@@ -9,6 +9,10 @@ library(readr)
 ```
 
 ## 1\. Introduction
+
+General Question: Understand which airlines and airports are the most
+recommended and the reasons for it, and investigate what drives each
+type of traveller’s preferences.
 
 ## 2\. Data
 
@@ -204,3 +208,6 @@ glimpse(seat)
     ## $ recommended         <dbl> 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1…
 
 ## 3\. Data analysis plan
+
+How does the overall ratings for airlines and airports change depending
+of the time of year? Do these patterns repeat every year?
