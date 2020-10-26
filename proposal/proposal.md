@@ -1,6 +1,6 @@
 Project proposal
 ================
-Team name
+Team macRoni
 
 ``` r
 library(tidyverse)
