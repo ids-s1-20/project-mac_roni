@@ -1,6 +1,6 @@
 Project proposal
 ================
-macaRoni
+macRoni
 
 ``` r
 library(tidyverse)
@@ -11,91 +11,20 @@ library(readr)
 ## 1\. Introduction
 
 The dataset is a Skytrax User Reviews Dataset (published August 2nd,
-2015) at <https://github.com/quankiquanki/skytrax-reviews-dataset> . The
-dataset is made up from 4 different data frames.
+2015) at <https://github.com/quankiquanki/skytrax-reviews-dataset> .
+
+General Question: Understand which airlines and airports are the most
+recommended and the reasons for it, and investigate what drives each
+type of traveller’s preferences.
 
 ## 2\. Data
 
 ``` r
 airline <- read_csv("/cloud/project/data/airline.csv")
-```
-
-    ## Parsed with column specification:
-    ## cols(
-    ##   .default = col_character(),
-    ##   date = col_date(format = ""),
-    ##   overall_rating = col_double(),
-    ##   seat_comfort_rating = col_double(),
-    ##   cabin_staff_rating = col_double(),
-    ##   food_beverages_rating = col_double(),
-    ##   inflight_entertainment_rating = col_double(),
-    ##   ground_service_rating = col_double(),
-    ##   wifi_connectivity_rating = col_double(),
-    ##   value_money_rating = col_double(),
-    ##   recommended = col_double()
-    ## )
-
-    ## See spec(...) for full column specifications.
-
-``` r
 airport <- read_csv("/cloud/project/data/airport.csv")
-```
-
-    ## Parsed with column specification:
-    ## cols(
-    ##   .default = col_double(),
-    ##   airport_name = col_character(),
-    ##   link = col_character(),
-    ##   title = col_character(),
-    ##   author = col_character(),
-    ##   author_country = col_character(),
-    ##   date = col_date(format = ""),
-    ##   content = col_character(),
-    ##   experience_airport = col_character(),
-    ##   date_visit = col_character(),
-    ##   type_traveller = col_character()
-    ## )
-    ## See spec(...) for full column specifications.
-
-``` r
 lounge <- read_csv("/cloud/project/data/lounge.csv")
-```
-
-    ## Parsed with column specification:
-    ## cols(
-    ##   .default = col_character(),
-    ##   date = col_date(format = ""),
-    ##   overall_rating = col_double(),
-    ##   comfort_rating = col_double(),
-    ##   cleanliness_rating = col_double(),
-    ##   bar_beverages_rating = col_double(),
-    ##   catering_rating = col_double(),
-    ##   washrooms_rating = col_double(),
-    ##   wifi_connectivity_rating = col_double(),
-    ##   staff_service_rating = col_double(),
-    ##   recommended = col_double()
-    ## )
-    ## See spec(...) for full column specifications.
-
-``` r
 seat <- read_csv("/cloud/project/data/seat.csv")
 ```
-
-    ## Parsed with column specification:
-    ## cols(
-    ##   .default = col_character(),
-    ##   date = col_date(format = ""),
-    ##   overall_rating = col_double(),
-    ##   seat_legroom_rating = col_double(),
-    ##   seat_recline_rating = col_double(),
-    ##   seat_width_rating = col_double(),
-    ##   aisle_space_rating = col_double(),
-    ##   viewing_tv_rating = col_double(),
-    ##   power_supply_rating = col_double(),
-    ##   seat_storage_rating = col_double(),
-    ##   recommended = col_double()
-    ## )
-    ## See spec(...) for full column specifications.
 
 ``` r
 glimpse(airline)
@@ -208,3 +137,36 @@ glimpse(seat)
     ## $ recommended         <dbl> 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1…
 
 ## 3\. Data analysis plan
+
+How does the overall ratings for airlines and airports change depending
+of the time of year? Do these patterns repeat every year? Which
+traveller type is prev during which time of the year? Y:
+overall\_rating, type\_traveller X : date
+
+To what extent do passengers in business class give better overall
+ratings than passengers in economy/Premium Economy? Does this alternate
+between different airplane types? Y: overall\_rating X: type\_traveller
+, cabin\_flown, aircraft
+
+What individual rating affects the overall rating for airports/airlines
+the most? Y: overall\_rating X: wifi\_connectivity\_rating,
+food\_beverages\_rating, queuing\_rating, cabin\_staff\_rating,
+seat\_comfort\_rating
+
+Do airlines improve their ratings with a particular reviewer over time,
+if so in which category are the improvements made Y: overall\_rating,
+other variables TBD after the most significant contributor is found X:
+author, date, airline\_name
+
+Do airline providers have different ratings when flying from or to
+different countries Y: overall\_rating X: airport\_name,
+experience\_airport
+
+Do positive reviews on an airline and positive reviews on lounge and
+seat have a correlation? Y: a graph showing corelation X:
+overall\_rating (in seat and lounge data set )
+
+Question to the instructor: Is it possible to segment the reviews into
+“positive” and “negative” ones (using text analysis on the content
+column) and replace all the positive and negative reviews with the words
+“good” or “bad”?

@@ -1,6 +1,6 @@
 ---
 title: "Project proposal"
-author: "macaRoni"
+author: "macRoni"
 output: github_document
 ---
 
@@ -14,21 +14,53 @@ library(readr)
 The dataset is a Skytrax User Reviews Dataset (published August 2nd, 2015) at https://github.com/quankiquanki/skytrax-reviews-dataset .  
 
 
+General Question: Understand which airlines and airports are the most recommended and the reasons for it, and investigate what drives each type of traveller’s preferences.
+
+
+
 ## 2. Data
 
-```{r read-files}
+```{r read-files, message = FALSE }
 airline <- read_csv("/cloud/project/data/airline.csv")
 airport <- read_csv("/cloud/project/data/airport.csv")
 lounge <- read_csv("/cloud/project/data/lounge.csv")
 seat <- read_csv("/cloud/project/data/seat.csv")
+
+```
+
+```{r}
 glimpse(airline)
 glimpse(airport)
 glimpse(lounge)
 glimpse(seat)
 ```
 
-
 ## 3. Data analysis plan
 
+How does the overall ratings for airlines and airports change depending of the time of year? Do these patterns repeat every year? Which traveller type is prev during which time of the year?
+Y: overall_rating, type_traveller
+X : date
+
+To what extent do passengers in business class give better overall ratings than passengers in economy/Premium Economy?
+Does this alternate between different airplane types?
+Y: overall_rating
+X: type_traveller , cabin_flown, aircraft   
 
 
+What individual rating affects the overall rating for airports/airlines the most? 
+Y: overall_rating
+X: wifi_connectivity_rating, food_beverages_rating, queuing_rating, cabin_staff_rating, seat_comfort_rating
+
+Do airlines improve their ratings with a particular reviewer over time, if so in which category are the improvements made
+Y: overall_rating, other variables TBD after the most significant contributor is found 
+X: author, date, airline_name 
+
+Do airline providers have different ratings when flying from or to different countries
+Y: overall_rating
+X: airport_name, experience_airport
+
+Do positive reviews on an airline and positive reviews on lounge and seat have a correlation?
+Y: a graph showing corelation 
+X: overall_rating (in seat and lounge data set )
+
+Question to the instructor: Is it possible to segment the reviews into “positive” and “negative” ones (using text analysis on the content column) and replace all the positive and negative reviews with the words “good” or “bad”?
