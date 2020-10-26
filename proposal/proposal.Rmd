@@ -34,5 +34,20 @@ glimpse(seat)
 
 How does the overall ratings for airlines and airports change depending of the time of year? Do these patterns repeat every year?
 
+To what extent do passengers in business class give better overall ratings than passengers in economy/Premium Economy?
+What specific ratings differ the most/which are the same?
+Does this alternate between different airlines/airplane types?
 
+What individual rating affects the overall rating for airports/airlines the most? Does this alter depending on the individual airline/airport?
 
+Do airlines improve their ratings with a particular reviewer over time, if so in what category are the improvements made
+
+Do airline providers have different ratings when flying from or to different countries
+
+Do positive reviews on an airline and positive reviews on lounge and seat have a correlation?
+
+Is it possible to segment the reviews into “positive” and “negative” ones and replace all the positive and negative reviews with the words “good” or “bad”?
+
+After certain connections have been established between the different variables, we aim to look into ‘how’ (and ‘whether’) the results will change if one of the variables are altered.
+
+Which traveller type is most prevailent during different times of the year?
