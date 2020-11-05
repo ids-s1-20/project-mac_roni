@@ -47,7 +47,7 @@ airline %>%
 
 ```
 
-Next, we visualised the distributuon of the traveller types the airline attracts.
+Next, we visualised the distribution of the traveller types the airline attracts.
 Although, this visualization doesn't take into account the 31018 missing values. 
 
 ```{r}
