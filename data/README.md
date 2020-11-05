@@ -13,7 +13,7 @@ The reviews are separated into 4 files
 - `seat.csv`: eat reviews
 
 
-##Airline Dataset 
+### Airline Dataset 
 
 Rows: 41394
 Columns: 20
@@ -42,7 +42,7 @@ Number of Values per Column
 
 
 
-###Airport Dataset
+### Airport Dataset
 
 Rows: 17721
 Columns: 20
@@ -71,7 +71,7 @@ Number of Values per Column:
 
 
 
-###Lounge Dataset
+### Lounge Dataset
 
 Rows: 2264
 Columns: 21
@@ -101,7 +101,7 @@ Number of Values per Column:
 
 
 
-###Seat Dataset
+### Seat Dataset
 
 Rows: 1258
 Columns: 21
