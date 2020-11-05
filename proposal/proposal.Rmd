@@ -14,7 +14,7 @@ library(readr)
 The dataset is a Skytrax User Reviews Dataset (published August 2nd, 2015) at https://github.com/quankiquanki/skytrax-reviews-dataset .  
 
 
-General Question: Understand which airlines and airports are the most recommended and the reasons for it, and investigate what drives each type of traveller’s preferences.
+General Theme: Which amenities impact the airline rating the most
 
 
 
