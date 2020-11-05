@@ -14,7 +14,8 @@ The reviews are separated into 4 files
 
 
 ##Airline Dataset 
-Rows: 4139
+
+Rows: 41394
 Columns: 20
 
 Number of Values per Column
@@ -42,6 +43,7 @@ Number of Values per Column
 
 
 ###Airport Dataset
+
 Rows: 17721
 Columns: 20
 
@@ -70,6 +72,7 @@ Number of Values per Column:
 
 
 ###Lounge Dataset
+
 Rows: 2264
 Columns: 21
 
@@ -99,6 +102,7 @@ Number of Values per Column:
 
 
 ###Seat Dataset
+
 Rows: 1258
 Columns: 21
 
