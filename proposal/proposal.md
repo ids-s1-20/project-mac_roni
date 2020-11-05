@@ -148,22 +148,13 @@ ratings than passengers in economy/Premium Economy? Does this alternate
 between different airplane types? Y: overall\_rating X: type\_traveller
 , cabin\_flown, aircraft
 
-What individual rating affects the overall rating for airports/airlines
-the most? Y: overall\_rating X: wifi\_connectivity\_rating,
-food\_beverages\_rating, queuing\_rating, cabin\_staff\_rating,
-seat\_comfort\_rating
-
 Do airlines improve their ratings with a particular reviewer over time,
 if so in which category are the improvements made Y: overall\_rating,
 other variables TBD after the most significant contributor is found X:
 author, date, airline\_name
 
-Do airline providers have different ratings when flying from or to
-different countries Y: overall\_rating X: airport\_name,
-experience\_airport
-
 Do positive reviews on an airline and positive reviews on lounge and
-seat have a correlation? Y: a graph showing corelation X:
+seat have a correlation? Y: a graph showing correlation X:
 overall\_rating (in seat and lounge data set )
 
 Question to the instructor: Is it possible to segment the reviews into

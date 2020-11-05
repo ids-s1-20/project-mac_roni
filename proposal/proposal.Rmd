@@ -46,21 +46,12 @@ Does this alternate between different airplane types?
 Y: overall_rating
 X: type_traveller , cabin_flown, aircraft   
 
-
-What individual rating affects the overall rating for airports/airlines the most? 
-Y: overall_rating
-X: wifi_connectivity_rating, food_beverages_rating, queuing_rating, cabin_staff_rating, seat_comfort_rating
-
 Do airlines improve their ratings with a particular reviewer over time, if so in which category are the improvements made
 Y: overall_rating, other variables TBD after the most significant contributor is found 
 X: author, date, airline_name 
 
-Do airline providers have different ratings when flying from or to different countries
-Y: overall_rating
-X: airport_name, experience_airport
-
 Do positive reviews on an airline and positive reviews on lounge and seat have a correlation?
-Y: a graph showing corelation 
+Y: a graph showing correlation 
 X: overall_rating (in seat and lounge data set )
 
 Question to the instructor: Is it possible to segment the reviews into “positive” and “negative” ones (using text analysis on the content column) and replace all the positive and negative reviews with the words “good” or “bad”?
