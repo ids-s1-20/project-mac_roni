@@ -136,6 +136,50 @@ glimpse(seat)
 
 ## 3\. Data analysis plan
 
+We first began by exploring the overall average ratings of the different
+airlines.
+
+``` r
+airline %>%
+  group_by(airline_name) %>%
+  summarise( average_overall_rating = mean(overall_rating, na.rm = TRUE)) %>%
+  arrange(desc(average_overall_rating))
+```
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## # A tibble: 362 x 2
+    ##    airline_name             average_overall_rating
+    ##    <chr>                                     <dbl>
+    ##  1 beijing-capital-airlines                  10   
+    ##  2 danish-air                                10   
+    ##  3 eastarjet                                 10   
+    ##  4 la-compagnie                              10   
+    ##  5 loganair                                  10   
+    ##  6 air-busan                                  9.45
+    ##  7 atlantic-airways                           9.25
+    ##  8 avianca-brasil                             9   
+    ##  9 europe-airpost                             9   
+    ## 10 jeju-air                                   9   
+    ## # … with 352 more rows
+
+Next, we visualised the distributuon of the traveller types the airline
+attracts. Although, this visualization doesn’t take into account the
+31018 missing values.
+
+``` r
+airline %>%
+  filter(type_traveller != "NA") %>%
+  ggplot( mapping = aes( y = type_traveller)) +
+  geom_bar() +
+  labs( title = "Distribution of the traveller types", 
+        y = "Traveller types" 
+        ) +
+  theme_minimal()
+```
+
+![](proposal_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
+
 How does the overall ratings for airlines and airports change depending
 of the time of year? Do these patterns repeat every year? Which
 traveller type is prev during which time of the year? Y:
