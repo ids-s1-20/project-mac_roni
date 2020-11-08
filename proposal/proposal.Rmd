@@ -21,10 +21,10 @@ General Theme: Which amenities impact the airline rating the most
 ## 2. Data
 
 ```{r read-files, message = FALSE }
-airline <- read_csv("/cloud/project/data/airline.csv")
-airport <- read_csv("/cloud/project/data/airport.csv")
-lounge <- read_csv("/cloud/project/data/lounge.csv")
-seat <- read_csv("/cloud/project/data/seat.csv")
+airline <- read_csv("/data/airline.csv")
+airport <- read_csv("/data/airport.csv")
+lounge <- read_csv("/data/lounge.csv")
+seat <- read_csv("/data/seat.csv")
 
 ```
 
