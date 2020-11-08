@@ -16,15 +16,13 @@ The dataset is a Skytrax User Reviews Dataset (published August 2nd, 2015) at ht
 
 General Theme: Which amenities impact the airline rating the most
 
-
-
 ## 2. Data
 
 ```{r read-files, message = FALSE }
-airline <- read_csv("/data/airline.csv")
-airport <- read_csv("/data/airport.csv")
-lounge <- read_csv("/data/lounge.csv")
-seat <- read_csv("/data/seat.csv")
+airline <- read_csv("/cloud/project/data/airline.csv")
+airport <- read_csv("/cloud/project/data/airport.csv")
+lounge <- read_csv("/cloud/project/data/lounge.csv")
+seat <- read_csv("/cloud/project/data/seat.csv")
 ```
 
 ```{r}
@@ -70,6 +68,8 @@ Does this alternate between different airplane types?
 Y: overall_rating
 X: type_traveller , cabin_flown, aircraft   
 
+Hypothesis: we expect business to have a higher rating and will use the correlation between overall rating and cabin flown to validate our hypothesis. 
+
 Do airlines improve their ratings with a particular reviewer over time, if so in which category are the improvements made
 Y: overall_rating, other variables TBD after the most significant contributor is found 
 X: author, date, airline_name 
@@ -78,4 +78,6 @@ Do positive reviews on an airline and positive reviews on lounge and seat have a
 Y: a graph showing correlation 
 X: overall_rating (in seat and lounge data set )
 
-Question to the instructor: Is it possible to segment the reviews into “positive” and “negative” ones (using text analysis on the content column) and replace all the positive and negative reviews with the words “good” or “bad”?
+Hypothesis: we expect seat rating to have a stronger correlation than the lounge rating because not everyone uses the lounge. 
+
+***Question to the instructor: Is it possible to segment the reviews into “positive” and “negative” ones (using text analysis on the content column) and replace all the positive and negative reviews with the words “good” or “bad”?***

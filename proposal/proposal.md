@@ -163,7 +163,7 @@ airline %>%
     ## 10 jeju-air                                   9   
     ## # … with 352 more rows
 
-Next, we visualised the distributuon of the traveller types the airline
+Next, we visualised the distribution of the traveller types the airline
 attracts. Although, this visualization doesn’t take into account the
 31018 missing values.
 
@@ -190,6 +190,10 @@ ratings than passengers in economy/Premium Economy? Does this alternate
 between different airplane types? Y: overall\_rating X: type\_traveller
 , cabin\_flown, aircraft
 
+Hypothesis: we expect business to have a higher rating and will use the
+correlation between overall rating and cabin flown to validate our
+hypothesis.
+
 Do airlines improve their ratings with a particular reviewer over time,
 if so in which category are the improvements made Y: overall\_rating,
 other variables TBD after the most significant contributor is found X:
@@ -199,7 +203,10 @@ Do positive reviews on an airline and positive reviews on lounge and
 seat have a correlation? Y: a graph showing correlation X:
 overall\_rating (in seat and lounge data set )
 
-Question to the instructor: Is it possible to segment the reviews into
-“positive” and “negative” ones (using text analysis on the content
+Hypothesis: we expect seat rating to have a stronger correlation than
+the lounge rating because not everyone uses the lounge.
+
+***Question to the instructor: Is it possible to segment the reviews
+into “positive” and “negative” ones (using text analysis on the content
 column) and replace all the positive and negative reviews with the words
-“good” or “bad”?
+“good” or “bad”?***
