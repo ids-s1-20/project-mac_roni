@@ -25,7 +25,6 @@ airline <- read_csv("/data/airline.csv")
 airport <- read_csv("/data/airport.csv")
 lounge <- read_csv("/data/lounge.csv")
 seat <- read_csv("/data/seat.csv")
-
 ```
 
 ```{r}
