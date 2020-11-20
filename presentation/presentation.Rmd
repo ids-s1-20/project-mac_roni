@@ -200,9 +200,14 @@ Limitations:
 - And if you want more bells and whistles, there is also `xaringanExtra`: https://pkg.garrickadenbuie.com/xaringanExtra.
 
 ---
-# Rating improvements over time
+# Question 1
 
+---
+# Question 2
 
+---
+# Question 3
 
-
+---
+# Question 4
 
