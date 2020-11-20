@@ -21,6 +21,7 @@ library(tidyverse)
 library(tidymodels)
 library(palmerpenguins)
 library(knitr)
+library(skimr)
 ```
 
 ```{r setup, include=FALSE}
@@ -201,6 +202,8 @@ Limitations:
 
 ---
 # Question 1
+
+Question: How does the overall ratings for airlines change depending of the time of year? Do these patterns repeat every year? Which traveller type is present during which time of the year?
 
 ---
 # Question 2

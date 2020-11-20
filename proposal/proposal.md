@@ -6,6 +6,7 @@ macRoni
 library(tidyverse)
 library(broom)
 library(readr)
+library(skimr)
 ```
 
 ## 1\. Introduction
@@ -13,7 +14,7 @@ library(readr)
 The dataset is a Skytrax User Reviews Dataset (published August 2nd,
 2015) at <https://github.com/quankiquanki/skytrax-reviews-dataset> .
 
-General Theme: Which amenities impact the airline rating the most
+General Theme: Which amenities impact the airline rating the most?
 
 ## 2\. Data
 
@@ -180,15 +181,31 @@ airline %>%
 
 ![](proposal_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
 
-How does the overall ratings for airlines and airports change depending
-of the time of year? Do these patterns repeat every year? Which
-traveller type is prev during which time of the year? Y:
-overall\_rating, type\_traveller X : date
+1.  How does the overall ratings for airlines change depending of the
+    time of year? Do these patterns repeat every year? Which traveller
+    type is prev during which time of the year?
 
-To what extent do passengers in business class give better overall
-ratings than passengers in economy/Premium Economy? Does this alternate
-between different airplane types? Y: overall\_rating X: type\_traveller
-, cabin\_flown, aircraft
+First, all NAs for the response variable and the predictor were removed.
+
+Next, a plot of mean ratings vs time shows how airline ratings change
+over time for ryanair and lufthansa. Values before 2014 were disregarded
+as there were too few of them to show any significant correlation.
+
+![](proposal_files/figure-gfm/plot-of-ryanair-vs-lufthansa-1.png)<!-- -->
+
+As the visualization shows, the ratings for ryanair have been steady at
+around 7 over 2013 and 2014, but have started deteriorating in
+2015.Comparing this to a more expensive company like lufthansa reveals
+that the overall ratings are more steady.
+
+On the other hand, there is no clear pattern in each year, which makes
+sense as the airline companies will normally try to provide the same
+service throughout the year.
+
+2.  To what extent do passengers in business class give better overall
+    ratings than passengers in economy/Premium Economy? Does this
+    alternate between different airplane types? Y: overall\_rating X:
+    type\_traveller , cabin\_flown, aircraft
 
 Hypothesis: we expect business to have a higher rating and will use the
 correlation between overall rating and cabin flown to validate our
