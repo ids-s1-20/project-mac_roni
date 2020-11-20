@@ -257,6 +257,26 @@ Question: How does the overall ratings for airlines change depending of the time
 ---
 # Question 3
 
+
+```r
+airline%&gt;%
+  mutate(duplicate = duplicated(.$author))%&gt;%
+  filter(duplicate)%&gt;%
+  group_by(author)%&gt;%
+  summarize(count = n())%&gt;%
+  ggplot(aes(x=count))+
+  geom_density()
+```
+
+```
+## `summarise()` ungrouping output (override with `.groups` argument)
+```
+
+&lt;img src="presentation_files/figure-html/unnamed-chunk-2-1.png" width="80%" /&gt;
+
+
+
+
 ---
 # Question 4
     </textarea>
