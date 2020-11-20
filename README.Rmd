@@ -1,6 +1,6 @@
 ---
-title: Project title
-author: by Team name
+title: Which amenities impact the airline rating the most? 
+author: macaRoni
 output: github_document
 ---
 
