@@ -208,6 +208,19 @@ Limitations:
 ---
 # Question 3
 
+```{r}
+airline%>%
+  mutate(duplicate = duplicated(.$author))%>%
+  filter(duplicate)%>%
+  group_by(author)%>%
+  summarize(count = n())%>%
+  ggplot(aes(x=count))+
+  geom_density()
+```
+
+
+
+
 ---
 # Question 4
 
