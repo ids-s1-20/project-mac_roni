@@ -1,5 +1,5 @@
 ---
-title: "Which amenities impact the airline rating the most? "
+title: "Which amenities impact the airline rating the most?"
 subtitle: "Presentation subtitle (if any)"
 author: "macaRoni <br> Sophie Kerfoot, Ben Thamm, Henrich Hegedus, Purvi Harwani"
 institute: "University of Edinburgh"
