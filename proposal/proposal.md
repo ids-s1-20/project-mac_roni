@@ -187,20 +187,44 @@ airline %>%
 
 First, all NAs for the response variable and the predictor were removed.
 
-Next, a plot of mean ratings vs time shows how airline ratings change
-over time for ryanair and lufthansa. Values before 2014 were disregarded
-as there were too few of them to show any significant correlation.
+``` r
+airline_nonas <- airline %>%
+  drop_na(overall_rating) #removing any NAs
+```
+
+Next, we want to investigate how time affects ratings. As the research
+question focuses on how airlines get high ratings, the five airlines
+with the highest rating were found. A limit of at least 100 survey
+submissions was imposed to increase the number of data points.
+
+    ## # A tibble: 106 x 3
+    ##    airline_name       mean_overall_rating     n
+    ##    <chr>                            <dbl> <int>
+    ##  1 asiana-airlines                   8.35   301
+    ##  2 garuda-indonesia                  8.31   351
+    ##  3 air-astana                        8.28   103
+    ##  4 bangkok-airways                   8.12   213
+    ##  5 indigo-airlines                   8.08   104
+    ##  6 korean-air                        8.03   315
+    ##  7 eva-air                           7.98   296
+    ##  8 aegean-airlines                   7.82   227
+    ##  9 singapore-airlines                7.77   432
+    ## 10 airasia-x                         7.71   246
+    ## # … with 96 more rows
+
+These airlines were plotted against time to identify any correlations.
 
 ![](proposal_files/figure-gfm/plot-of-ryanair-vs-lufthansa-1.png)<!-- -->
 
-As the visualization shows, the ratings for ryanair have been steady at
-around 7 over 2013 and 2014, but have started deteriorating in
-2015.Comparing this to a more expensive company like lufthansa reveals
-that the overall ratings are more steady.
+As the visualization shows, all of the airlines receive ratings in
+between 5-10, with air-astana showing an increase at the end of 2015.
+For indigo-airlines, garuda-indonesia and bangkok-airlines, the ratings
+deteriorated at the end of 2015. Garuda-indonesia ratings stay constant
+throughout both years.
 
-On the other hand, there is no clear pattern in each year, which makes
-sense as the airline companies will normally try to provide the same
-service throughout the year.
+There is no clear pattern in each year, which makes sense as the airline
+companies will normally try to provide the same service throughout the
+year.
 
 2.  To what extent do passengers in business class give better overall
     ratings than passengers in economy/Premium Economy? Does this
