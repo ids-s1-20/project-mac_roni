@@ -21,6 +21,7 @@ library(tidyverse)
 library(tidymodels)
 library(palmerpenguins)
 library(knitr)
+
 ```
 
 ```{r setup, include=FALSE}
@@ -209,13 +210,45 @@ Limitations:
 # Question 3
 
 ```{r}
-airline%>%
+rep_rating<-airline%>%
   mutate(duplicate = duplicated(.$author))%>%
-  filter(duplicate)%>%
+  filter(duplicate)
+
+rep_rating%>%
   group_by(author)%>%
   summarize(count = n())%>%
   ggplot(aes(x=count))+
-  geom_density()
+  geom_histogram()
+```
+```{r}
+rep_rating%>%
+  group_by(author)%>%
+  summarize(count = n())%>%
+  filter(count == max(count))
+```
+
+```{r}
+rep_rating%>%
+  filter(author == "Anders Pedersen")%>%
+  filter(airline_name == "qatar-airways")%>%
+  ggplot(aes(x = date, y = overall_rating, color = airline_name))+
+  geom_smooth(method = lm, se = FALSE)+
+  geom_point()
+  
+  
+```
+```{r}
+anders_filtered <- rep_rating%>%
+  filter(author == "Anders Pedersen")%>%
+  filter(airline_name == "qatar-airways")
+
+
+anders_qatar_fit<- linear_reg()%>%
+  set_engine("lm")%>%
+  fit(overall_rating ~ date, data= anders_filtered)
+
+tidy(anders_qatar_fit)
+  
 ```
 
 
