@@ -104,9 +104,9 @@ As the visualization shows, all of the airlines receive ratings in between 5-10,
 
 There is no clear pattern in each year, which makes sense as the airline companies will normally try to provide the same service throughout the year. 
 
-As Air Astana shows a sudden increase, one can look at the individual ratings (Seat Comfort, Cabin Staff, Food Beverages, Inflight Entertainment and Money Value) and see if there is one rating that sticks out.
+One can look at the individual ratings (Seat Comfort, Cabin Staff, Food Beverages, Inflight Entertainment and Money Value) and see if there is one rating that sticks out depending on the airline. 
 
-```{r air-astana-ratings-breakdown, message = FALSE, echo = FALSE}
+```{r all-airlines-ratings-breakdown, message = FALSE, echo = FALSE}
 airline_nonas %>%
   group_by(airline_name, date) %>%
   summarise(mean_seat_comfort_rating = mean(seat_comfort_rating, na.rm = TRUE),
@@ -115,7 +115,7 @@ airline_nonas %>%
             mean_inflight_entertainment_rating = mean(inflight_entertainment_rating, na.rm = TRUE),
             mean_value_money_rating = mean(value_money_rating, na.rm = TRUE),
             ) %>%
-  filter(airline_name == "air-astana",
+  filter(airline_name %in% c("asiana-airlines", "garuda-indonesia", "air-astana", "bangkok-airways", "indigo-airlines"),
          date >= "2014-01-01") %>%
   ggplot(aes(x = date)) +
   geom_smooth(aes(y = mean_seat_comfort_rating, color = "red"), se = FALSE) +
@@ -125,7 +125,7 @@ airline_nonas %>%
   geom_smooth(aes(y = mean_value_money_rating, color = "black"), se = FALSE) +
   labs(
     title = "Seat Comfort, Cabin Staff, Food Beverages, Inflight Entertainment and 
-Money Value Rating for Air Astana",
+Money Value Ratings for Top Five Airlines",
     subtitle = "From 2014 to 2015",
     x = "Date",
     y = "Rating"
@@ -133,10 +133,11 @@ Money Value Rating for Air Astana",
   scale_color_identity(name = "Type of Rating (Mean)",
                           breaks = c("red", "green", "blue", "yellow", "black"),
                           labels = c("Seat Comfort", "Cabin Staff", "Food Beverages", "Inflight Entertainment", "Money Value"),
-                          guide = "legend")
+                          guide = "legend") +
+  facet_wrap(~airline_name, ncol = 3)
   
 ```
-As the visualisation shows, all ratings increase from the start of 2015 onwards. The highest increases are seen in seat comfort, money value and cabin staff. This shows that passengers dont focus on one individual rating, but on all of them to combine to a high overall rating.
+As the visualisation shows, to increase in overall rating, all individaul ratings have to increase. This can be seen in the example of Air Astana. For airlines that decreased in overall rating (bangkok-airways and indigo-airlines), only specific individual ratings decreased or had an overall worse score (especially inflight entertainment). 
 
 2. To what extent do passengers in business class give better overall ratings than passengers in economy/Premium Economy?
 Does this alternate between different airplane types?

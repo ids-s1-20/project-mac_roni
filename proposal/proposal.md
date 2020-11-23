@@ -226,16 +226,21 @@ There is no clear pattern in each year, which makes sense as the airline
 companies will normally try to provide the same service throughout the
 year.
 
-As Air Astana shows a sudden increase, one can look at the individual
-ratings (Seat Comfort, Cabin Staff, Food Beverages, Inflight
-Entertainment and Money Value) and see if there is one rating that
-sticks out.
+One can look at the individual ratings (Seat Comfort, Cabin Staff, Food
+Beverages, Inflight Entertainment and Money Value) and see if there is
+one rating that sticks out depending on the airline.
 
-![](proposal_files/figure-gfm/air-astana-ratings-breakdown-1.png)<!-- -->
-As the visualisation shows, all ratings increase from the start of 2015
-onwards. The highest increases are seen in seat comfort, money value and
-cabin staff. This shows that passengers dont focus on one individual
-rating, but on all of them to combine to a high overall rating.
+    ## Warning: Removed 2 rows containing non-finite values (stat_smooth).
+
+    ## Warning: Removed 9 rows containing non-finite values (stat_smooth).
+
+![](proposal_files/figure-gfm/all-airlines-ratings-breakdown-1.png)<!-- -->
+As the visualisation shows, to increase in overall rating, all
+individaul ratings have to increase. This can be seen in the example of
+Air Astana. For airlines that decreased in overall rating
+(bangkok-airways and indigo-airlines), only specific individual ratings
+decreased or had an overall worse score (especially inflight
+entertainment).
 
 2.  To what extent do passengers in business class give better overall
     ratings than passengers in economy/Premium Economy? Does this
