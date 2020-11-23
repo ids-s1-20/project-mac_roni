@@ -1,9 +1,9 @@
 [![Check allowed files](https://github.com/ids-s1-20/project-mac_roni/workflows/Check%20allowed%20files/badge.svg)](https://github.com/ids-s1-20/project-mac_roni/actions?query=workflow:%22Check%20allowed%20files%22) [![Check presentation renders](https://github.com/ids-s1-20/project-mac_roni/workflows/Check%20presentation%20renders/badge.svg)](https://github.com/ids-s1-20/project-mac_roni/actions?query=workflow:%22Check%20presentation%20renders%22) [![Check README renders](https://github.com/ids-s1-20/project-mac_roni/workflows/Check%20README%20renders/badge.svg)](https://github.com/ids-s1-20/project-mac_roni/actions?query=workflow:%22Check%20README%20renders%22)
 
 
-Project title
+Which amenities impact the airline rating the most?
 ================
-by Team name
+by MacRoni
 
 ## Summary
 

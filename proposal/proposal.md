@@ -6,6 +6,7 @@ macRoni
 library(tidyverse)
 library(broom)
 library(readr)
+library(skimr)
 ```
 
 ## 1\. Introduction
@@ -180,62 +181,122 @@ airline %>%
 
 ![](proposal_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
 
-How does the overall ratings for airlines and airports change depending
-of the time of year? Do these patterns repeat every year? Which
-traveller type is prev during which time of the year? Y:
-overall\_rating, type\_traveller X : date
+1.  How does the overall ratings for airlines change depending of the
+    time of year? Do these patterns repeat every year? Which traveller
+    type is prev during which time of the year?
 
 Which type of travelers in first class give better overall ratings than
 passengers in other classes? Does this alternate between different
-airlines? Y: overall\_rating X: type\_traveller , cabin\_flown,
-airline\_name
+airlines?
+
+First, all NAs for the response variable and the predictor were removed.
+
+``` r
+airline_nonas <- airline %>%
+  drop_na(overall_rating) #removing any NAs
+```
+
+Next, we want to investigate how time affects ratings. As the research
+question focuses on how airlines get high ratings, the five airlines
+with the highest rating were found. A limit of at least 100 survey
+submissions was imposed to increase the number of data points.
+
+    ## # A tibble: 106 x 3
+    ##    airline_name       mean_overall_rating     n
+    ##    <chr>                            <dbl> <int>
+    ##  1 asiana-airlines                   8.35   301
+    ##  2 garuda-indonesia                  8.31   351
+    ##  3 air-astana                        8.28   103
+    ##  4 bangkok-airways                   8.12   213
+    ##  5 indigo-airlines                   8.08   104
+    ##  6 korean-air                        8.03   315
+    ##  7 eva-air                           7.98   296
+    ##  8 aegean-airlines                   7.82   227
+    ##  9 singapore-airlines                7.77   432
+    ## 10 airasia-x                         7.71   246
+    ## # … with 96 more rows
+
+These airlines were plotted against time to identify any correlations.
+
+![](proposal_files/figure-gfm/plot-of-ryanair-vs-lufthansa-1.png)<!-- -->
+
+As the visualization shows, all of the airlines receive ratings in
+between 5-10, with air-astana showing an increase at the end of 2015.
+For indigo-airlines, garuda-indonesia and bangkok-airlines, the ratings
+deteriorated at the end of 2015. Garuda-indonesia ratings stay constant
+throughout both years.
+
+There is no clear pattern in each year, which makes sense as the airline
+companies will normally try to provide the same service throughout the
+year.
+
+2.  To what extent do passengers in first class give better overall
+    ratings than passengers in other classes? Does this alternate
+    between different airplane types? Y: overall\_rating X:
+    type\_traveller , cabin\_flown, airline\_name
+
+Let’s look at the average overall rating the passengers gave for each of
+the classes.
+
+``` r
+airline %>%
+  filter(!is.na(overall_rating), !is.na(cabin_flown) ) %>%
+  group_by(cabin_flown) %>%
+  summarise(mean_overall_rating = mean(overall_rating, na.rm = TRUE))
+```
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## # A tibble: 4 x 2
+    ##   cabin_flown     mean_overall_rating
+    ##   <chr>                         <dbl>
+    ## 1 Business Class                 6.87
+    ## 2 Economy                        5.97
+    ## 3 First Class                    6.65
+    ## 4 Premium Economy                5.86
 
 Hypothesis: we expect first class to have a higher rating and will use
 the correlation between overall rating and cabin flown to validate our
 hypothesis.
 
+Business class has received the highest amount of rating. It is closely
+followed by First class. This doesn’t match our hypothesis.
+
+Is this because passengers feel the business class services are better
+or fewer people choose to travel in first class? Let’s find out\!
+
 ``` r
-glimpse(airline)
+airline %>%
+  filter(!is.na(overall_rating), !is.na(cabin_flown) ) %>%
+  group_by(cabin_flown) %>%
+  count(cabin_flown) %>%
+  arrange(desc(n))
 ```
 
-    ## Rows: 41,396
-    ## Columns: 20
-    ## $ airline_name                  <chr> "adria-airways", "adria-airways", "adri…
-    ## $ link                          <chr> "/airline-reviews/adria-airways", "/air…
-    ## $ title                         <chr> "Adria Airways customer review", "Adria…
-    ## $ author                        <chr> "D Ito", "Ron Kuhlmann", "E Albin", "Te…
-    ## $ author_country                <chr> "Germany", "United States", "Switzerlan…
-    ## $ date                          <date> 2015-04-10, 2015-01-05, 2014-09-14, 20…
-    ## $ content                       <chr> "Outbound flight FRA/PRN A319. 2 hours …
-    ## $ aircraft                      <chr> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
-    ## $ type_traveller                <chr> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
-    ## $ cabin_flown                   <chr> "Economy", "Business Class", "Economy",…
-    ## $ route                         <chr> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
-    ## $ overall_rating                <dbl> 7, 10, 9, 8, 4, 9, 5, 9, 8, 10, 9, 7, 8…
-    ## $ seat_comfort_rating           <dbl> 4, 4, 5, 4, 4, 4, 4, 5, 4, 5, 4, 4, 4, …
-    ## $ cabin_staff_rating            <dbl> 4, 5, 5, 4, 2, 4, 4, 5, 3, 5, 4, 5, 4, …
-    ## $ food_beverages_rating         <dbl> 4, 4, 4, 3, 1, 3, 1, 4, 4, 4, 4, 3, 4, …
-    ## $ inflight_entertainment_rating <dbl> 0, 1, 0, 1, 2, 3, 0, 3, 1, 4, 4, 3, 0, …
-    ## $ ground_service_rating         <dbl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
-    ## $ wifi_connectivity_rating      <dbl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
-    ## $ value_money_rating            <dbl> 4, 5, 5, 4, 2, 4, 3, 4, 4, 4, 4, 5, 4, …
-    ## $ recommended                   <dbl> 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, …
+    ## # A tibble: 4 x 2
+    ## # Groups:   cabin_flown [4]
+    ##   cabin_flown         n
+    ##   <chr>           <int>
+    ## 1 Economy         26429
+    ## 2 Business Class   6133
+    ## 3 Premium Economy  1445
+    ## 4 First Class       846
+
+Now, it is obvious that first class has a lower rating compared to
+business class since fewer passengers chose that cabin type.
 
 Sub question: What is the distribution of traveller\_type in each of the
 cabin\_flown categories?
-
-Hypothesis: “Solo leisure travelers is the significant category of
-travellers found in First Class”
 
 ``` r
 airline %>%
   filter (!is.na(cabin_flown), !is.na(type_traveller), !is.na(overall_rating) ) %>%
   ggplot(aes(x = cabin_flown, fill = type_traveller)) +
-  geom_bar(position="fill") +
+  geom_bar(position ="fill") +
   coord_flip()
 ```
 
-![](proposal_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+![](proposal_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
 
 This reveals the type of travellers in each of the cabins.
 
@@ -253,13 +314,13 @@ From a pocket-friendly and budgeting point of view, it makes sense that
 the family leisure traveler category is mostly found in the Economy
 class.
 
-Next, let’s explore the overall\_rating variable.
+Next, let’s explore how the overall flight rating varies.
 
 ``` r
 airline %>%
   filter(!is.na(overall_rating)) %>%
   group_by(overall_rating) %>%
-  count(overall_rating)
+  count(overall_rating) 
 ```
 
     ## # A tibble: 10 x 2
@@ -286,7 +347,7 @@ airline %>%
   geom_col() 
 ```
 
-![](proposal_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+![](proposal_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
 
 Majority of the travelers have rated the airlines a 10 (5861 to be
 exact) but ratings like 8, 9, 10 are also common. Surprisingly, the
