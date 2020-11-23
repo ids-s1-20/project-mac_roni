@@ -13,7 +13,7 @@ library(readr)
 The dataset is a Skytrax User Reviews Dataset (published August 2nd,
 2015) at <https://github.com/quankiquanki/skytrax-reviews-dataset> .
 
-General Theme: Which amenities impact the airline rating the most
+General Theme: Which amenities impact the airline rating the most?
 
 ## 2\. Data
 
@@ -185,14 +185,112 @@ of the time of year? Do these patterns repeat every year? Which
 traveller type is prev during which time of the year? Y:
 overall\_rating, type\_traveller X : date
 
-To what extent do passengers in business class give better overall
-ratings than passengers in economy/Premium Economy? Does this alternate
-between different airplane types? Y: overall\_rating X: type\_traveller
-, cabin\_flown, aircraft
+Which type of travelers in first class give better overall ratings than
+passengers in other classes? Does this alternate between different
+airlines? Y: overall\_rating X: type\_traveller , cabin\_flown,
+airline\_name
 
-Hypothesis: we expect business to have a higher rating and will use the
-correlation between overall rating and cabin flown to validate our
+Hypothesis: we expect first class to have a higher rating and will use
+the correlation between overall rating and cabin flown to validate our
 hypothesis.
+
+``` r
+glimpse(airline)
+```
+
+    ## Rows: 41,396
+    ## Columns: 20
+    ## $ airline_name                  <chr> "adria-airways", "adria-airways", "adri…
+    ## $ link                          <chr> "/airline-reviews/adria-airways", "/air…
+    ## $ title                         <chr> "Adria Airways customer review", "Adria…
+    ## $ author                        <chr> "D Ito", "Ron Kuhlmann", "E Albin", "Te…
+    ## $ author_country                <chr> "Germany", "United States", "Switzerlan…
+    ## $ date                          <date> 2015-04-10, 2015-01-05, 2014-09-14, 20…
+    ## $ content                       <chr> "Outbound flight FRA/PRN A319. 2 hours …
+    ## $ aircraft                      <chr> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
+    ## $ type_traveller                <chr> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
+    ## $ cabin_flown                   <chr> "Economy", "Business Class", "Economy",…
+    ## $ route                         <chr> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
+    ## $ overall_rating                <dbl> 7, 10, 9, 8, 4, 9, 5, 9, 8, 10, 9, 7, 8…
+    ## $ seat_comfort_rating           <dbl> 4, 4, 5, 4, 4, 4, 4, 5, 4, 5, 4, 4, 4, …
+    ## $ cabin_staff_rating            <dbl> 4, 5, 5, 4, 2, 4, 4, 5, 3, 5, 4, 5, 4, …
+    ## $ food_beverages_rating         <dbl> 4, 4, 4, 3, 1, 3, 1, 4, 4, 4, 4, 3, 4, …
+    ## $ inflight_entertainment_rating <dbl> 0, 1, 0, 1, 2, 3, 0, 3, 1, 4, 4, 3, 0, …
+    ## $ ground_service_rating         <dbl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
+    ## $ wifi_connectivity_rating      <dbl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
+    ## $ value_money_rating            <dbl> 4, 5, 5, 4, 2, 4, 3, 4, 4, 4, 4, 5, 4, …
+    ## $ recommended                   <dbl> 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, …
+
+Sub question: What is the distribution of traveller\_type in each of the
+cabin\_flown categories?
+
+Hypothesis: “Solo leisure travelers is the significant category of
+travellers found in First Class”
+
+``` r
+airline %>%
+  filter (!is.na(cabin_flown), !is.na(type_traveller), !is.na(overall_rating) ) %>%
+  ggplot(aes(x = cabin_flown, fill = type_traveller)) +
+  geom_bar(position="fill") +
+  coord_flip()
+```
+
+![](proposal_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+
+This reveals the type of travellers in each of the cabins.
+
+For first class, as expected, the solo leisure traveller\_type prevails.
+This adds up since the tickets may cost significantly more than any of
+the other classes so it may not be pocket-friendly to travel in larger
+groups than 1.
+
+A few other observations that can be made are: Travelers who are flying
+for business trips prefer the Business Class which does make sense since
+they may be travelling often and can use their loyalty card points for
+an upgrade to a business class.
+
+From a pocket-friendly and budgeting point of view, it makes sense that
+the family leisure traveler category is mostly found in the Economy
+class.
+
+Next, let’s explore the overall\_rating variable.
+
+``` r
+airline %>%
+  filter(!is.na(overall_rating)) %>%
+  group_by(overall_rating) %>%
+  count(overall_rating)
+```
+
+    ## # A tibble: 10 x 2
+    ## # Groups:   overall_rating [10]
+    ##    overall_rating     n
+    ##             <dbl> <int>
+    ##  1              1  5390
+    ##  2              2  2996
+    ##  3              3  2375
+    ##  4              4  1810
+    ##  5              5  2538
+    ##  6              6  1814
+    ##  7              7  3336
+    ##  8              8  5329
+    ##  9              9  5412
+    ## 10             10  5861
+
+``` r
+airline %>% 
+  filter(!is.na(overall_rating)) %>%
+  group_by(overall_rating) %>%
+  count(overall_rating) %>%
+  ggplot(aes(x=factor(overall_rating), y = n)) + ## want to fill it by cabin_flown but running into errors 
+  geom_col() 
+```
+
+![](proposal_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+
+Majority of the travelers have rated the airlines a 10 (5861 to be
+exact) but ratings like 8, 9, 10 are also common. Surprisingly, the
+extreme value of rating = 1 is also frequent.
 
 Do airlines improve their ratings with a particular reviewer over time,
 if so in which category are the improvements made Y: overall\_rating,

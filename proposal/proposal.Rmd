@@ -63,12 +63,67 @@ How does the overall ratings for airlines and airports change depending of the t
 Y: overall_rating, type_traveller
 X : date
 
-To what extent do passengers in business class give better overall ratings than passengers in economy/Premium Economy?
-Does this alternate between different airplane types?
-Y: overall_rating
-X: type_traveller , cabin_flown, aircraft   
 
-Hypothesis: we expect business to have a higher rating and will use the correlation between overall rating and cabin flown to validate our hypothesis. 
+Which type of travelers in first class give better overall ratings than passengers in other classes? 
+Does this alternate between different airlines?
+Y: overall_rating
+X: type_traveller , cabin_flown, airline_name
+
+Hypothesis: we expect first class to have a higher rating and will use the correlation between overall rating and cabin flown to validate our hypothesis. 
+
+```{r}
+glimpse(airline)
+```
+
+Sub question: What is the distribution of traveller_type in each of the 
+cabin_flown categories? 
+
+Hypothesis: "Solo leisure travelers is the significant category of travellers found
+in First Class"
+
+```{r}
+airline %>%
+  filter (!is.na(cabin_flown), !is.na(type_traveller), !is.na(overall_rating) ) %>%
+  ggplot(aes(x = cabin_flown, fill = type_traveller)) +
+  geom_bar(position="fill") +
+  coord_flip()
+
+```
+
+This reveals the type of travellers in each of the cabins. 
+
+For first class, as expected, the solo leisure traveller_type prevails. This adds up since
+the tickets may cost significantly more than any of the other classes so it may 
+not be pocket-friendly to travel in larger groups than 1.   
+
+A few other observations that can be made are:
+Travelers who are flying for business trips prefer the Business Class which does make sense 
+since they may be travelling often and can use their loyalty card points for an upgrade to a business 
+class. 
+
+From a pocket-friendly and budgeting point of view, it makes sense that the family leisure traveler category is  mostly found in the Economy class.
+
+
+Next, let's explore the overall_rating variable. 
+
+```{r}
+airline %>%
+  filter(!is.na(overall_rating)) %>%
+  group_by(overall_rating) %>%
+  count(overall_rating)
+
+airline %>% 
+  filter(!is.na(overall_rating)) %>%
+  group_by(overall_rating) %>%
+  count(overall_rating) %>%
+  ggplot(aes(x=factor(overall_rating), y = n)) + ## want to fill it by cabin_flown but running into errors 
+  geom_col() 
+```
+
+Majority of the travelers have rated the airlines a 10 (5861 to be exact) but ratings 
+like 8, 9, 10 are also common. Surprisingly, the extreme value of rating = 1 is also 
+frequent. 
+
 
 Do airlines improve their ratings with a particular reviewer over time, if so in which category are the improvements made
 Y: overall_rating, other variables TBD after the most significant contributor is found 
