@@ -82,16 +82,16 @@ airline_nonas %>%
 
 These airlines were plotted against time to identify any correlations.
 
-```{r plot-of-ryanair-vs-lufthansa, message = FALSE, echo = FALSE}
+```{r five-highest-ratings-plot, message = FALSE, echo = FALSE}
 airline_nonas %>%
   group_by(airline_name, date) %>%
   summarise(mean_overall_rating = mean(overall_rating, na.rm = TRUE)) %>%
   filter(airline_name %in% c("asiana-airlines", "garuda-indonesia", "air-astana", "bangkok-airways", "indigo-airlines"),
          date >= "2014-01-01") %>%
   ggplot(aes(x = date, y = mean_overall_rating, color = airline_name)) +
-  geom_smooth() +
+  geom_smooth(se = FALSE) +
   labs(
-    title = "Overall ratings of Lufthansa and Ryanair",
+    title = "Overall ratings of five highest ranked airlines",
     subtitle = "From 2014 to 2015",
     x = "Date",
     y = "Overall Rating"
@@ -103,6 +103,40 @@ airline_nonas %>%
 As the visualization shows, all of the airlines receive ratings in between 5-10, with air-astana showing an increase at the end of 2015. For indigo-airlines, garuda-indonesia and bangkok-airlines, the ratings deteriorated at the end of 2015. Garuda-indonesia ratings stay constant throughout both years.
 
 There is no clear pattern in each year, which makes sense as the airline companies will normally try to provide the same service throughout the year. 
+
+As Air Astana shows a sudden increase, one can look at the individual ratings (Seat Comfort, Cabin Staff, Food Beverages, Inflight Entertainment and Money Value) and see if there is one rating that sticks out.
+
+```{r air-astana-ratings-breakdown, message = FALSE, echo = FALSE}
+airline_nonas %>%
+  group_by(airline_name, date) %>%
+  summarise(mean_seat_comfort_rating = mean(seat_comfort_rating, na.rm = TRUE),
+            mean_cabin_staff_rating = mean(cabin_staff_rating, na.rm = TRUE),
+            mean_food_beverages_rating = mean(food_beverages_rating, na.rm = TRUE),
+            mean_inflight_entertainment_rating = mean(inflight_entertainment_rating, na.rm = TRUE),
+            mean_value_money_rating = mean(value_money_rating, na.rm = TRUE),
+            ) %>%
+  filter(airline_name == "air-astana",
+         date >= "2014-01-01") %>%
+  ggplot(aes(x = date)) +
+  geom_smooth(aes(y = mean_seat_comfort_rating, color = "red"), se = FALSE) +
+  geom_smooth(aes(y = mean_cabin_staff_rating, color = "green"), se = FALSE) +
+  geom_smooth(aes(y = mean_food_beverages_rating, color = "blue"), se = FALSE) +
+  geom_smooth(aes(y = mean_inflight_entertainment_rating, color = "yellow"), se = FALSE) +
+  geom_smooth(aes(y = mean_value_money_rating, color = "black"), se = FALSE) +
+  labs(
+    title = "Seat Comfort, Cabin Staff, Food Beverages, Inflight Entertainment and 
+Money Value Rating for Air Astana",
+    subtitle = "From 2014 to 2015",
+    x = "Date",
+    y = "Rating"
+  ) +
+  scale_color_identity(name = "Type of Rating (Mean)",
+                          breaks = c("red", "green", "blue", "yellow", "black"),
+                          labels = c("Seat Comfort", "Cabin Staff", "Food Beverages", "Inflight Entertainment", "Money Value"),
+                          guide = "legend")
+  
+```
+As the visualisation shows, all ratings increase from the start of 2015 onwards. The highest increases are seen in seat comfort, money value and cabin staff. This shows that passengers dont focus on one individual rating, but on all of them to combine to a high overall rating.
 
 2. To what extent do passengers in business class give better overall ratings than passengers in economy/Premium Economy?
 Does this alternate between different airplane types?

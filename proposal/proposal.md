@@ -214,7 +214,7 @@ submissions was imposed to increase the number of data points.
 
 These airlines were plotted against time to identify any correlations.
 
-![](proposal_files/figure-gfm/plot-of-ryanair-vs-lufthansa-1.png)<!-- -->
+![](proposal_files/figure-gfm/five-highest-ratings-plot-1.png)<!-- -->
 
 As the visualization shows, all of the airlines receive ratings in
 between 5-10, with air-astana showing an increase at the end of 2015.
@@ -225,6 +225,17 @@ throughout both years.
 There is no clear pattern in each year, which makes sense as the airline
 companies will normally try to provide the same service throughout the
 year.
+
+As Air Astana shows a sudden increase, one can look at the individual
+ratings (Seat Comfort, Cabin Staff, Food Beverages, Inflight
+Entertainment and Money Value) and see if there is one rating that
+sticks out.
+
+![](proposal_files/figure-gfm/air-astana-ratings-breakdown-1.png)<!-- -->
+As the visualisation shows, all ratings increase from the start of 2015
+onwards. The highest increases are seen in seat comfort, money value and
+cabin staff. This shows that passengers dont focus on one individual
+rating, but on all of them to combine to a high overall rating.
 
 2.  To what extent do passengers in business class give better overall
     ratings than passengers in economy/Premium Economy? Does this
