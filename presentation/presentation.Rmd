@@ -227,3 +227,40 @@ airline%>%
 ---
 # Question 4
 
+
+```{r - selecting-relevant-columns}
+airline_rating <- airline %>%
+select(airline_name, overall_rating, author, date) %>%
+  rename(airline_rating = "overall_rating",
+         date_airline = "date")
+
+lounge_rating <- lounge %>%
+select(airline_name, overall_rating, author, date) %>%
+  rename(lounge_rating = "overall_rating",
+         date_lounge = "date")
+
+seat_rating <- seat %>%
+select(airline_name, overall_rating, author, date) %>%
+  rename(seat_rating = "overall_rating",
+         date_seat = "date")
+```
+
+```{r - joining-lounge-and-airline}
+airline_lounge <- full_join(lounge_rating, airline_rating) %>%
+  na.omit()
+
+```
+
+
+```{r joining-seat-to-lounge-and-airline}
+a_l_s <- full_join(airline_lounge, seat_rating) %>%
+  na.omit()
+
+a_l_s <- a_l_s[, c(1, 3, 5, 2, 7, 4, 6, 8)]
+
+a_l_s
+```
+```{r}
+
+```
+
