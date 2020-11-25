@@ -4,7 +4,7 @@
     <title>Which amenities impact the airline rating the most?</title>
     <meta charset="utf-8" />
     <meta name="author" content="macaRoni   Sophie Kerfoot, Ben Thamm, Henrich Hegedus, Purvi Harwani" />
-    <meta name="date" content="2020-11-20" />
+    <meta name="date" content="2020-11-25" />
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/default-fonts.css" rel="stylesheet" />
   </head>
@@ -16,7 +16,7 @@ class: center, middle, inverse, title-slide
 ## Presentation subtitle (if any)
 ### macaRoni <br> Sophie Kerfoot, Ben Thamm, Henrich Hegedus, Purvi Harwani
 ### University of Edinburgh
-### 2020-11-20
+### 2020-11-25
 
 ---
 
@@ -249,11 +249,116 @@ Limitations:
 ---
 # Question 1
 
+Question: How does the overall ratings for airlines change depending of the time of year? Do these patterns repeat every year? Which traveller type is present during which time of the year?
+
 ---
 # Question 2
 
 ---
 # Question 3
+
+
+```r
+rep_rating&lt;-airline%&gt;%
+  mutate(duplicate = duplicated(.$author))%&gt;%
+  filter(duplicate)
+
+rep_rating_airline &lt;-airline%&gt;%
+  group_by(author)%&gt;%
+  mutate(duplicate = duplicated(airline_name))%&gt;%
+  filter(duplicate)%&gt;%
+  arrange(date)
+
+rep_rating_airline%&gt;%
+  summarize(count = n())%&gt;%
+  ggplot(aes(x=count))+
+  geom_histogram()
+```
+
+```
+## `summarise()` ungrouping output (override with `.groups` argument)
+```
+
+```
+## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+```
+
+&lt;img src="presentation_files/figure-html/unnamed-chunk-2-1.png" width="80%" /&gt;
+We can see that not may reviewers review the same airline more than once 
+
+```r
+rep_rating_airline%&gt;%
+  group_by(author)%&gt;%
+  summarize(count = n())%&gt;%
+  filter(count == max(count))
+```
+
+```
+## `summarise()` ungrouping output (override with `.groups` argument)
+```
+
+```
+## # A tibble: 1 x 2
+##   author          count
+##   &lt;chr&gt;           &lt;int&gt;
+## 1 Anders Pedersen    39
+```
+
+
+```r
+author_more_than_once &lt;-airline%&gt;%
+  mutate(duplicate_auth = duplicated(.$author))%&gt;%
+  filter(duplicate_auth)%&gt;%
+  
+  group_by(airline_name,author)%&gt;%
+  mutate(count = n())%&gt;%
+  filter(count&gt;1)%&gt;%
+  ungroup()
+  
+author_more_than_once%&gt;%
+  group_by(author)%&gt;%
+  summarize(count = n())%&gt;%
+  ggplot(aes(x=count))+
+  geom_histogram()
+```
+
+```
+## `summarise()` ungrouping output (override with `.groups` argument)
+```
+
+```
+## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+```
+
+&lt;img src="presentation_files/figure-html/unnamed-chunk-4-1.png" width="80%" /&gt;
+we can see that not many people rate a singe airline more than once
+
+
+```r
+anders_filtered &lt;- rep_rating%&gt;%
+  filter(author == "Anders Pedersen")%&gt;%
+  filter(airline_name == "qatar-airways")
+
+
+anders_qatar_fit&lt;- linear_reg()%&gt;%
+  set_engine("lm")%&gt;%
+  fit(overall_rating ~ date, data= anders_filtered)
+
+tidy(anders_qatar_fit)
+```
+
+```
+## # A tibble: 2 x 5
+##   term        estimate std.error statistic p.value
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
+## 1 (Intercept) -7.75     19.8        -0.392   0.702
+## 2 date         0.00101   0.00121     0.832   0.422
+```
+
+
+
+
+
 
 ---
 # Question 4

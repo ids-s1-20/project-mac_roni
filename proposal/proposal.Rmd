@@ -8,6 +8,7 @@ output: github_document
 library(tidyverse)
 library(broom)
 library(readr)
+library(skimr)
 ```
 
 ## 1. Introduction
@@ -59,11 +60,51 @@ airline %>%
 ```
 
 
-How does the overall ratings for airlines and airports change depending of the time of year? Do these patterns repeat every year? Which traveller type is prev during which time of the year?
-Y: overall_rating, type_traveller
-X : date
+1. How does the overall ratings for airlines change depending of the time of year? Do these patterns repeat every year? Which traveller type is prev during which time of the year?
 
-To what extent do passengers in business class give better overall ratings than passengers in economy/Premium Economy?
+First, all NAs for the response variable and the predictor were removed. 
+
+```{r mean-ratings-airlines, message = FALSE}
+airline_nonas <- airline %>%
+  drop_na(overall_rating) #removing any NAs
+```
+
+Next, we want to investigate how time affects ratings. As the research question focuses on how airlines get high ratings, the five airlines with the highest rating were found. A limit of at least 100 survey submissions was imposed to increase the number of data points.
+
+```{r five-highest-rated-airlines, message = FALSE, echo = FALSE}
+airline_nonas %>%
+  group_by(airline_name) %>%
+  summarise(mean_overall_rating = mean(overall_rating, na.rm = TRUE),
+            n = n()) %>%
+  filter(n >= 100) %>%
+  arrange(desc(mean_overall_rating))
+```
+
+These airlines were plotted against time to identify any correlations.
+
+```{r plot-of-ryanair-vs-lufthansa, message = FALSE, echo = FALSE}
+airline_nonas %>%
+  group_by(airline_name, date) %>%
+  summarise(mean_overall_rating = mean(overall_rating, na.rm = TRUE)) %>%
+  filter(airline_name %in% c("asiana-airlines", "garuda-indonesia", "air-astana", "bangkok-airways", "indigo-airlines"),
+         date >= "2014-01-01") %>%
+  ggplot(aes(x = date, y = mean_overall_rating, color = airline_name)) +
+  geom_smooth() +
+  labs(
+    title = "Overall ratings of Lufthansa and Ryanair",
+    subtitle = "From 2014 to 2015",
+    x = "Date",
+    y = "Overall Rating"
+  ) +
+  guides(color = guide_legend(title = "Airline Name")) 
+  
+```
+
+As the visualization shows, all of the airlines receive ratings in between 5-10, with air-astana showing an increase at the end of 2015. For indigo-airlines, garuda-indonesia and bangkok-airlines, the ratings deteriorated at the end of 2015. Garuda-indonesia ratings stay constant throughout both years.
+
+There is no clear pattern in each year, which makes sense as the airline companies will normally try to provide the same service throughout the year. 
+
+2. To what extent do passengers in business class give better overall ratings than passengers in economy/Premium Economy?
 Does this alternate between different airplane types?
 Y: overall_rating
 X: type_traveller , cabin_flown, aircraft   

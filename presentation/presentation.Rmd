@@ -1,5 +1,5 @@
 ---
-title: "Which amenities impact the airline rating the most? "
+title: "Which amenities impact the airline rating the most?"
 subtitle: "Presentation subtitle (if any)"
 author: "macaRoni <br> Sophie Kerfoot, Ben Thamm, Henrich Hegedus, Purvi Harwani"
 institute: "University of Edinburgh"
@@ -21,7 +21,8 @@ library(tidyverse)
 library(tidymodels)
 library(palmerpenguins)
 library(knitr)
-
+require(GGally)
+library(ggcorrplot)
 ```
 
 ```{r setup, include=FALSE}
@@ -203,6 +204,8 @@ Limitations:
 ---
 # Question 1
 
+Question: How does the overall ratings for airlines change depending of the time of year? Do these patterns repeat every year? Which traveller type is present during which time of the year?
+
 ---
 # Question 2
 
@@ -214,29 +217,44 @@ rep_rating<-airline%>%
   mutate(duplicate = duplicated(.$author))%>%
   filter(duplicate)
 
-rep_rating%>%
+rep_rating_airline <-airline%>%
   group_by(author)%>%
+  mutate(duplicate = duplicated(airline_name))%>%
+  filter(duplicate)%>%
+  arrange(date)
+
+rep_rating_airline%>%
   summarize(count = n())%>%
   ggplot(aes(x=count))+
   geom_histogram()
 ```
+We can see that not may reviewers review the same airline more than once 
 ```{r}
-rep_rating%>%
+rep_rating_airline%>%
   group_by(author)%>%
   summarize(count = n())%>%
   filter(count == max(count))
 ```
 
 ```{r}
-rep_rating%>%
-  filter(author == "Anders Pedersen")%>%
-  filter(airline_name == "qatar-airways")%>%
-  ggplot(aes(x = date, y = overall_rating, color = airline_name))+
-  geom_smooth(method = lm, se = FALSE)+
-  geom_point()
+author_more_than_once <-airline%>%
+  mutate(duplicate_auth = duplicated(.$author))%>%
+  filter(duplicate_auth)%>%
   
+  group_by(airline_name,author)%>%
+  mutate(count = n())%>%
+  filter(count>1)%>%
+  ungroup()
+  
+author_more_than_once%>%
+  group_by(author)%>%
+  summarize(count = n())%>%
+  ggplot(aes(x=count))+
+  geom_histogram()
   
 ```
+we can see that not many people rate a singe airline more than once
+
 ```{r}
 anders_filtered <- rep_rating%>%
   filter(author == "Anders Pedersen")%>%
@@ -250,6 +268,8 @@ anders_qatar_fit<- linear_reg()%>%
 tidy(anders_qatar_fit)
   
 ```
+
+
 
 
 
