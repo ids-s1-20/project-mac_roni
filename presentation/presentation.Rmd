@@ -259,8 +259,15 @@ a_l_s <- full_join(airline_lounge, seat_rating) %>%
 a_l_s <- a_l_s[, c(1, 3, 5, 2, 7, 4, 6, 8)]
 
 a_l_s
-```
-```{r}
 
+a_l_s %>%
+  ggplot(mapping = aes(y = author)) +
+  geom_point(aes(x = seat_rating, 
+                 colour = "seat_rating",
+                 alpha = 0.4)) +
+   geom_point(aes(x = lounge_rating, 
+                  colour = "lounge_rating",
+                   alpha = 0.4)) +
+   theme_minimal()
 ```
 
