@@ -185,6 +185,10 @@ airline %>%
     time of year? Do these patterns repeat every year? Which traveller
     type is prev during which time of the year?
 
+Which type of travelers in first class give better overall ratings than
+passengers in other classes? Does this alternate between different
+airlines?
+
 First, all NAs for the response variable and the predictor were removed.
 
 ``` r
@@ -214,7 +218,7 @@ submissions was imposed to increase the number of data points.
 
 These airlines were plotted against time to identify any correlations.
 
-![](proposal_files/figure-gfm/plot-of-ryanair-vs-lufthansa-1.png)<!-- -->
+![](proposal_files/figure-gfm/five-highest-ratings-plot-1.png)<!-- -->
 
 As the visualization shows, all of the airlines receive ratings in
 between 5-10, with air-astana showing an increase at the end of 2015.
@@ -226,14 +230,148 @@ There is no clear pattern in each year, which makes sense as the airline
 companies will normally try to provide the same service throughout the
 year.
 
-2.  To what extent do passengers in business class give better overall
-    ratings than passengers in economy/Premium Economy? Does this
-    alternate between different airplane types? Y: overall\_rating X:
-    type\_traveller , cabin\_flown, aircraft
+2.  To what extent do passengers in first class give better overall
+    ratings than passengers in other classes?
 
-Hypothesis: we expect business to have a higher rating and will use the
-correlation between overall rating and cabin flown to validate our
+One can look at the individual ratings (Seat Comfort, Cabin Staff, Food
+Beverages, Inflight Entertainment and Money Value) and see if there is
+one rating that sticks out depending on the airline.
+
+    ## Warning: Removed 2 rows containing non-finite values (stat_smooth).
+
+    ## Warning: Removed 9 rows containing non-finite values (stat_smooth).
+
+![](proposal_files/figure-gfm/all-airlines-ratings-breakdown-1.png)<!-- -->
+As the visualisation shows, to increase in overall rating, all
+individaul ratings have to increase. This can be seen in the example of
+Air Astana. For airlines that decreased in overall rating
+(bangkok-airways and indigo-airlines), only specific individual ratings
+decreased or had an overall worse score (especially inflight
+entertainment).
+
+2.  To what extent do passengers in business class give better overall
+    ratings than passengers in economy/Premium Economy?
+
+Does this alternate between different airplane types? Y: overall\_rating
+X: type\_traveller , cabin\_flown, airline\_name
+
+Let’s look at the average overall rating the passengers gave for each of
+the classes.
+
+``` r
+airline %>%
+  filter(!is.na(overall_rating), !is.na(cabin_flown) ) %>%
+  group_by(cabin_flown) %>%
+  summarise(mean_overall_rating = mean(overall_rating, na.rm = TRUE))
+```
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## # A tibble: 4 x 2
+    ##   cabin_flown     mean_overall_rating
+    ##   <chr>                         <dbl>
+    ## 1 Business Class                 6.87
+    ## 2 Economy                        5.97
+    ## 3 First Class                    6.65
+    ## 4 Premium Economy                5.86
+
+Hypothesis: we expect first class to have a higher rating and will use
+the correlation between overall rating and cabin flown to validate our
 hypothesis.
+
+Business class has received the highest amount of rating. It is closely
+followed by First class. This doesn’t match our hypothesis.
+
+Is this because passengers feel the business class services are better
+or fewer people choose to travel in first class? Let’s find out\!
+
+``` r
+airline %>%
+  filter(!is.na(overall_rating), !is.na(cabin_flown) ) %>%
+  group_by(cabin_flown) %>%
+  count(cabin_flown) %>%
+  arrange(desc(n))
+```
+
+    ## # A tibble: 4 x 2
+    ## # Groups:   cabin_flown [4]
+    ##   cabin_flown         n
+    ##   <chr>           <int>
+    ## 1 Economy         26429
+    ## 2 Business Class   6133
+    ## 3 Premium Economy  1445
+    ## 4 First Class       846
+
+Now, it is obvious that first class has a lower rating compared to
+business class since fewer passengers chose that cabin type.
+
+Sub question: What is the distribution of traveller\_type in each of the
+cabin\_flown categories?
+
+``` r
+airline %>%
+  filter (!is.na(cabin_flown), !is.na(type_traveller), !is.na(overall_rating) ) %>%
+  ggplot(aes(x = cabin_flown, fill = type_traveller)) +
+  geom_bar(position ="fill") +
+  coord_flip()
+```
+
+![](proposal_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+
+This reveals the type of travellers in each of the cabins.
+
+For first class, as expected, the solo leisure traveller\_type prevails.
+This adds up since the tickets may cost significantly more than any of
+the other classes so it may not be pocket-friendly to travel in larger
+groups than 1.
+
+A few other observations that can be made are: Travelers who are flying
+for business trips prefer the Business Class which does make sense since
+they may be travelling often and can use their loyalty card points for
+an upgrade to a business class.
+
+From a pocket-friendly and budgeting point of view, it makes sense that
+the family leisure traveler category is mostly found in the Economy
+class.
+
+Next, let’s explore how the overall flight rating varies.
+
+``` r
+airline %>%
+  filter(!is.na(overall_rating)) %>%
+  group_by(overall_rating) %>%
+  count(overall_rating) 
+```
+
+    ## # A tibble: 10 x 2
+    ## # Groups:   overall_rating [10]
+    ##    overall_rating     n
+    ##             <dbl> <int>
+    ##  1              1  5390
+    ##  2              2  2996
+    ##  3              3  2375
+    ##  4              4  1810
+    ##  5              5  2538
+    ##  6              6  1814
+    ##  7              7  3336
+    ##  8              8  5329
+    ##  9              9  5412
+    ## 10             10  5861
+
+``` r
+airline %>% 
+  filter(!is.na(overall_rating)) %>%
+  group_by(overall_rating) %>%
+  count(overall_rating) %>%
+  ggplot(aes(x=factor(overall_rating), y = n)) + ## want to fill it by cabin_flown but running into errors 
+  geom_col() 
+```
+
+![](proposal_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
+
+Majority of the travelers have rated the airlines a 10 (5861 to be
+exact) but ratings like 8, 9, 10 are also common. Surprisingly, the
+extreme value of rating = 1 is also frequent.
 
 Do airlines improve their ratings with a particular reviewer over time,
 if so in which category are the improvements made Y: overall\_rating,
