@@ -109,7 +109,7 @@ As the visualization shows, all of the airlines receive ratings in between 5-10,
 There is no clear pattern in each year, which makes sense as the airline companies will normally try to provide the same service throughout the year. 
 
 
-2. To what extent do passengers in first class give better overall ratings than passengers in other classes?
+1.5. Which amenity significantly contributes to the top 5 airlines' overall rating?
 
 One can look at the individual ratings (Seat Comfort, Cabin Staff, Food Beverages, Inflight Entertainment and Money Value) and see if there is one rating that sticks out depending on the airline. 
 
@@ -146,9 +146,20 @@ Money Value Ratings for Top Five Airlines",
 ```
 As the visualisation shows, to increase in overall rating, all individaul ratings have to increase. This can be seen in the example of Air Astana. For airlines that decreased in overall rating (bangkok-airways and indigo-airlines), only specific individual ratings decreased or had an overall worse score (especially inflight entertainment). 
 
-2. To what extent do passengers in business class give better overall ratings than passengers in economy/Premium Economy?
 
-Does this alternate between different airplane types?
+
+# Question 2 
+
+2. To what extent do passengers in first class give better ratings than passengers in economy/Premium Economy, etc?
+
+How does overall ratings change over time for first class? 
+
+```{r}
+airline %>%
+  
+```
+
+
 Y: overall_rating
 X: type_traveller , cabin_flown, airline_name
 
@@ -158,10 +169,11 @@ Let's look at the average overall rating the passengers gave for each of the cla
 airline %>%
   filter(!is.na(overall_rating), !is.na(cabin_flown) ) %>%
   group_by(cabin_flown) %>%
-  summarise(mean_overall_rating = mean(overall_rating, na.rm = TRUE))
+  summarise(mean_overall_rating = mean(overall_rating, na.rm = TRUE)) %>%
+  arrange(desc(mean_overall_rating))
 ```
 
-Hypothesis: we expect first class to have a higher rating and will use the correlation between overall rating and cabin flown to validate our hypothesis. 
+Hypothesis: we expect first class to have a higher rating.
 
 Business class has received the highest amount of rating. It is closely followed by 
 First class. This doesn't match our hypothesis. 
@@ -181,8 +193,8 @@ airline %>%
 Now, it is obvious that first class has a lower rating compared to business 
 class since fewer passengers chose that cabin type. 
 
-Sub question: What is the distribution of traveller_type in each of the 
-cabin_flown categories? 
+Let's look into what type of travelers opt for first class cabin which may help us 
+further understand the amenities they'd be interested in! 
 
 
 ```{r}
@@ -194,22 +206,22 @@ airline %>%
 
 ```
 
-This reveals the type of travellers in each of the cabins.
-
+This reveals the type of travelers in each of the cabins.
 
 For first class, as expected, the solo leisure traveller_type prevails. This adds up since
 the tickets may cost significantly more than any of the other classes so it may 
 not be pocket-friendly to travel in larger groups than 1.   
-
-A few other observations that can be made are:
-Travelers who are flying for business trips prefer the Business Class which does make sense 
-since they may be travelling often and can use their loyalty card points for an upgrade to a business 
-class. 
-
-From a pocket-friendly and budgeting point of view, it makes sense that the family leisure traveler category is  mostly found in the Economy class.
+The distribution of travelers also reveals why first class has the smallest number of passengers since
+'couple leisure' and 'family leisure' categories don't form a large section of first class cabin passengers.  
 
 
-Next, let's explore how the overall flight rating varies.
+# End of question 2
+
+
+
+***unnecesary for Purvi's task, does anyone else find this useful to know?***
+
+How the overall flight rating varies.
 
 ```{r}
 airline %>%
@@ -239,5 +251,3 @@ Y: a graph showing correlation
 X: overall_rating (in seat and lounge data set )
 
 Hypothesis: we expect seat rating to have a stronger correlation than the lounge rating because not everyone uses the lounge. 
-
-***Question to the instructor: Is it possible to segment the reviews into “positive” and “negative” ones (using text analysis on the content column) and replace all the positive and negative reviews with the words “good” or “bad”?***
