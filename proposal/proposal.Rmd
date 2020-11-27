@@ -255,8 +255,8 @@ amen_filtered %>%
             mean_overall_rating = mean(overall_rating))
 ```
 
-Perhaps, this can mean that the mention of these services in the comments made has been positive according to
-the mean results yielded. 
+Perhaps, this can mean that the mention of these services in the comments made has been fairly positive according to
+the mean results yielded. Also, seeing the mention of words like good, great, comfortable and excellent reinforces can aid the claim made above. 
 
 This runs in line with the mean overall rating proportionately as they both are around 65%.  
 
