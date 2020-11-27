@@ -256,18 +256,44 @@ author_more_than_once%>%
 we can see that not many people rate a singe airline more than once
 
 ```{r}
-anders_filtered <- rep_rating%>%
-  filter(author == "Anders Pedersen")%>%
-  filter(airline_name == "qatar-airways")
-
-
-anders_qatar_fit<- linear_reg()%>%
+slopes <- function(data) {
+  fited <- linear_reg()%>%
   set_engine("lm")%>%
-  fit(overall_rating ~ date, data= anders_filtered)
-
-tidy(anders_qatar_fit)
-  
+  fit(overall_rating ~ date, data= data)
+  return(tidy(fited)$estimate[2])  #return the slope
+}
 ```
+```{r}
+(slopes(author_more_than_once))
+
+```
+```{r}
+df2 <- author_more_than_once %>% 
+  group_by(author,airline_name) %>% # group by variable state
+  filter(!is.na(date),!is.na(overall_rating))%>%
+  do(data.frame(model = tidy(lm(overall_rating~date, data=.)))) %>% # for each group run a linear fit and save the output as a date table
+  ungroup # forget about your initial grouping
+df2
+```
+
+```{r}
+df2 <- df2%>%
+  filter(model.term == "date")%>%
+  mutate(improvement=sign(model.estimate))%>%  #did they improve or not
+  group_by(airline_name)%>%
+  mutate(mean_improvement = mean(improvement))
+
+df2$airline_name = reorder(df2$airline_name, df2$mean_improvement)
+
+df2%>%
+  filter(!is.na(mean_improvement))%>%
+  ggplot(aes(x = mean_improvement))+
+  geom_histogram(bins = 10)
+
+```
+
+
+We can see that most airlines don't improve from flight to flight but with the improvement mean being `r mean(df2$mean_improvement,na.rm=TRUE)`
 
 
 
