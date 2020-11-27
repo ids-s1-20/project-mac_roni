@@ -51,7 +51,108 @@ class: center, middle
 
 class: inverse, center, middle
 
-# Section title
+## Dataset for our project
+
+---
+
+# Our Dataset: Skytrax User Reviews!
+
+.pull-left[
+3 datasets (Airline ratings, Seat ratings and Lounge ratings) from a Skytrax User Reviews Dataset (published August 2nd, 2015).
+- Compiled as a Github Repository by quankiquanki
+
+Each dataset has 20 variables, and the number of observations vary depending on the dataset.
+
+- Columns: Airline Information, Author Information, Overall Rating, Contributors to the overall rating
+
+- Observations : each observation is a passenger that filled out a survey based on their experience of the airline, lounge or seat. 
+]
+
+.pull-right[
+```{r skytrax, echo = FALSE, out.width = "60%", fig.align = "center", fig.cap = "Image credit: Photo by Hak-Seon Kim on ResearchGate. Example of a Seat Review."}
+include_graphics("https://www.researchgate.net/profile/Hak_Seon_Kim/publication/336240340/figure/fig1/AS:809950729232385@1570118710905/Airline-passengers-review-on-Skytrax.png")
+```
+]
+---
+
+class: inverse, center, middle
+
+## Question 1
+# How does the overall ratings for airlines change depending of the time of year?
+
+---
+
+# Assumptions
+
+```{r mean-ratings-airlines, message = FALSE, echo = FALSE}
+airline_nonas <- airline %>%
+  drop_na(overall_rating) #removing any NAs
+```
+
+1. Time only ranges from 2014 to 2015 due to lack of data points for other years (n > 1500 observations)
+
+2. Overall ratings averaged by date and airline name to avoid multiple data points for the same day
+
+3. Focus was put on the top five airlines that had the highest overall ratings
+
+```{r five-highest-rated-airlines, message = FALSE, echo = FALSE}
+airline_nonas %>%
+  group_by(airline_name) %>%
+  summarise(mean_overall_rating = mean(overall_rating, na.rm = TRUE),
+            n = n()) %>%
+  filter(n >= 100) %>%
+  arrange(desc(mean_overall_rating)) %>%
+  head()
+```
+
+- These turned out to be Asiana Airlines, Garuda Indonesia, Air Astana, Bangkok Airways, and Indigo Airlines. 
+
+---
+
+# Overall Rating versus Time
+
+```{r five-highest-ratings-plot, message = FALSE, echo = FALSE}
+airline_nonas %>%
+  group_by(airline_name, date) %>%
+  summarise(mean_overall_rating = mean(overall_rating, na.rm = TRUE)) %>%
+  filter(airline_name %in% c("asiana-airlines", "garuda-indonesia", "air-astana", "bangkok-airways", "indigo-airlines"),
+         date >= "2014-01-01") %>%
+  ggplot(aes(x = date, y = mean_overall_rating, color = airline_name)) +
+  geom_smooth(se = FALSE) +
+  labs(
+    title = "Overall ratings of five highest ranked airlines",
+    subtitle = "From 2014 to 2015",
+    x = "Date",
+    y = "Overall Rating"
+  ) +
+  guides(color = guide_legend(title = "Airline Name")) +
+  theme_minimal()
+  
+```
+
+---
+# Overall Rating versus Time Explained 
+
+.pull-left[
+General Trends: 
+
+- Passengers that fill out the survey tend to give high overall ratings
+- There is no significant pattern in the overall ratings when comparing different years
+
+
+Trends in Specific Airlines at the start of 2015: 
+
+- Air Astana -> higher ratings in comparison to 2014
+- Garuda Indonesia -> similar ratings in comparison to the last year
+- Asiana Airlines, Bangkok Airways, and Indigo Airlines -> lower ratings in comparison to 2014.
+]
+
+.pull-right[
+
+```{r ref.label = "five-highest-ratings-plot",  message = FALSE, echo = FALSE, out.width="100%", fig.width=5}
+
+```
+]
 
 ---
 
@@ -299,18 +400,44 @@ author_more_than_once%>%
 we can see that not many people rate a singe airline more than once
 
 ```{r}
-anders_filtered <- rep_rating%>%
-  filter(author == "Anders Pedersen")%>%
-  filter(airline_name == "qatar-airways")
-
-
-anders_qatar_fit<- linear_reg()%>%
+slopes <- function(data) {
+  fited <- linear_reg()%>%
   set_engine("lm")%>%
-  fit(overall_rating ~ date, data= anders_filtered)
-
-tidy(anders_qatar_fit)
-  
+  fit(overall_rating ~ date, data= data)
+  return(tidy(fited)$estimate[2])  #return the slope
+}
 ```
+```{r}
+(slopes(author_more_than_once))
+
+```
+```{r}
+df2 <- author_more_than_once %>% 
+  group_by(author,airline_name) %>% # group by variable state
+  filter(!is.na(date),!is.na(overall_rating))%>%
+  do(data.frame(model = tidy(lm(overall_rating~date, data=.)))) %>% # for each group run a linear fit and save the output as a date table
+  ungroup # forget about your initial grouping
+df2
+```
+
+```{r}
+df2 <- df2%>%
+  filter(model.term == "date")%>%
+  mutate(improvement=sign(model.estimate))%>%  #did they improve or not
+  group_by(airline_name)%>%
+  mutate(mean_improvement = mean(improvement))
+
+df2$airline_name = reorder(df2$airline_name, df2$mean_improvement)
+
+df2%>%
+  filter(!is.na(mean_improvement))%>%
+  ggplot(aes(x = mean_improvement))+
+  geom_histogram(bins = 10)
+
+```
+
+
+We can see that most airlines don't improve from flight to flight but with the improvement mean being `r mean(df2$mean_improvement,na.rm=TRUE)`
 
 
 

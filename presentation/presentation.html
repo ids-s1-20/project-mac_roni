@@ -37,7 +37,90 @@ class: center, middle
 
 class: inverse, center, middle
 
-# Section title
+## Dataset for our project
+
+---
+
+# Our Dataset: Skytrax User Reviews!
+
+.pull-left[
+3 datasets (Airline ratings, Seat ratings and Lounge ratings) from a Skytrax User Reviews Dataset (published August 2nd, 2015).
+- Compiled as a Github Repository by quankiquanki
+
+Each dataset has 20 variables, and the number of observations vary depending on the dataset.
+
+- Columns: Airline Information, Author Information, Overall Rating, Contributors to the overall rating
+
+- Observations : each observation is a passenger that filled out a survey based on their experience of the airline, lounge or seat. 
+]
+
+.pull-right[
+&lt;div class="figure" style="text-align: center"&gt;
+&lt;img src="https://www.researchgate.net/profile/Hak_Seon_Kim/publication/336240340/figure/fig1/AS:809950729232385@1570118710905/Airline-passengers-review-on-Skytrax.png" alt="Image credit: Photo by Hak-Seon Kim on ResearchGate. Example of a Seat Review." width="60%" /&gt;
+&lt;p class="caption"&gt;Image credit: Photo by Hak-Seon Kim on ResearchGate. Example of a Seat Review.&lt;/p&gt;
+&lt;/div&gt;
+]
+---
+
+class: inverse, center, middle
+
+## Question 1
+# How does the overall ratings for airlines change depending of the time of year?
+
+---
+
+# Assumptions
+
+
+
+1. Time only ranges from 2014 to 2015 due to lack of data points for other years (n &gt; 1500 observations)
+
+2. Overall ratings averaged by date and airline name to avoid multiple data points for the same day
+
+3. Focus was put on the top five airlines that had the highest overall ratings
+
+
+```
+## # A tibble: 6 x 3
+##   airline_name     mean_overall_rating     n
+##   &lt;chr&gt;                          &lt;dbl&gt; &lt;int&gt;
+## 1 asiana-airlines                 8.35   301
+## 2 garuda-indonesia                8.31   351
+## 3 air-astana                      8.28   103
+## 4 bangkok-airways                 8.12   213
+## 5 indigo-airlines                 8.08   104
+## 6 korean-air                      8.03   315
+```
+
+- These turned out to be Asiana Airlines, Garuda Indonesia, Air Astana, Bangkok Airways, and Indigo Airlines. 
+
+---
+
+# Overall Rating versus Time
+
+&lt;img src="presentation_files/figure-html/five-highest-ratings-plot-1.png" width="80%" /&gt;
+
+---
+# Overall Rating versus Time Explained 
+
+.pull-left[
+General Trends: 
+
+- Passengers that fill out the survey tend to give high overall ratings
+- There is no significant pattern in the overall ratings when comparing different years
+
+
+Trends in Specific Airlines at the start of 2015: 
+
+- Air Astana -&gt; higher ratings in comparison to 2014
+- Garuda Indonesia -&gt; similar ratings in comparison to the last year
+- Asiana Airlines, Bangkok Airways, and Indigo Airlines -&gt; lower ratings in comparison to 2014.
+]
+
+.pull-right[
+
+&lt;img src="presentation_files/figure-html/unnamed-chunk-1-1.png" width="100%" /&gt;
+]
 
 ---
 
@@ -133,7 +216,7 @@ glance(model)
 - goes here
 ]
 .pull-right[
-&lt;img src="presentation_files/figure-html/unnamed-chunk-1-1.png" width="100%" /&gt;
+&lt;img src="presentation_files/figure-html/unnamed-chunk-2-1.png" width="100%" /&gt;
 ]
 
 ---
@@ -329,7 +412,11 @@ rep_rating_airline%&gt;%
 ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 ```
 
+<<<<<<< HEAD
 &lt;img src="presentation_files/figure-html/unnamed-chunk-4-1.png" width="80%" /&gt;
+=======
+&lt;img src="presentation_files/figure-html/unnamed-chunk-3-1.png" width="80%" /&gt;
+>>>>>>> 9ebbdf5576ee3c08dc3da2f6071d0f60362e40c0
 We can see that not may reviewers review the same airline more than once 
 
 ```r
@@ -376,30 +463,308 @@ author_more_than_once%&gt;%
 ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 ```
 
+<<<<<<< HEAD
 &lt;img src="presentation_files/figure-html/unnamed-chunk-6-1.png" width="80%" /&gt;
+=======
+&lt;img src="presentation_files/figure-html/unnamed-chunk-5-1.png" width="80%" /&gt;
+>>>>>>> 9ebbdf5576ee3c08dc3da2f6071d0f60362e40c0
 we can see that not many people rate a singe airline more than once
 
 
 ```r
-anders_filtered &lt;- rep_rating%&gt;%
-  filter(author == "Anders Pedersen")%&gt;%
-  filter(airline_name == "qatar-airways")
-
-
-anders_qatar_fit&lt;- linear_reg()%&gt;%
+slopes &lt;- function(data) {
+  fited &lt;- linear_reg()%&gt;%
   set_engine("lm")%&gt;%
-  fit(overall_rating ~ date, data= anders_filtered)
-
-tidy(anders_qatar_fit)
+  fit(overall_rating ~ date, data= data)
+  return(tidy(fited)$estimate[2])  #return the slope
+}
 ```
 
+```r
+(slopes(author_more_than_once))
 ```
-## # A tibble: 2 x 5
-##   term        estimate std.error statistic p.value
-##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
-## 1 (Intercept) -7.75     19.8        -0.392   0.702
-## 2 date         0.00101   0.00121     0.832   0.422
+
 ```
+## [1] 0.0002610146
+```
+
+```r
+df2 &lt;- author_more_than_once %&gt;% 
+  group_by(author,airline_name) %&gt;% # group by variable state
+  filter(!is.na(date),!is.na(overall_rating))%&gt;%
+  do(data.frame(model = tidy(lm(overall_rating~date, data=.)))) %&gt;% # for each group run a linear fit and save the output as a date table
+  ungroup # forget about your initial grouping
+```
+
+```
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+
+## Warning in summary.lm(x): essentially perfect fit: summary may be unreliable
+```
+
+```r
+df2
+```
+
+```
+## # A tibble: 2,620 x 7
+##    author airline_name model.term model.estimate model.std.error model.statistic
+##    &lt;chr&gt;  &lt;chr&gt;        &lt;chr&gt;               &lt;dbl&gt;           &lt;dbl&gt;           &lt;dbl&gt;
+##  1 -      biman-bangl… (Intercep…    -220.              6.92e-12       -3.18e+13
+##  2 -      biman-bangl… date             0.0162          5.03e-16        3.23e+13
+##  3 -      druk-air     (Intercep…     -74.2           NaN             NaN       
+##  4 -      druk-air     date             0.00565       NaN             NaN       
+##  5 -      intersky     (Intercep…     -90.5           NaN             NaN       
+##  6 -      intersky     date             0.00685       NaN             NaN       
+##  7 -      jazeera-air… (Intercep…     311.              1.00e+ 2        3.11e+ 0
+##  8 -      jazeera-air… date            -0.0222          7.20e- 3       -3.08e+ 0
+##  9 -      luxair       (Intercep…      -9.20            1.19e+ 2       -7.73e- 2
+## 10 -      luxair       date             0.000982        8.64e- 3        1.14e- 1
+## # … with 2,610 more rows, and 1 more variable: model.p.value &lt;dbl&gt;
+```
+
+
+```r
+df2 &lt;- df2%&gt;%
+  filter(model.term == "date")%&gt;%
+  mutate(improvement=sign(model.estimate))%&gt;%  #did they improve or not
+  group_by(airline_name)%&gt;%
+  mutate(mean_improvement = mean(improvement))
+
+df2$airline_name = reorder(df2$airline_name, df2$mean_improvement)
+
+df2%&gt;%
+  filter(!is.na(mean_improvement))%&gt;%
+  ggplot(aes(x = mean_improvement))+
+  geom_histogram(bins = 10)
+```
+
+&lt;img src="presentation_files/figure-html/unnamed-chunk-9-1.png" width="80%" /&gt;
+
+
+We can see that most airlines don't improve from flight to flight but with the improvement mean being 0.0576923
 
 
 

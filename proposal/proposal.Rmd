@@ -65,6 +65,20 @@ airline_nonas %>%
   arrange(desc(mean_overall_rating))
 ```
 
+```{r number of observations vs date, message = FALSE, echo = FALSE}
+airline_nonas %>%
+  filter(date >= "2010-01-01") %>%
+  ggplot(aes(x = date)) +
+  geom_histogram(binwidth = 60) +
+  geom_hline(yintercept=1500, color = "orange") +
+  labs(
+    title = "Number of Observations vs Date",
+    x = "Date",
+    y = "Count"
+  ) +
+  theme_minimal()
+```
+
 These airlines were plotted against time to identify any correlations.
 
 ```{r five-highest-ratings-plot, message = FALSE, echo = FALSE}
@@ -126,8 +140,6 @@ Money Value Ratings for Top Five Airlines",
   
 ```
 As the visualisation shows, to increase in overall rating, all individaul ratings have to increase. This can be seen in the example of Air Astana. For airlines that decreased in overall rating (bangkok-airways and indigo-airlines), only specific individual ratings decreased or had an overall worse score (especially inflight entertainment). 
-
-
 
 # Question 2 
 
