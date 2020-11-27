@@ -41,15 +41,15 @@ class: inverse, center, middle
 
 ---
 
-# Data
+# Our Dataset: Skytrax User Reviews!
 
 .pull-left[
-Data: 3 datasets (Airline ratings, Seat ratings and Lounge ratings) from a Skytrax User Reviews Dataset (published August 2nd, 2015).
+3 datasets (Airline ratings, Seat ratings and Lounge ratings) from a Skytrax User Reviews Dataset (published August 2nd, 2015).
 - Compiled as a Github Repository by quankiquanki
 
 Each dataset has 20 variables, and the number of observations vary depending on the dataset.
 
-- Columns: Airline Information, Author Information, Overall Rating, "Contributors to the overall rating"
+- Columns: Airline Information, Author Information, Overall Rating, Contributors to the overall rating
 
 - Observations : each observation is a passenger that filled out a survey based on their experience of the airline, lounge or seat. 
 ]
@@ -62,7 +62,67 @@ Each dataset has 20 variables, and the number of observations vary depending on 
 ]
 ---
 
+class: inverse, center, middle
 
+## Question 1
+# How does the overall ratings for airlines change depending of the time of year?
+
+---
+
+# Assumptions
+
+
+
+1. Time only ranges from 2014 to 2015 due to lack of data points for other years (n &gt; 1500 observations)
+
+2. Overall ratings averaged by date and airline name to avoid multiple data points for the same day
+
+3. Focus was put on the top five airlines that had the highest overall ratings
+
+
+```
+## # A tibble: 6 x 3
+##   airline_name     mean_overall_rating     n
+##   &lt;chr&gt;                          &lt;dbl&gt; &lt;int&gt;
+## 1 asiana-airlines                 8.35   301
+## 2 garuda-indonesia                8.31   351
+## 3 air-astana                      8.28   103
+## 4 bangkok-airways                 8.12   213
+## 5 indigo-airlines                 8.08   104
+## 6 korean-air                      8.03   315
+```
+
+- These turned out to be Asiana Airlines, Garuda Indonesia, Air Astana, Bangkok Airways, and Indigo Airlines. 
+
+---
+
+# Overall Rating versus Time
+
+&lt;img src="presentation_files/figure-html/five-highest-ratings-plot-1.png" width="80%" /&gt;
+
+---
+# Overall Rating versus Time Explained 
+
+.pull-left[
+General Trends: 
+
+- Passengers that fill out the survey tend to give high overall ratings
+- There is no significant pattern in the overall ratings when comparing different years
+
+
+Trends in Specific Airlines at the start of 2015: 
+
+- Air Astana -&gt; higher ratings in comparison to 2014
+- Garuda Indonesia -&gt; similar ratings in comparison to the last year
+- Asiana Airlines, Bangkok Airways, and Indigo Airlines -&gt; lower ratings in comparison to 2014.
+]
+
+.pull-right[
+
+&lt;img src="presentation_files/figure-html/unnamed-chunk-1-1.png" width="100%" /&gt;
+]
+
+---
 
 # Hello World
 
@@ -156,7 +216,7 @@ glance(model)
 - goes here
 ]
 .pull-right[
-&lt;img src="presentation_files/figure-html/unnamed-chunk-1-1.png" width="100%" /&gt;
+&lt;img src="presentation_files/figure-html/unnamed-chunk-2-1.png" width="100%" /&gt;
 ]
 
 ---
@@ -306,7 +366,7 @@ rep_rating_airline%&gt;%
 ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 ```
 
-&lt;img src="presentation_files/figure-html/unnamed-chunk-2-1.png" width="80%" /&gt;
+&lt;img src="presentation_files/figure-html/unnamed-chunk-3-1.png" width="80%" /&gt;
 We can see that not may reviewers review the same airline more than once 
 
 ```r
@@ -353,7 +413,7 @@ author_more_than_once%&gt;%
 ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 ```
 
-&lt;img src="presentation_files/figure-html/unnamed-chunk-4-1.png" width="80%" /&gt;
+&lt;img src="presentation_files/figure-html/unnamed-chunk-5-1.png" width="80%" /&gt;
 we can see that not many people rate a singe airline more than once
 
 
@@ -647,7 +707,7 @@ df2%&gt;%
   geom_histogram(bins = 10)
 ```
 
-&lt;img src="presentation_files/figure-html/unnamed-chunk-8-1.png" width="80%" /&gt;
+&lt;img src="presentation_files/figure-html/unnamed-chunk-9-1.png" width="80%" /&gt;
 
 
 We can see that most airlines don't improve from flight to flight but with the improvement mean being 0.0576923
