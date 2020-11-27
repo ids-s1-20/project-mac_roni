@@ -1,6 +1,6 @@
 ---
-title: "Which amenities impact the airline rating the most?"
-subtitle: "Presentation subtitle (if any)"
+title: "How do the amenities impact the flight's overall rating?"
+subtitle: "By cabin, seat, lounge and over time"
 author: "macaRoni <br> Sophie Kerfoot, Ben Thamm, Henrich Hegedus, Purvi Harwani"
 institute: "University of Edinburgh"
 date: "`r Sys.Date()`"
@@ -23,6 +23,10 @@ library(palmerpenguins)
 library(knitr)
 require(GGally)
 library(ggcorrplot)
+library(broom)
+library(readr)
+library(skimr)
+library(tidytext)
 ```
 
 ```{r setup, include=FALSE}
@@ -209,7 +213,46 @@ Question: How does the overall ratings for airlines change depending of the time
 ---
 # Question 2
 
+To what extent do passengers in first class give better ratings
+than passengers in other cabin types? 
+Note: There are 4 different cabins in this dataset ( First class, Business Class, Premium Economy, Economy)
+
+Let's look at the average overall rating the passengers gave for each of the classes. 
+Hypothesis: We expect first class to have a higher rating since, as per the norm, first class is considered to be the most preferable one.
+
+```{r, echo = FALSE, message = FALSE}
+airline %>%
+  filter(!is.na(overall_rating), !is.na(cabin_flown) ) %>%
+  group_by(cabin_flown) %>%
+  summarise(mean_overall_rating = mean(overall_rating, na.rm = TRUE)) %>%
+  arrange(desc(mean_overall_rating))
+```
+
+Business class has received the highest amount of rating. It is closely followed by 
+First class. This doesn't match our hypothesis. 
+
+Is this because passengers feel the business class services are better or fewer people choose
+to travel in first class?
+Let's find out!
+
 ---
+
+
+
+```{r echo = FALSE, message = FALSE}
+airline %>%
+  filter(!is.na(overall_rating), !is.na(cabin_flown) ) %>%
+  group_by(cabin_flown) %>%
+  count(cabin_flown) %>%
+  arrange(desc(n))
+```
+
+Now, it is obvious that first class has a lower rating compared to business 
+class since fewer passengers chose that cabin type. 
+
+
+---
+
 # Question 3
 
 ```{r}

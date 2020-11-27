@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="" xml:lang="">
   <head>
-    <title>Which amenities impact the airline rating the most?</title>
+    <title>How do the amenities impact the flight’s overall rating?</title>
     <meta charset="utf-8" />
     <meta name="author" content="macaRoni   Sophie Kerfoot, Ben Thamm, Henrich Hegedus, Purvi Harwani" />
-    <meta name="date" content="2020-11-25" />
+    <meta name="date" content="2020-11-27" />
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/default-fonts.css" rel="stylesheet" />
   </head>
@@ -12,11 +12,11 @@
     <textarea id="source">
 class: center, middle, inverse, title-slide
 
-# Which amenities impact the airline rating the most?
+# How do the amenities impact the flight’s overall rating?
 ## Presentation subtitle (if any)
 ### macaRoni <br> Sophie Kerfoot, Ben Thamm, Henrich Hegedus, Purvi Harwani
 ### University of Edinburgh
-### 2020-11-25
+### 2020-11-27
 
 ---
 
@@ -254,7 +254,53 @@ Question: How does the overall ratings for airlines change depending of the time
 ---
 # Question 2
 
+To what extent do passengers in first class give better ratings
+than passengers in other cabin types? 
+Note: There are 4 different cabins in this dataset ( First class, Business Class, Premium Economy, Economy)
+
+Let's look at the average overall rating the passengers gave for each of the classes. 
+Hypothesis: We expect first class to have a higher rating since, as per the norm, first class is considered to be the most preferable one.
+
+
+```
+## # A tibble: 4 x 2
+##   cabin_flown     mean_overall_rating
+##   &lt;chr&gt;                         &lt;dbl&gt;
+## 1 Business Class                 6.87
+## 2 First Class                    6.65
+## 3 Economy                        5.97
+## 4 Premium Economy                5.86
+```
+
+Business class has received the highest amount of rating. It is closely followed by 
+First class. This doesn't match our hypothesis. 
+
+Is this because passengers feel the business class services are better or fewer people choose
+to travel in first class?
+Let's find out!
+
 ---
+
+
+
+
+```
+## # A tibble: 4 x 2
+## # Groups:   cabin_flown [4]
+##   cabin_flown         n
+##   &lt;chr&gt;           &lt;int&gt;
+## 1 Economy         26429
+## 2 Business Class   6133
+## 3 Premium Economy  1445
+## 4 First Class       846
+```
+
+Now, it is obvious that first class has a lower rating compared to business 
+class since fewer passengers chose that cabin type. 
+
+
+---
+
 # Question 3
 
 
@@ -283,7 +329,7 @@ rep_rating_airline%&gt;%
 ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 ```
 
-&lt;img src="presentation_files/figure-html/unnamed-chunk-2-1.png" width="80%" /&gt;
+&lt;img src="presentation_files/figure-html/unnamed-chunk-4-1.png" width="80%" /&gt;
 We can see that not may reviewers review the same airline more than once 
 
 ```r
@@ -330,7 +376,7 @@ author_more_than_once%&gt;%
 ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 ```
 
-&lt;img src="presentation_files/figure-html/unnamed-chunk-4-1.png" width="80%" /&gt;
+&lt;img src="presentation_files/figure-html/unnamed-chunk-6-1.png" width="80%" /&gt;
 we can see that not many people rate a singe airline more than once
 
 
