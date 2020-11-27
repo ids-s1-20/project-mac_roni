@@ -9,6 +9,7 @@ library(tidyverse)
 library(broom)
 library(readr)
 library(skimr)
+library(tidytext)
 ```
 
 ## 1. Introduction
@@ -151,17 +152,8 @@ As the visualisation shows, to increase in overall rating, all individaul rating
 # Question 2 
 
 2. To what extent do passengers in first class give better ratings than passengers in economy/Premium Economy, etc?
+Also, how satisfied are the first class passengers with the services they mentioned in their comments the most about?  
 
-How does overall ratings change over time for first class? 
-
-```{r}
-airline %>%
-  
-```
-
-
-Y: overall_rating
-X: type_traveller , cabin_flown, airline_name
 
 Let's look at the average overall rating the passengers gave for each of the classes. 
 
@@ -193,8 +185,7 @@ airline %>%
 Now, it is obvious that first class has a lower rating compared to business 
 class since fewer passengers chose that cabin type. 
 
-Let's look into what type of travelers opt for first class cabin which may help us 
-further understand the amenities they'd be interested in! 
+Let's look into what type of travelers opt for first class cabin which may be able to explain the above. 
 
 
 ```{r}
@@ -214,6 +205,60 @@ not be pocket-friendly to travel in larger groups than 1.
 The distribution of travelers also reveals why first class has the smallest number of passengers since
 'couple leisure' and 'family leisure' categories don't form a large section of first class cabin passengers.  
 
+Let's look into which aspects of the services did the first class cabin passengers mention about in their comments and 
+how did they rate them? 
+ 
+Filtered for NAs for variables that I am entirely sure of looking into.
+
+```{r}
+airline_amen_nonas <- airline %>%
+  drop_na(overall_rating, value_money_rating, cabin_flown)  
+
+```
+
+Text analysis:
+
+```{r}
+
+airline_amen_nonas %>%
+  filter( cabin_flown == "First Class" ) %>%
+  unnest_tokens(word, content) %>%
+  anti_join(get_stopwords(), by = "word") %>%
+  count(word, sort = TRUE) %>% 
+  slice_max(n, n = 20)
+
+```
+
+The results reveal words like "wifi", "connectivity", "entertainment"  don't appear, so I will choose to not look 
+into the amenity variable associated with those words as it is not ***highly*** reviewed by the first class passengers. The word 'service' does appear 4th in the list but the word ground is not there so it is not 
+a strong enough indicator for me to choose the ground_service amenity. 
+So, after narrowing my search, I will filter for seat, cabin staff and food and, explore the ratings given for these. 
+The amen_filtered has been extended accordingly from airline_amen_nonas. 
+
+```{r}
+
+amen_filtered <- airline %>%
+  drop_na(overall_rating, value_money_rating, cabin_flown, seat_comfort_rating,
+          cabin_staff_rating, food_beverages_rating)  
+
+```
+
+```{r}
+amen_filtered %>%
+  filter( cabin_flown == "First Class" ) %>%
+  select( cabin_flown, overall_rating, value_money_rating, seat_comfort_rating,
+          cabin_staff_rating, food_beverages_rating) %>%
+  summarise(mean_seat_comfort_rating = mean(seat_comfort_rating),
+            mean_cabin_staff_rating = mean(cabin_staff_rating),
+            mean_food_beverages_rating = mean(food_beverages_rating),
+            mean_value_money_rating = mean(value_money_rating),
+            mean_overall_rating = mean(overall_rating))
+```
+
+Perhaps, this can mean that the mention of these services in the comments made has been fairly positive according to
+the mean results yielded. Also, seeing the mention of words like good, great, comfortable and excellent reinforces can aid the claim made above. 
+
+This runs in line with the mean overall rating proportionately as they both are around 65%.  
 
 # End of question 2
 
