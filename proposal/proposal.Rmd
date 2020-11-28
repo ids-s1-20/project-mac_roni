@@ -238,6 +238,108 @@ Do positive reviews on an airline and positive reviews on lounge and seat have a
 Y: a graph showing correlation 
 X: overall_rating (in seat and lounge data set )
 
+```{r - selecting-relevant-columns}
+airline_rating <- airline %>%
+select(airline_name, overall_rating, author, date) %>%
+  rename(airline_rating = "overall_rating",
+         date_airline = "date")
+
+lounge_rating <- lounge %>%
+select(airline_name, overall_rating, author, date) %>%
+  rename(lounge_rating = "overall_rating",
+         date_lounge = "date")
+
+seat_rating <- seat %>%
+select(airline_name, overall_rating, author, date) %>%
+  rename(seat_rating = "overall_rating",
+         date_seat = "date")
+```
+
+```{r - joining-lounge-and-airline}
+airline_lounge <- full_join(lounge_rating, airline_rating) %>%
+  na.omit()
+
+airline_lounge
+```
+
+
+```{r joining-seat-to-lounge-and-airline}
+airline_lounge_seat <- full_join(airline_lounge, seat_rating) %>%
+  na.omit()
+
+a_l_s <- a_l_s[, c(1, 3, 5, 2, 7, 4, 6, 8)]
+
+a_l_s
+```
+
+
+```{r creating-overall-column}
+als_overall_rating <- airline_lounge_seat %>%
+  pivot_longer(cols = c("airline_rating", "seat_rating", "lounge_rating"), values_to = ("overall_rating")) %>%
+   rename(rating_type = "name") %>%
+  mutate(
+    date = case_when(
+      rating_type == "airline_rating" ~ date_airline,
+      rating_type == "seat_rating"    ~ date_seat,
+      rating_type == "lounge_rating"  ~ date_lounge
+    )) %>%
+  select(airline_name, author, rating_type, overall_rating, date) %>%
+  distinct()
+
+als_overall_rating
+  
+```
+
+```{r calculating-mean-where-authors-have-multiple-ratings-for-one-type}
+als_with_mean <- als_overall_rating %>%
+  group_by(author, rating_type) %>%
+  mutate(mean_overall_rating = mean(overall_rating)) %>%
+  select(airline_name, author, rating_type,mean_overall_rating) %>%
+  distinct()
+
+als_with_mean
+```
+
+
+```{r calculating-the-difference-between-the-means-of-different-rating-types}
+ als_with_mean_difference <- als_with_mean %>%
+pivot_wider(names_from = rating_type, values_from = mean_overall_rating) %>%
+mutate(percentage_difference_in_airline_and_lounge_rating = (airline_rating-lounge_rating)/10*100,
+       percentage_difference_in_airline_and_seat_rating = (airline_rating-seat_rating)/10*100)
+
+als_with_mean_difference
+```
+
+```{r changing-values-to-absolute}
+abs_data <- als_with_mean_difference %>%
+  mutate(abs_percentage_difference_in_airline_and_seat_rating = abs(percentage_difference_in_airline_and_seat_rating)) %>%
+  select(airline_name, author, airline_rating, seat_rating, lounge_rating, percentage_difference_in_airline_and_lounge_rating, abs_percentage_difference_in_airline_and_seat_rating)
+
+abs_data
+```
+
+
+```{r graph-airline-and-lounge-ratings}
+abs_data %>%
+  ggplot(mapping = aes(x = author, 
+                      y = percentage_difference_in_airline_and_lounge_rating )) + 
+  geom_bar(stat = "identity") +
+  labs(title = "Difference in the Ratings between Airline and Lounge",
+       x = "Author",
+       y = "% Difference") 
+```
+
+```{r graph-airline-and-lounge-ratings}
+abs_data %>%
+  ggplot(mapping = aes(x = author, 
+                      y = abs_percentage_difference_in_airline_and_seat_rating )) + 
+  geom_bar(stat = "identity") +
+  labs(title = "Difference in the Ratings between Airline and Seat",
+       x = "Author",
+       y = "% Difference") 
+```
+
+
 Hypothesis: we expect seat rating to have a stronger correlation than the lounge rating because not everyone uses the lounge. 
 
 ***Question to the instructor: Is it possible to segment the reviews into “positive” and “negative” ones (using text analysis on the content column) and replace all the positive and negative reviews with the words “good” or “bad”?***
