@@ -7,6 +7,7 @@ library(tidyverse)
 library(broom)
 library(readr)
 library(skimr)
+library(tidytext)
 ```
 
 ## 1\. Introduction
@@ -14,13 +15,12 @@ library(skimr)
 The dataset is a Skytrax User Reviews Dataset (published August 2nd,
 2015) at <https://github.com/quankiquanki/skytrax-reviews-dataset> .
 
-General Theme: Which amenities impact the airline rating the most?
+General Theme: How do the amenities impact the flight’s overall rating?
 
 ## 2\. Data
 
 ``` r
 airline <- read_csv("/cloud/project/data/airline.csv")
-airport <- read_csv("/cloud/project/data/airport.csv")
 lounge <- read_csv("/cloud/project/data/lounge.csv")
 seat <- read_csv("/cloud/project/data/seat.csv")
 ```
@@ -51,33 +51,6 @@ glimpse(airline)
     ## $ wifi_connectivity_rating      <dbl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
     ## $ value_money_rating            <dbl> 4, 5, 5, 4, 2, 4, 3, 4, 4, 4, 4, 5, 4, …
     ## $ recommended                   <dbl> 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, …
-
-``` r
-glimpse(airport)
-```
-
-    ## Rows: 17,721
-    ## Columns: 20
-    ## $ airport_name                <chr> "aalborg-airport", "aalborg-airport", "aa…
-    ## $ link                        <chr> "/airport-reviews/aalborg-airport", "/air…
-    ## $ title                       <chr> "Aalborg Airport customer review", "Aalbo…
-    ## $ author                      <chr> "Klaus Malling", "S Kroes", "M Andersen",…
-    ## $ author_country              <chr> "Denmark", "Netherlands", "Denmark", "Fra…
-    ## $ date                        <date> 2014-02-11, 2013-02-13, 2012-08-07, 2011…
-    ## $ content                     <chr> "A small very effective airport with few …
-    ## $ experience_airport          <chr> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-    ## $ date_visit                  <chr> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-    ## $ type_traveller              <chr> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-    ## $ overall_rating              <dbl> 9, 9, 9, 5, 4, 5, 4, 1, NA, NA, NA, 2, 8,…
-    ## $ queuing_rating              <dbl> 5, 5, 5, 5, NA, NA, NA, NA, NA, NA, NA, 1…
-    ## $ terminal_cleanliness_rating <dbl> 5, 4, 5, 5, NA, NA, NA, NA, NA, NA, NA, 3…
-    ## $ terminal_seating_rating     <dbl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-    ## $ terminal_signs_rating       <dbl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-    ## $ food_beverages_rating       <dbl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-    ## $ airport_shopping_rating     <dbl> 4, 4, 4, 3, NA, NA, NA, NA, NA, NA, NA, 1…
-    ## $ wifi_connectivity_rating    <dbl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-    ## $ airport_staff_rating        <dbl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-    ## $ recommended                 <dbl> 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0,…
 
 ``` r
 glimpse(lounge)
@@ -164,30 +137,9 @@ airline %>%
     ## 10 jeju-air                                   9   
     ## # … with 352 more rows
 
-Next, we visualised the distribution of the traveller types the airline
-attracts. Although, this visualization doesn’t take into account the
-31018 missing values.
-
-``` r
-airline %>%
-  filter(type_traveller != "NA") %>%
-  ggplot( mapping = aes( y = type_traveller)) +
-  geom_bar() +
-  labs( title = "Distribution of the traveller types", 
-        y = "Traveller types" 
-        ) +
-  theme_minimal()
-```
-
-![](proposal_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
-
 1.  How does the overall ratings for airlines change depending of the
-    time of year? Do these patterns repeat every year? Which traveller
-    type is prev during which time of the year?
-
-Which type of travelers in first class give better overall ratings than
-passengers in other classes? Does this alternate between different
-airlines?
+    time of year? Do these patterns repeat every year? Which traveler
+    type is prevalent during which time of the year?
 
 First, all NAs for the response variable and the predictor were removed.
 
@@ -228,10 +180,11 @@ throughout both years.
 
 There is no clear pattern in each year, which makes sense as the airline
 companies will normally try to provide the same service throughout the
-year.
+year. And, this may also mean that the airlines probably don’t take the
+comments given by the passengers too seriously.
 
-2.  To what extent do passengers in first class give better overall
-    ratings than passengers in other classes?
+1.5. Which amenity significantly contributes to the top 5 airlines’
+overall rating?
 
 One can look at the individual ratings (Seat Comfort, Cabin Staff, Food
 Beverages, Inflight Entertainment and Money Value) and see if there is
@@ -249,20 +202,24 @@ Air Astana. For airlines that decreased in overall rating
 decreased or had an overall worse score (especially inflight
 entertainment).
 
-2.  To what extent do passengers in business class give better overall
-    ratings than passengers in economy/Premium Economy?
+# Question 2
 
-Does this alternate between different airplane types? Y: overall\_rating
-X: type\_traveller , cabin\_flown, airline\_name
+2.  To what extent do passengers in first class give better ratings than
+    passengers in other classes? Also, how satisfied are the first class
+    passengers with the services they mentioned in their comments the
+    most about?
 
 Let’s look at the average overall rating the passengers gave for each of
-the classes.
+the classes. Hypothesis: We expect first class to have a higher rating
+since, as per the norm, first class is considered to be the most
+preferable one.
 
 ``` r
 airline %>%
   filter(!is.na(overall_rating), !is.na(cabin_flown) ) %>%
   group_by(cabin_flown) %>%
-  summarise(mean_overall_rating = mean(overall_rating, na.rm = TRUE))
+  summarise(mean_overall_rating = mean(overall_rating, na.rm = TRUE)) %>%
+  arrange(desc(mean_overall_rating))
 ```
 
     ## `summarise()` ungrouping output (override with `.groups` argument)
@@ -271,13 +228,9 @@ airline %>%
     ##   cabin_flown     mean_overall_rating
     ##   <chr>                         <dbl>
     ## 1 Business Class                 6.87
-    ## 2 Economy                        5.97
-    ## 3 First Class                    6.65
+    ## 2 First Class                    6.65
+    ## 3 Economy                        5.97
     ## 4 Premium Economy                5.86
-
-Hypothesis: we expect first class to have a higher rating and will use
-the correlation between overall rating and cabin flown to validate our
-hypothesis.
 
 Business class has received the highest amount of rating. It is closely
 followed by First class. This doesn’t match our hypothesis.
@@ -305,8 +258,8 @@ airline %>%
 Now, it is obvious that first class has a lower rating compared to
 business class since fewer passengers chose that cabin type.
 
-Sub question: What is the distribution of traveller\_type in each of the
-cabin\_flown categories?
+Let’s look into what type of travelers opt for first class cabin which
+may be able to explain the above.
 
 ``` r
 airline %>%
@@ -316,58 +269,128 @@ airline %>%
   coord_flip()
 ```
 
-![](proposal_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+![](proposal_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
 
-This reveals the type of travellers in each of the cabins.
+This reveals the type of travelers in each of the cabins.
 
 For first class, as expected, the solo leisure traveller\_type prevails.
 This adds up since the tickets may cost significantly more than any of
 the other classes so it may not be pocket-friendly to travel in larger
-groups than 1.
+groups than 1.  
+The distribution of travelers also reveals why first class has the
+smallest number of passengers since ‘couple leisure’ and ‘family
+leisure’ categories don’t form a large section of first class cabin
+passengers.
 
-A few other observations that can be made are: Travelers who are flying
-for business trips prefer the Business Class which does make sense since
-they may be travelling often and can use their loyalty card points for
-an upgrade to a business class.
+Let’s look into which amenities did the first class cabin passengers
+mention the most about in their comments and how did they rate them?
 
-From a pocket-friendly and budgeting point of view, it makes sense that
-the family leisure traveler category is mostly found in the Economy
-class.
-
-Next, let’s explore how the overall flight rating varies.
+Filtered for NAs for variables that I am entirely sure of looking into.
 
 ``` r
-airline %>%
-  filter(!is.na(overall_rating)) %>%
-  group_by(overall_rating) %>%
-  count(overall_rating) 
+airline_amen_nonas <- airline %>%
+  drop_na(overall_rating, value_money_rating, cabin_flown)  
 ```
 
-    ## # A tibble: 10 x 2
-    ## # Groups:   overall_rating [10]
-    ##    overall_rating     n
-    ##             <dbl> <int>
-    ##  1              1  5390
-    ##  2              2  2996
-    ##  3              3  2375
-    ##  4              4  1810
-    ##  5              5  2538
-    ##  6              6  1814
-    ##  7              7  3336
-    ##  8              8  5329
-    ##  9              9  5412
-    ## 10             10  5861
+Text analysis:
 
 ``` r
-airline %>% 
-  filter(!is.na(overall_rating)) %>%
-  group_by(overall_rating) %>%
-  count(overall_rating) %>%
-  ggplot(aes(x=factor(overall_rating), y = n)) + ## want to fill it by cabin_flown but running into errors 
-  geom_col() 
+two_words <- airline_amen_nonas %>%
+  filter( cabin_flown == "First Class" ) %>%
+  unnest_tokens(word, content, token = "ngrams", n = 2) %>%
+  count(word, sort = TRUE) %>% 
+  slice_max(n, n = 65)
+
+#single_word <- airline_amen_nonas %>%
+ # filter( cabin_flown == "First Class" ) %>%
+ # unnest_tokens(word, content) %>%
+ # anti_join(get_stopwords(), by = "word") %>%
+ # count(word, sort = TRUE) %>% 
+ # slice_max(n, n = 20)
 ```
 
-![](proposal_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
+The results reveal phrases like “wifi connectivity”, “flight
+entertainment” don’t appear commonly, so I will choose to not look into
+the amenity variable associated with those words as it is not
+***highly*** reviewed by the first class passengers. To be thorough, I
+have unnested the sentences into two tokens instead of just words.
+
+So, after narrowing my search using text analysis, I will filter for
+seat, cabin staff and food and, explore the ratings given for these. The
+amen\_filtered has been extended accordingly from airline\_amen\_nonas.
+
+``` r
+amen_filtered <- airline %>%
+  drop_na(overall_rating, cabin_flown, seat_comfort_rating,
+          cabin_staff_rating, food_beverages_rating)  
+```
+
+``` r
+amen_filtered %>%
+  filter( cabin_flown == "First Class" ) %>%
+  select(overall_rating, value_money_rating, seat_comfort_rating,
+          cabin_staff_rating, food_beverages_rating) %>%
+  summarise(mean_seat_comfort_rating = mean(seat_comfort_rating),
+            mean_cabin_staff_rating = mean(cabin_staff_rating),
+            mean_food_beverages_rating = mean(food_beverages_rating),
+            mean_overall_rating = mean(overall_rating))
+```
+
+    ## # A tibble: 1 x 4
+    ##   mean_seat_comfort_r… mean_cabin_staff_r… mean_food_beverage… mean_overall_rat…
+    ##                  <dbl>               <dbl>               <dbl>             <dbl>
+    ## 1                 3.80                3.84                3.40              6.63
+
+Perhaps, this can mean that the mention of these services in the
+comments made has been fairly positive according to the mean results
+yielded. After looking at variability, we can add that passengers had
+strong opinions about the food and beverages in the first class cabin of
+the flight. The mean values show that on average, the passengers were
+happier with the service offered by the crew instead of the seating
+comfort level. This is supported by the density plot as there are fewer
+observations \< 3 for cabin staff rating than seat\_comfort rating.
+
+But, let’s see the variability to reaffirm our claim.
+
+``` r
+ y <- amen_filtered %>%
+  group_by(airline_name) %>%
+  filter( cabin_flown == "First Class" ) %>%
+  select(overall_rating, value_money_rating, seat_comfort_rating,
+          cabin_staff_rating, food_beverages_rating) %>%
+  summarise(mean_seat_comfort_rating = mean(seat_comfort_rating),
+            mean_cabin_staff_rating = mean(cabin_staff_rating),
+            mean_food_beverages_rating = mean(food_beverages_rating),
+            mean_value_money_rating = mean(value_money_rating),
+            mean_overall_rating = mean(overall_rating))
+```
+
+    ## Adding missing grouping variables: `airline_name`
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+``` r
+seat_var <- y %>%
+ggplot( mapping = aes(x = mean_seat_comfort_rating)) +
+  geom_density() 
+
+cabin_var <- y %>%
+ggplot( mapping = aes(x = mean_cabin_staff_rating)) +
+  geom_density() 
+
+food_var <- y %>%
+ggplot( mapping = aes(x = mean_food_beverages_rating)) +
+  geom_density()
+
+overall_var <-y %>%
+  ggplot( mapping = aes(x = mean_overall_rating)) +
+  geom_density()
+```
+
+This runs in line with the average statistics visualized in the tibble
+before.
+
+# End of question 2
 
 Majority of the travelers have rated the airlines a 10 (5861 to be
 exact) but ratings like 8, 9, 10 are also common. Surprisingly, the
@@ -384,8 +407,3 @@ overall\_rating (in seat and lounge data set )
 
 Hypothesis: we expect seat rating to have a stronger correlation than
 the lounge rating because not everyone uses the lounge.
-
-***Question to the instructor: Is it possible to segment the reviews
-into “positive” and “negative” ones (using text analysis on the content
-column) and replace all the positive and negative reviews with the words
-“good” or “bad”?***
