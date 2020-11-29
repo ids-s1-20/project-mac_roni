@@ -113,7 +113,7 @@ airline_nonas %>%
 
 # Overall Rating versus Time
 
-```{r five-highest-ratings-plot, message = FALSE, echo = FALSE}
+```{r five-highest-ratings-plot, message = FALSE, echo = FALSE, eval=FALSE}
 airline_nonas %>%
   group_by(airline_name, date) %>%
   summarise(mean_overall_rating = mean(overall_rating, na.rm = TRUE)) %>%
@@ -151,9 +151,7 @@ Trends in Specific Airlines at the start of 2015:
 
 .pull-right[
 
-```{r ref.label = "five-highest-ratings-plot",  message = FALSE, echo = FALSE, out.width="100%", fig.width=5}
-
-```
+pen
 ]
 
 ---
@@ -356,7 +354,7 @@ class since fewer passengers chose that cabin type.
 
 # Do airline improve their rating with a particular customer over time
 First we need to filter out all the reviewers who didn't rate a airline twice
-```{r}
+```{r filter-repeated-authors}
 author_more_than_once <-airline%>%
   mutate(duplicate_auth = duplicated(.$author))%>%
   filter(duplicate_auth)%>%
@@ -364,11 +362,10 @@ author_more_than_once <-airline%>%
   mutate(count = n())%>%
   filter(count>1)%>%
   ungroup()
-
 ```
-
+after filtering out the reviewers who didn't rate a single airline more than once we are left with `r nrow(author_more_than_once)` and `r length(unique(author_more_than_once$author))` unique authors
 ---
-```{r echo=FALSE,  message=FALSE}  
+```{r repeated-rating-distribution, echo=FALSE,  message=FALSE}  
 author_more_than_once%>%
   group_by(author)%>%
   summarize(count = n())%>%
@@ -382,9 +379,58 @@ author_more_than_once%>%
   )
   
 ```
-
+- significantly right skewed
+- most rate only twice
+- hardly any people rate one airline more than 10 times
 ---
-```{r}
+# Definition of improvement
+- slope of linear fit
+- 3 levels 
+  - -1 - got worse
+  - 0 - no improvement
+  - 1 - improvement
+  
+.pull-left[
+```{r postive-slope, echo=FALSE, message=FALSE}
+airline%>%
+  filter(author == "A Krummacher",
+         airline_name == "srilankan-airlines")%>%
+  ggplot(aes(x=date, y=overall_rating))+
+  geom_point()+
+  geom_smooth(method = "lm", se = FALSE)+
+  labs(
+    title = "Rating of srilanka airlines over time",
+    subtitle = "by one reviewer",
+    x = "Date",
+    y = "Overal rating"
+  )
+
+
+```
+]
+.pull-right[
+```{r negative-slope, echo=FALSE, message=FALSE}
+airline%>%
+  filter(author == "A Clarke",
+         airline_name == "ryanair")%>%
+  ggplot(aes(x=date, y=overall_rating))+
+  geom_point()+
+  geom_smooth(method = "lm", se = FALSE)+
+  labs(
+    title = "Rating of united airlines over time",
+    subtitle = "by one reviewer",
+    x = "Date",
+    y = "Overal rating"
+  )
+```
+]
+---
+
+
+
+
+
+```{r slopes-function, echo=FALSE}
 #https://stackoverflow.com/a/31874484
 slopes <- function(response) {
   return(
@@ -397,8 +443,8 @@ slopes <- function(response) {
   )
 }
 ```
----
-```{r eval=FALSE}
+
+```{r map-slope-responses, eval=FALSE}
 responses = c("overall_rating",
               "seat_comfort_rating",
               "cabin_staff_rating",
@@ -409,6 +455,14 @@ responses = c("overall_rating",
 
 list_slopes <- map(responses,slopes)
 ```
+```{r eval=FALSE}
+data.frame(list_slopes[1])%>%
+  filter(model.estimate<0)
+  
+```
+
+
+
 ---
 ```{r eval=FALSE}
 transform <- function(df, response){
