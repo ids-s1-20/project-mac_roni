@@ -28,6 +28,7 @@ library(readr)
 library(skimr)
 library(tidytext)
 library(corrr)
+theme_set(theme_minimal())
 ```
 
 ```{r setup, include=FALSE}
@@ -353,70 +354,51 @@ class since fewer passengers chose that cabin type.
 
 ---
 
-# Question 3
-
-```{r}
-rep_rating<-airline%>%
-  mutate(duplicate = duplicated(.$author))%>%
-  filter(duplicate)
-
-rep_rating_airline <-airline%>%
-  group_by(author)%>%
-  mutate(duplicate = duplicated(airline_name))%>%
-  filter(duplicate)%>%
-  arrange(date)
-
-rep_rating_airline%>%
-  summarize(count = n())%>%
-  ggplot(aes(x=count))+
-  geom_histogram()
-```
-We can see that not may reviewers review the same airline more than once 
-```{r}
-rep_rating_airline%>%
-  group_by(author)%>%
-  summarize(count = n())%>%
-  filter(count == max(count))
-```
-
+# Do airline improve their rating with a particular customer over time
+First we need to filter out all the reviewers who didn't rate a airline twice
 ```{r}
 author_more_than_once <-airline%>%
   mutate(duplicate_auth = duplicated(.$author))%>%
   filter(duplicate_auth)%>%
-  
   group_by(airline_name,author)%>%
   mutate(count = n())%>%
   filter(count>1)%>%
   ungroup()
-  
+
+```
+
+---
+```{r echo=FALSE,  message=FALSE}  
 author_more_than_once%>%
   group_by(author)%>%
   summarize(count = n())%>%
   ggplot(aes(x=count))+
-  geom_histogram()
+  geom_histogram()+
+  labs(
+    title = "Repeated rating of one airline",
+    subtitle = "by one customer",
+    x = "times rated",
+    y = "number of reviewers"
+  )
   
 ```
-we can see that not many people rate a single airline more than once
 
+---
 ```{r}
+#https://stackoverflow.com/a/31874484
 slopes <- function(response) {
-  return(author_more_than_once %>% 
+  return(
+    author_more_than_once %>% 
   select(airline_name, author, y = response,X = date)%>%
-  group_by(author,airline_name) %>% # group by variable state
+  group_by(author,airline_name) %>%
   filter(!is.na(X),!is.na(y))%>%
-  do(data.frame(model = tidy(lm(y~X, data=.)))) %>% # for each group run a linear fit and save the output as a date table
-  ungroup)
+  do(data.frame(model = tidy(lm(y~X, data=.)))) %>%
+  ungroup
+  )
 }
 ```
-
-```{r}
-author_more_than_once%>%
-  filter(!is.na(date),!is.na(.[12]))
-```
-
-
-
-```{r}
+---
+```{r eval=FALSE}
 responses = c("overall_rating",
               "seat_comfort_rating",
               "cabin_staff_rating",
@@ -427,8 +409,8 @@ responses = c("overall_rating",
 
 list_slopes <- map(responses,slopes)
 ```
-
-```{r}
+---
+```{r eval=FALSE}
 transform <- function(df, response){
     working_df <- df%>%
     filter(model.term == "X")%>%
@@ -444,14 +426,14 @@ transform <- function(df, response){
 ```
 
 
-```{r}
+```{r eval=FALSE}
 list_slopes_trans <- map2(list_slopes,responses,transform)
 
 joint_improvements <- list_slopes_trans %>% reduce(left_join, by = c("author","airline_name"))
 joint_improvements
 ```
-
-```{r}
+---
+```{r eval=FALSE}
 joint_improvements%>%
   select(overall_rating_improvement,
          cabin_staff_rating_improvement,
@@ -463,18 +445,8 @@ joint_improvements%>%
   correlate()
   
 ```
-```{r}
-ggcorrplot(type = "lower", lab = TRUE)+
-  theme(axis.title.x=element_blank(),
-        axis.text.x=element_blank(),
-        axis.ticks.x=element_blank(),
-        axis.title.y=element_blank(),
-        axis.text.y=element_blank(),
-        axis.ticks.y=element_blank())
-```
 
-
-```{r}
+```{r eval=FALSE}
 joint_improvements%>%
 ggplot(aes(y = overall_rating_improvement, x = value_money_rating_improvement))+
   geom_jitter()
@@ -482,25 +454,7 @@ ggplot(aes(y = overall_rating_improvement, x = value_money_rating_improvement))+
 map(responses, cors)
 ```
 
-
-
-```{r}
-df2 <- joint_improvements%>%
-  group_by(airline_name)%>%
-  mutate(mean_improvement = mean(overall_rating_improvement))
-
-df2$airline_name = reorder(df2$airline_name, df2$mean_improvement)
-
-df2%>%
-  filter(!is.na(mean_improvement))%>%
-  ggplot(aes(x = mean_improvement))+
-  geom_histogram(bins = 10)
-
-```
-
-
-We can see that most airlines don't improve from flight to flight but with the improvement mean being `r mean(df2$mean_improvement,na.rm=TRUE)`
-
+We can see that most airlines don't improve from flight to flight but with the improvement mean being 
 
 
 
