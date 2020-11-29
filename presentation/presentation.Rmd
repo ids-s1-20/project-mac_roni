@@ -27,6 +27,7 @@ library(broom)
 library(readr)
 library(skimr)
 library(tidytext)
+library(corrr)
 ```
 
 ```{r setup, include=FALSE}
@@ -255,9 +256,7 @@ ggplot(penguins, aes(x = bill_length_mm, y = species, color = species)) +
 
 If you want to generate a table, make sure it is in the HTML format (instead of Markdown or other formats), e.g.,
 
-```{r iris-table, echo = FALSE}
-kable(head(iris), format = "html")
-```
+
 
 ---
 
@@ -397,7 +396,7 @@ author_more_than_once%>%
   geom_histogram()
   
 ```
-we can see that not many people rate a singe airline more than once
+we can see that not many people rate a single airline more than once
 
 ```{r}
 slopes <- function(response) {
@@ -418,7 +417,8 @@ author_more_than_once%>%
 
 
 ```{r}
-responses = c("seat_comfort_rating",
+responses = c("overall_rating",
+              "seat_comfort_rating",
               "cabin_staff_rating",
               "food_beverages_rating",
               "inflight_entertainment_rating",
@@ -448,6 +448,7 @@ transform <- function(df, response){
 list_slopes_trans <- map2(list_slopes,responses,transform)
 
 joint_improvements <- list_slopes_trans %>% reduce(left_join, by = c("author","airline_name"))
+joint_improvements
 ```
 
 ```{r}
@@ -459,8 +460,17 @@ joint_improvements%>%
          inflight_entertainment_rating_improvement,
          wifi_connectivity_rating_improvement,
          value_money_rating_improvement)%>%
-  cor(use = "pairwise.complete.obs", method = "pearson")
-
+  correlate()
+  
+```
+```{r}
+ggcorrplot(type = "lower", lab = TRUE)+
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank())
 ```
 
 
@@ -473,15 +483,6 @@ map(responses, cors)
 ```
 
 
-```{r}
-df2 <- author_more_than_once %>% 
-  select(airline_name, author, y = overall_rating,X = date)%>%
-  group_by(author,airline_name) %>% # group by variable state
-  filter(!is.na(X),!is.na(y))%>%
-  do(data.frame(model = tidy(lm(y~X, data=.)))) %>% # for each group run a linear fit and save the output as a date table
-  ungroup # forget about your initial grouping
-df2
-```
 
 ```{r}
 df2 <- joint_improvements%>%
