@@ -278,32 +278,93 @@ author_more_than_once%>%
 we can see that not many people rate a singe airline more than once
 
 ```{r}
-slopes <- function(data) {
-  fited <- linear_reg()%>%
-  set_engine("lm")%>%
-  fit(overall_rating ~ date, data= data)
-  return(tidy(fited)$estimate[2])  #return the slope
+slopes <- function(response) {
+  return(author_more_than_once %>% 
+  select(airline_name, author, y = response,X = date)%>%
+  group_by(author,airline_name) %>% # group by variable state
+  filter(!is.na(X),!is.na(y))%>%
+  do(data.frame(model = tidy(lm(y~X, data=.)))) %>% # for each group run a linear fit and save the output as a date table
+  ungroup)
 }
 ```
+
 ```{r}
-(slopes(author_more_than_once))
+author_more_than_once%>%
+  filter(!is.na(date),!is.na(.[12]))
+```
+
+
+
+```{r}
+responses = c("seat_comfort_rating",
+              "cabin_staff_rating",
+              "food_beverages_rating",
+              "inflight_entertainment_rating",
+              "wifi_connectivity_rating",
+              "value_money_rating")
+
+list_slopes <- map(responses,slopes)
+```
+
+```{r}
+transform <- function(df, response){
+    working_df <- df%>%
+    filter(model.term == "X")%>%
+    select(author,airline_name, slope = model.estimate)%>%
+    mutate(improvement = sign(slope))%>%
+    group_by(airline_name)%>%
+      mutate(mean_improvement = mean(improvement))%>%
+    ungroup
+    names(working_df)[3] <- paste(response,"slope",sep = "_")
+    names(working_df)[4] <- paste(response,"improvement",sep = "_")
+    return(working_df)
+}
+```
+
+
+```{r}
+list_slopes_trans <- map2(list_slopes,responses,transform)
+
+joint_improvements <- list_slopes_trans %>% reduce(left_join, by = c("author","airline_name"))
+```
+
+```{r}
+joint_improvements%>%
+  select(overall_rating_improvement,
+         cabin_staff_rating_improvement,
+         food_beverages_rating_improvement,
+         seat_comfort_rating_improvement,
+         inflight_entertainment_rating_improvement,
+         wifi_connectivity_rating_improvement,
+         value_money_rating_improvement)%>%
+  cor(use = "pairwise.complete.obs", method = "pearson")
 
 ```
+
+
+```{r}
+joint_improvements%>%
+ggplot(aes(y = overall_rating_improvement, x = value_money_rating_improvement))+
+  geom_jitter()
+
+map(responses, cors)
+```
+
+
 ```{r}
 df2 <- author_more_than_once %>% 
+  select(airline_name, author, y = overall_rating,X = date)%>%
   group_by(author,airline_name) %>% # group by variable state
-  filter(!is.na(date),!is.na(overall_rating))%>%
-  do(data.frame(model = tidy(lm(overall_rating~date, data=.)))) %>% # for each group run a linear fit and save the output as a date table
+  filter(!is.na(X),!is.na(y))%>%
+  do(data.frame(model = tidy(lm(y~X, data=.)))) %>% # for each group run a linear fit and save the output as a date table
   ungroup # forget about your initial grouping
 df2
 ```
 
 ```{r}
-df2 <- df2%>%
-  filter(model.term == "date")%>%
-  mutate(improvement=sign(model.estimate))%>%  #did they improve or not
+df2 <- joint_improvements%>%
   group_by(airline_name)%>%
-  mutate(mean_improvement = mean(improvement))
+  mutate(mean_improvement = mean(overall_rating_improvement))
 
 df2$airline_name = reorder(df2$airline_name, df2$mean_improvement)
 
