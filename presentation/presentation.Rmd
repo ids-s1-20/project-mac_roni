@@ -33,7 +33,7 @@ theme_set(theme_minimal())
 
 ```{r setup, include=FALSE}
 # For better figure resolution
-knitr::opts_chunk$set(fig.retina = 3, dpi = 300, fig.width = 6, fig.asp = 0.618, out.width = "80%")
+knitr::opts_chunk$set(fig.retina = 3, dpi = 300, fig.width = 8, fig.asp = 0.618, out.width = "80%")
 ```
 
 ```{r load-data, include=FALSE}
@@ -47,7 +47,7 @@ seat <- read_csv("/cloud/project/data/seat.csv")
 
 class: center, middle
 
-## A statement of the overall goal / research question
+## Main Goal: To find the amenities that impact a flight's overall rating (Cabin, Seat, Lounge & Over Time) 
 
 ---
 
@@ -80,7 +80,7 @@ include_graphics("https://www.researchgate.net/profile/Hak_Seon_Kim/publication/
 class: inverse, center, middle
 
 ## Question 1
-# How does the overall ratings for airlines change depending of the time of year?
+# How does the overall ratings for airlines change depending on the time of the year?
 
 ---
 
@@ -111,9 +111,9 @@ airline_nonas %>%
 
 ---
 
-# Overall Rating versus Time
+class: inverse, center, middle
 
-```{r five-highest-ratings-plot, message = FALSE, echo = FALSE, eval=FALSE}
+```{r five-highest-ratings-plots, message = FALSE, echo = FALSE, out.width = "100%"}
 airline_nonas %>%
   group_by(airline_name, date) %>%
   summarise(mean_overall_rating = mean(overall_rating, na.rm = TRUE)) %>%
@@ -127,32 +127,43 @@ airline_nonas %>%
     x = "Date",
     y = "Overall Rating"
   ) +
-  guides(color = guide_legend(title = "Airline Name")) +
-  theme_minimal()
-  
+  guides(color = guide_legend(title = "Airline Name")) 
 ```
-
 ---
-# Overall Rating versus Time Explained 
+
+# How does time affect the overall rating?
+
+Main Finding: There is no significant pattern in between years or at certain times of the year. 
+- One would expect airlines to offer the same service throughout each year. 
+
+# Limitations
 
 .pull-left[
-General Trends: 
+There are some limitations that influenced the exploration of time variable.
 
-- Passengers that fill out the survey tend to give high overall ratings
-- There is no significant pattern in the overall ratings when comparing different years
-
-
-Trends in Specific Airlines at the start of 2015: 
-
-- Air Astana -> higher ratings in comparison to 2014
-- Garuda Indonesia -> similar ratings in comparison to the last year
-- Asiana Airlines, Bangkok Airways, and Indigo Airlines -> lower ratings in comparison to 2014.
+- Uncertainty in geom_smooth function (high)
+- Limited time period (2 years)
 ]
 
 .pull-right[
-
-pen
+```{r five-highest-ratings-plots-with-error, message = FALSE, echo = FALSE, out.width = "100%"}
+airline_nonas %>%
+  group_by(airline_name, date) %>%
+  summarise(mean_overall_rating = mean(overall_rating, na.rm = TRUE)) %>%
+  filter(airline_name %in% c("asiana-airlines", "garuda-indonesia", "air-astana", "bangkok-airways", "indigo-airlines"),
+         date >= "2014-01-01") %>%
+  ggplot(aes(x = date, y = mean_overall_rating, color = airline_name)) +
+  geom_smooth(se = TRUE) +
+  labs(
+    title = "Overall ratings of five highest ranked airlines",
+    subtitle = "From 2014 to 2015",
+    x = "Date",
+    y = "Overall Rating"
+  ) +
+  guides(color = guide_legend(title = "Airline Name")) 
+```
 ]
+
 
 ---
 
