@@ -4,7 +4,7 @@
     <title>How do the amenities impact the flight’s overall rating?</title>
     <meta charset="utf-8" />
     <meta name="author" content="macaRoni   Sophie Kerfoot, Ben Thamm, Henrich Hegedus, Purvi Harwani" />
-    <meta name="date" content="2020-11-27" />
+    <meta name="date" content="2020-11-29" />
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/default-fonts.css" rel="stylesheet" />
   </head>
@@ -13,10 +13,10 @@
 class: center, middle, inverse, title-slide
 
 # How do the amenities impact the flight’s overall rating?
-## Presentation subtitle (if any)
+## By cabin, seat, lounge and over time
 ### macaRoni <br> Sophie Kerfoot, Ben Thamm, Henrich Hegedus, Purvi Harwani
 ### University of Edinburgh
-### 2020-11-27
+### 2020-11-29
 
 ---
 
@@ -412,11 +412,7 @@ rep_rating_airline%&gt;%
 ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 ```
 
-<<<<<<< HEAD
-&lt;img src="presentation_files/figure-html/unnamed-chunk-4-1.png" width="80%" /&gt;
-=======
-&lt;img src="presentation_files/figure-html/unnamed-chunk-3-1.png" width="80%" /&gt;
->>>>>>> 9ebbdf5576ee3c08dc3da2f6071d0f60362e40c0
+&lt;img src="presentation_files/figure-html/unnamed-chunk-5-1.png" width="80%" /&gt;
 We can see that not may reviewers review the same airline more than once 
 
 ```r
@@ -463,11 +459,7 @@ author_more_than_once%&gt;%
 ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 ```
 
-<<<<<<< HEAD
-&lt;img src="presentation_files/figure-html/unnamed-chunk-6-1.png" width="80%" /&gt;
-=======
-&lt;img src="presentation_files/figure-html/unnamed-chunk-5-1.png" width="80%" /&gt;
->>>>>>> 9ebbdf5576ee3c08dc3da2f6071d0f60362e40c0
+&lt;img src="presentation_files/figure-html/unnamed-chunk-7-1.png" width="80%" /&gt;
 we can see that not many people rate a singe airline more than once
 
 
@@ -761,7 +753,7 @@ df2%&gt;%
   geom_histogram(bins = 10)
 ```
 
-&lt;img src="presentation_files/figure-html/unnamed-chunk-9-1.png" width="80%" /&gt;
+&lt;img src="presentation_files/figure-html/unnamed-chunk-11-1.png" width="80%" /&gt;
 
 
 We can see that most airlines don't improve from flight to flight but with the improvement mean being 0.0576923
@@ -773,6 +765,247 @@ We can see that most airlines don't improve from flight to flight but with the i
 
 ---
 # Question 4
+
+
+
+
+```r
+airline_rating &lt;- airline %&gt;%
+select(airline_name, overall_rating, author, date) %&gt;%
+  rename(airline_rating = "overall_rating",
+         date_airline = "date")
+
+lounge_rating &lt;- lounge %&gt;%
+select(airline_name, overall_rating, author, date) %&gt;%
+  rename(lounge_rating = "overall_rating",
+         date_lounge = "date")
+
+seat_rating &lt;- seat %&gt;%
+select(airline_name, overall_rating, author, date) %&gt;%
+  rename(seat_rating = "overall_rating",
+         date_seat = "date")
+```
+
+
+```r
+airline_lounge &lt;- full_join(lounge_rating, airline_rating) %&gt;%
+  na.omit()
+```
+
+```
+## Joining, by = c("airline_name", "author")
+```
+
+```r
+airline_lounge
+```
+
+```
+## # A tibble: 1,058 x 6
+##    airline_name lounge_rating author     date_lounge airline_rating date_airline
+##    &lt;chr&gt;                &lt;dbl&gt; &lt;chr&gt;      &lt;date&gt;               &lt;dbl&gt; &lt;date&gt;      
+##  1 aer-lingus               4 Alan Wan   2014-10-28               7 2014-10-31  
+##  2 aer-lingus               2 Sean Leon… 2013-11-15               9 2015-01-14  
+##  3 aer-lingus               2 Sean Leon… 2013-11-15               5 2013-10-16  
+##  4 aer-lingus               2 Sean Leon… 2013-11-15               9 2013-01-22  
+##  5 aer-lingus               3 F Hogan    2013-04-04               6 2013-04-01  
+##  6 aer-lingus               4 Alan Wan   2012-09-10               7 2014-10-31  
+##  7 aer-lingus               3 Alan Wan   2012-09-10               7 2014-10-31  
+##  8 aer-lingus               4 Patrick J… 2011-09-13              10 2013-03-21  
+##  9 aer-lingus               2 Patrick J… 2009-03-18              10 2013-03-21  
+## 10 aer-lingus               2 Patrick J… 2009-03-18              10 2013-03-21  
+## # … with 1,048 more rows
+```
+
+
+
+```r
+airline_lounge_seat &lt;- full_join(airline_lounge, seat_rating) %&gt;%
+  na.omit()
+```
+
+```
+## Joining, by = c("airline_name", "author")
+```
+
+```r
+airline_lounge_seat &lt;- airline_lounge_seat[, c(1, 3, 5, 2, 7, 4, 6, 8)]
+
+airline_lounge_seat
+```
+
+```
+## # A tibble: 81 x 8
+##    airline_name author airline_rating lounge_rating seat_rating date_lounge
+##    &lt;chr&gt;        &lt;chr&gt;           &lt;dbl&gt;         &lt;dbl&gt;       &lt;dbl&gt; &lt;date&gt;     
+##  1 air-france   C Waj…              2             4           3 2014-03-11 
+##  2 air-france   C Waj…              3             4           3 2014-03-11 
+##  3 air-france   C Waj…              9             4           3 2014-03-11 
+##  4 air-france   C Waj…              2             3           3 2013-12-23 
+##  5 air-france   C Waj…              3             3           3 2013-12-23 
+##  6 air-france   C Waj…              9             3           3 2013-12-23 
+##  7 air-france   C Waj…              2             4           3 2013-05-29 
+##  8 air-france   C Waj…              3             4           3 2013-05-29 
+##  9 air-france   C Waj…              9             4           3 2013-05-29 
+## 10 air-france   C Waj…              2             3           3 2012-09-10 
+## # … with 71 more rows, and 2 more variables: date_airline &lt;date&gt;,
+## #   date_seat &lt;date&gt;
+```
+
+
+
+```r
+als_overall_rating &lt;- airline_lounge_seat %&gt;%
+  pivot_longer(cols = c("airline_rating", "seat_rating", "lounge_rating"), values_to = ("overall_rating")) %&gt;%
+   rename(rating_type = "name") %&gt;%
+  mutate(
+    date = case_when(
+      rating_type == "airline_rating" ~ date_airline,
+      rating_type == "seat_rating"    ~ date_seat,
+      rating_type == "lounge_rating"  ~ date_lounge
+    )) %&gt;%
+  select(airline_name, author, rating_type, overall_rating, date) %&gt;%
+  distinct()
+
+als_overall_rating
+```
+
+```
+## # A tibble: 75 x 5
+##    airline_name author     rating_type    overall_rating date      
+##    &lt;chr&gt;        &lt;chr&gt;      &lt;chr&gt;                   &lt;dbl&gt; &lt;date&gt;    
+##  1 air-france   C Wajsberg airline_rating              2 2014-05-05
+##  2 air-france   C Wajsberg seat_rating                 3 2014-01-10
+##  3 air-france   C Wajsberg lounge_rating               4 2014-03-11
+##  4 air-france   C Wajsberg airline_rating              3 2014-04-21
+##  5 air-france   C Wajsberg airline_rating              9 2013-10-22
+##  6 air-france   C Wajsberg lounge_rating               3 2013-12-23
+##  7 air-france   C Wajsberg lounge_rating               4 2013-05-29
+##  8 air-france   C Wajsberg lounge_rating               3 2012-09-10
+##  9 air-france   C Wajsberg lounge_rating               3 2012-01-30
+## 10 air-france   C Wajsberg lounge_rating               2 2012-01-25
+## # … with 65 more rows
+```
+
+
+```r
+als_with_mean &lt;- als_overall_rating %&gt;%
+  group_by(author, rating_type) %&gt;%
+  mutate(mean_overall_rating = mean(overall_rating)) %&gt;%
+  select(airline_name, author, rating_type,mean_overall_rating) %&gt;%
+  distinct()
+
+als_with_mean
+```
+
+```
+## # A tibble: 39 x 4
+## # Groups:   author, rating_type [39]
+##    airline_name           author     rating_type    mean_overall_rating
+##    &lt;chr&gt;                  &lt;chr&gt;      &lt;chr&gt;                        &lt;dbl&gt;
+##  1 air-france             C Wajsberg airline_rating                4.67
+##  2 air-france             C Wajsberg seat_rating                   3   
+##  3 air-france             C Wajsberg lounge_rating                 3.17
+##  4 asiana-airlines        J Min      airline_rating                8.92
+##  5 asiana-airlines        J Min      seat_rating                  10   
+##  6 asiana-airlines        J Min      lounge_rating                 4   
+##  7 british-airways        B Harrison airline_rating                2   
+##  8 british-airways        B Harrison seat_rating                   2   
+##  9 british-airways        B Harrison lounge_rating                 1   
+## 10 cathay-pacific-airways S Howard   airline_rating                9.57
+## # … with 29 more rows
+```
+
+
+
+```r
+ als_with_mean_difference &lt;- als_with_mean %&gt;%
+pivot_wider(names_from = rating_type, values_from = mean_overall_rating) %&gt;%
+mutate(percentage_difference_in_airline_and_lounge_rating = (airline_rating-lounge_rating)/10*100,
+       percentage_difference_in_airline_and_seat_rating = (airline_rating-seat_rating)/10*100)
+
+als_with_mean_difference
+```
+
+```
+## # A tibble: 13 x 7
+## # Groups:   author [13]
+##    airline_name author airline_rating seat_rating lounge_rating percentage_diff…
+##    &lt;chr&gt;        &lt;chr&gt;           &lt;dbl&gt;       &lt;dbl&gt;         &lt;dbl&gt;            &lt;dbl&gt;
+##  1 air-france   C Waj…           4.67           3          3.17             15. 
+##  2 asiana-airl… J Min            8.92          10          4                49.2
+##  3 british-air… B Har…           2              2          1                10  
+##  4 cathay-paci… S How…           9.57           1          1                85.7
+##  5 british-air… K Lee            5              3          4                10  
+##  6 cathay-paci… Jerem…           7.67           9          4                36.7
+##  7 malaysia-ai… Colin…           8              7          3                50  
+##  8 qantas-airw… Craig…           7              2          4.17             28.3
+##  9 qantas-airw… Jim A…           9.5            4          5                45  
+## 10 qatar-airwa… Willy…           9              9          4                50  
+## 11 singapore-a… P Bor…           3              1          2                10  
+## 12 singapore-a… Caspe…           6              5          4                20  
+## 13 singapore-a… Micha…           6              3          3                30  
+## # … with 1 more variable:
+## #   percentage_difference_in_airline_and_seat_rating &lt;dbl&gt;
+```
+
+
+```r
+abs_data &lt;- als_with_mean_difference %&gt;%
+  mutate(abs_percentage_difference_in_airline_and_seat_rating = abs(percentage_difference_in_airline_and_seat_rating)) %&gt;%
+  select(airline_name, author, airline_rating, seat_rating, lounge_rating, percentage_difference_in_airline_and_lounge_rating, abs_percentage_difference_in_airline_and_seat_rating)
+
+abs_data
+```
+
+```
+## # A tibble: 13 x 7
+## # Groups:   author [13]
+##    airline_name author airline_rating seat_rating lounge_rating percentage_diff…
+##    &lt;chr&gt;        &lt;chr&gt;           &lt;dbl&gt;       &lt;dbl&gt;         &lt;dbl&gt;            &lt;dbl&gt;
+##  1 air-france   C Waj…           4.67           3          3.17             15. 
+##  2 asiana-airl… J Min            8.92          10          4                49.2
+##  3 british-air… B Har…           2              2          1                10  
+##  4 cathay-paci… S How…           9.57           1          1                85.7
+##  5 british-air… K Lee            5              3          4                10  
+##  6 cathay-paci… Jerem…           7.67           9          4                36.7
+##  7 malaysia-ai… Colin…           8              7          3                50  
+##  8 qantas-airw… Craig…           7              2          4.17             28.3
+##  9 qantas-airw… Jim A…           9.5            4          5                45  
+## 10 qatar-airwa… Willy…           9              9          4                50  
+## 11 singapore-a… P Bor…           3              1          2                10  
+## 12 singapore-a… Caspe…           6              5          4                20  
+## 13 singapore-a… Micha…           6              3          3                30  
+## # … with 1 more variable:
+## #   abs_percentage_difference_in_airline_and_seat_rating &lt;dbl&gt;
+```
+
+
+
+```r
+abs_data %&gt;%
+  ggplot(mapping = aes(x = author, 
+                      y = percentage_difference_in_airline_and_lounge_rating )) + 
+  geom_bar(stat = "identity") +
+  labs(title = "Difference in the Ratings between Airline and Lounge",
+       x = "Author",
+       y = "% Difference") 
+```
+
+&lt;img src="presentation_files/figure-html/graph-airline-and-lounge-ratings-1.png" width="80%" /&gt;
+
+
+```r
+abs_data %&gt;%
+  ggplot(mapping = aes(x = author, 
+                      y = abs_percentage_difference_in_airline_and_seat_rating )) + 
+  geom_bar(stat = "identity") +
+  labs(title = "Difference in the Ratings between Airline and Seat",
+       x = "Author",
+       y = "% Difference") 
+```
+
+&lt;img src="presentation_files/figure-html/graph-airline-and-seat-ratings-1.png" width="80%" /&gt;
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
