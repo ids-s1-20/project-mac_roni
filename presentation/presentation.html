@@ -4,11 +4,7 @@
     <title>How do the amenities impact the flight’s overall rating?</title>
     <meta charset="utf-8" />
     <meta name="author" content="macaRoni   Sophie Kerfoot, Ben Thamm, Henrich Hegedus, Purvi Harwani" />
-<<<<<<< HEAD
-    <meta name="date" content="2020-11-28" />
-=======
-    <meta name="date" content="2020-11-29" />
->>>>>>> 106f45fb9cc18de8647526c6919f139fb676ccd3
+    <meta name="date" content="2020-11-30" />
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/default-fonts.css" rel="stylesheet" />
   </head>
@@ -20,11 +16,7 @@ class: center, middle, inverse, title-slide
 ## By cabin, seat, lounge and over time
 ### macaRoni <br> Sophie Kerfoot, Ben Thamm, Henrich Hegedus, Purvi Harwani
 ### University of Edinburgh
-<<<<<<< HEAD
-### 2020-11-28
-=======
-### 2020-11-29
->>>>>>> 106f45fb9cc18de8647526c6919f139fb676ccd3
+### 2020-11-30
 
 ---
 
@@ -39,7 +31,7 @@ class: center, middle, inverse, title-slide
 
 class: center, middle
 
-## A statement of the overall goal / research question
+## Main Goal: To find the amenities that impact a flight's overall rating (Cabin, Seat, Lounge &amp; Over Time) 
 
 ---
 
@@ -104,31 +96,32 @@ class: inverse, center, middle
 
 ---
 
-# Overall Rating versus Time
+class: inverse, center, middle
 
-
-
+&lt;img src="presentation_files/figure-html/five-highest-ratings-plots-1.png" width="100%" /&gt;
 ---
-# Overall Rating versus Time Explained 
+class: inverse, center, middle
 
-.pull-left[
-General Trends: 
+&lt;img src="presentation_files/figure-html/all-airlines-ratings-breakdown-1.png" width="100%" /&gt;
+---
 
-- Passengers that fill out the survey tend to give high overall ratings
-- There is no significant pattern in the overall ratings when comparing different years
+# How does time affect the overall rating?
 
+Main Finding: There is no significant pattern in between years or at certain times of the year. 
+- One would expect airlines to offer the same service throughout each year. 
 
-Trends in Specific Airlines at the start of 2015: 
+#### Findings within the amenity of time
+For an overall rating to increase over time, all contributors have to increase. 
+- Passengers receive a good experience in every perspective
 
-- Air Astana -&gt; higher ratings in comparison to 2014
-- Garuda Indonesia -&gt; similar ratings in comparison to the last year
-- Asiana Airlines, Bangkok Airways, and Indigo Airlines -&gt; lower ratings in comparison to 2014.
-]
+For an overall rating to decrease over time, there are two possibilities:
+- Contributor gets lower ratings consistently
+- Contributor starts to decrease 
 
-.pull-right[
+#### Limitations
 
-pen
-]
+- Uncertainty in geom_smooth function (high)
+- Limited time period (2 years)
 
 ---
 
@@ -338,60 +331,8 @@ class since fewer passengers chose that cabin type.
 
 ---
 
-<<<<<<< HEAD
-# Question 3
-
-
-```r
-rep_rating&lt;-airline%&gt;%
-  mutate(duplicate = duplicated(.$author))%&gt;%
-  filter(duplicate)
-
-rep_rating_airline &lt;-airline%&gt;%
-  group_by(author)%&gt;%
-  mutate(duplicate = duplicated(airline_name))%&gt;%
-  filter(duplicate)%&gt;%
-  arrange(date)
-
-rep_rating_airline%&gt;%
-  summarize(count = n())%&gt;%
-  ggplot(aes(x=count))+
-  geom_histogram()
-```
-
-```
-## `summarise()` ungrouping output (override with `.groups` argument)
-```
-
-```
-## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-```
-
-&lt;img src="presentation_files/figure-html/unnamed-chunk-5-1.png" width="80%" /&gt;
-We can see that not may reviewers review the same airline more than once 
-
-```r
-rep_rating_airline%&gt;%
-  group_by(author)%&gt;%
-  summarize(count = n())%&gt;%
-  filter(count == max(count))
-```
-
-```
-## `summarise()` ungrouping output (override with `.groups` argument)
-```
-
-```
-## # A tibble: 1 x 2
-##   author          count
-##   &lt;chr&gt;           &lt;int&gt;
-## 1 Anders Pedersen    39
-```
-
-=======
 # Do airline improve their rating with a particular customer over time
 First we need to filter out all the reviewers who didn't rate a airline twice
->>>>>>> 106f45fb9cc18de8647526c6919f139fb676ccd3
 
 ```r
 author_more_than_once &lt;-airline%&gt;%
@@ -426,11 +367,6 @@ after filtering out the reviewers who didn't rate a single airline more than onc
 
 
 
-<<<<<<< HEAD
-&lt;img src="presentation_files/figure-html/unnamed-chunk-7-1.png" width="80%" /&gt;
-we can see that not many people rate a singe airline more than once
-=======
->>>>>>> 106f45fb9cc18de8647526c6919f139fb676ccd3
 
 
 
@@ -450,7 +386,7 @@ list_slopes &lt;- map(responses,slopes)
 
 ```r
 data.frame(list_slopes[1])%&gt;%
-  filter(model.estimate&gt;0)
+  filter(model.estimate&lt;0)
 ```
 
 
@@ -494,10 +430,6 @@ joint_improvements%&gt;%
   correlate()
 ```
 
-<<<<<<< HEAD
-&lt;img src="presentation_files/figure-html/unnamed-chunk-11-1.png" width="80%" /&gt;
-=======
->>>>>>> 106f45fb9cc18de8647526c6919f139fb676ccd3
 
 ```r
 joint_improvements%&gt;%

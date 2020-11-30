@@ -33,7 +33,7 @@ theme_set(theme_minimal())
 
 ```{r setup, include=FALSE}
 # For better figure resolution
-knitr::opts_chunk$set(fig.retina = 3, dpi = 300, fig.width = 6, fig.asp = 0.618, out.width = "80%")
+knitr::opts_chunk$set(fig.retina = 3, dpi = 300, fig.width = 8, fig.asp = 0.618, out.width = "80%")
 ```
 
 ```{r load-data, include=FALSE}
@@ -47,7 +47,7 @@ seat <- read_csv("/cloud/project/data/seat.csv")
 
 class: center, middle
 
-## A statement of the overall goal / research question
+## Main Goal: To find the amenities that impact a flight's overall rating (Cabin, Seat, Lounge & Over Time) 
 
 ---
 
@@ -111,9 +111,9 @@ airline_nonas %>%
 
 ---
 
-# Overall Rating versus Time
+class: inverse, center, middle
 
-```{r five-highest-ratings-plot, message = FALSE, echo = FALSE, eval=FALSE}
+```{r five-highest-ratings-plots, message = FALSE, echo = FALSE, out.width = "100%"}
 airline_nonas %>%
   group_by(airline_name, date) %>%
   summarise(mean_overall_rating = mean(overall_rating, na.rm = TRUE)) %>%
@@ -127,32 +127,61 @@ airline_nonas %>%
     x = "Date",
     y = "Overall Rating"
   ) +
-  guides(color = guide_legend(title = "Airline Name")) +
-  theme_minimal()
+  guides(color = guide_legend(title = "Airline Name")) 
+```
+---
+class: inverse, center, middle
+
+```{r all-airlines-ratings-breakdown, message = FALSE, echo = FALSE, warning = FALSE, out.width = "100%"}
+airline_nonas %>%
+  group_by(airline_name, date) %>%
+  summarise(mean_seat_comfort_rating = mean(seat_comfort_rating, na.rm = TRUE),
+            mean_cabin_staff_rating = mean(cabin_staff_rating, na.rm = TRUE),
+            mean_food_beverages_rating = mean(food_beverages_rating, na.rm = TRUE),
+            mean_inflight_entertainment_rating = mean(inflight_entertainment_rating, na.rm = TRUE),
+            mean_value_money_rating = mean(value_money_rating, na.rm = TRUE),
+            ) %>%
+  filter(airline_name %in% c("asiana-airlines", "garuda-indonesia", "air-astana", "bangkok-airways", "indigo-airlines"),
+         date >= "2014-01-01") %>%
+  ggplot(aes(x = date)) +
+  geom_smooth(aes(y = mean_seat_comfort_rating, color = "red"), se = FALSE) +
+  geom_smooth(aes(y = mean_cabin_staff_rating, color = "green"), se = FALSE) +
+  geom_smooth(aes(y = mean_food_beverages_rating, color = "blue"), se = FALSE) +
+  geom_smooth(aes(y = mean_inflight_entertainment_rating, color = "yellow"), se = FALSE) +
+  geom_smooth(aes(y = mean_value_money_rating, color = "black"), se = FALSE) +
+  labs(
+    title = "Seat Comfort, Cabin Staff, Food Beverages, Inflight Entertainment and 
+Money Value Ratings for Top Five Airlines",
+    subtitle = "From 2014 to 2015",
+    x = "Date",
+    y = "Rating"
+  ) +
+  scale_color_identity(name = "Type of Rating (Mean)",
+                          breaks = c("red", "green", "blue", "yellow", "black"),
+                          labels = c("Seat Comfort", "Cabin Staff", "Food Beverages", "Inflight Entertainment", "Money Value"),
+                          guide = "legend") +
+  facet_wrap(~airline_name, ncol = 3)
   
 ```
-
 ---
-# Overall Rating versus Time Explained 
 
-.pull-left[
-General Trends: 
+# How does time affect the overall rating?
 
-- Passengers that fill out the survey tend to give high overall ratings
-- There is no significant pattern in the overall ratings when comparing different years
+Main Finding: There is no significant pattern in between years or at certain times of the year. 
+- One would expect airlines to offer the same service throughout each year. 
 
+#### Findings within the amenity of time
+For an overall rating to increase over time, all contributors have to increase. 
+- Passengers receive a good experience in every perspective
 
-Trends in Specific Airlines at the start of 2015: 
+For an overall rating to decrease over time, there are two possibilities:
+- Contributor gets lower ratings consistently
+- Contributor starts to decrease 
 
-- Air Astana -> higher ratings in comparison to 2014
-- Garuda Indonesia -> similar ratings in comparison to the last year
-- Asiana Airlines, Bangkok Airways, and Indigo Airlines -> lower ratings in comparison to 2014.
-]
+#### Limitations
 
-.pull-right[
-
-pen
-]
+- Uncertainty in geom_smooth function (high)
+- Limited time period (2 years)
 
 ---
 

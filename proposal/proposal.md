@@ -168,6 +168,58 @@ submissions was imposed to increase the number of data points.
     ## 10 airasia-x                         7.71   246
     ## # … with 96 more rows
 
+![](proposal_files/figure-gfm/number%20of%20observations%20vs%20date-1.png)<!-- -->
+Table: Data summary
+
+|                                                  |      |
+| :----------------------------------------------- | :--- |
+| Name                                             | seat |
+| Number of rows                                   | 1258 |
+| Number of columns                                | 21   |
+| \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_   |      |
+| Column type frequency:                           |      |
+| character                                        | 11   |
+| Date                                             | 1    |
+| numeric                                          | 9    |
+| \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_ |      |
+| Group variables                                  | None |
+
+**Variable type: character**
+
+| skim\_variable  | n\_missing | complete\_rate | min |  max | empty | n\_unique | whitespace |
+| :-------------- | ---------: | -------------: | --: | ---: | ----: | --------: | ---------: |
+| airline\_name   |          0 |           1.00 |   5 |   30 |     0 |        97 |          0 |
+| link            |          0 |           1.00 |  19 |   44 |     0 |        97 |          0 |
+| title           |          0 |           1.00 |  21 |   41 |     0 |        97 |          0 |
+| author          |          0 |           1.00 |   4 |   24 |     0 |      1147 |          0 |
+| author\_country |          8 |           0.99 |   4 |   20 |     0 |        59 |          0 |
+| content         |          0 |           1.00 |  32 | 3141 |     0 |      1246 |          0 |
+| aircraft        |          0 |           1.00 |   3 |   34 |     0 |       156 |          0 |
+| seat\_layout    |          6 |           1.00 |   3 |   27 |     0 |        35 |          0 |
+| date\_flown     |       1145 |           0.09 |  10 |   10 |     0 |        73 |          0 |
+| cabin\_flown    |          6 |           1.00 |   7 |   20 |     0 |         3 |          0 |
+| type\_traveller |       1140 |           0.09 |   8 |   14 |     0 |         4 |          0 |
+
+**Variable type: Date**
+
+| skim\_variable | n\_missing | complete\_rate | min        | max        | median     | n\_unique |
+| :------------- | ---------: | -------------: | :--------- | :--------- | :--------- | --------: |
+| date           |          0 |              1 | 1970-01-01 | 2015-08-02 | 2013-09-06 |       282 |
+
+**Variable type: numeric**
+
+| skim\_variable        | n\_missing | complete\_rate | mean |   sd | p0 | p25 | p50 | p75 | p100 | hist  |
+| :-------------------- | ---------: | -------------: | ---: | ---: | -: | --: | --: | --: | ---: | :---- |
+| overall\_rating       |          1 |           1.00 | 4.32 | 3.04 |  1 |   1 |   4 |   7 |   10 | ▇▃▂▃▂ |
+| seat\_legroom\_rating |          0 |           1.00 | 2.75 | 1.45 |  1 |   1 |   3 |   4 |    5 | ▇▅▅▆▅ |
+| seat\_recline\_rating |          0 |           1.00 | 2.63 | 1.27 |  1 |   1 |   3 |   4 |    5 | ▇▆▇▆▂ |
+| seat\_width\_rating   |          0 |           1.00 | 2.72 | 1.27 |  1 |   2 |   3 |   4 |    5 | ▇▆▇▇▂ |
+| aisle\_space\_rating  |          0 |           1.00 | 2.73 | 1.34 |  1 |   1 |   3 |   4 |    5 | ▇▆▇▆▃ |
+| viewing\_tv\_rating   |         29 |           0.98 | 2.87 | 1.45 |  0 |   2 |   3 |   4 |    5 | ▇▅▇▇▅ |
+| power\_supply\_rating |       1196 |           0.05 | 3.77 | 1.31 |  1 |   3 |   4 |   5 |    5 | ▂▂▃▅▇ |
+| seat\_storage\_rating |       1145 |           0.09 | 3.07 | 1.33 |  1 |   2 |   3 |   4 |    5 | ▅▆▆▇▅ |
+| recommended           |          0 |           1.00 | 0.36 | 0.48 |  0 |   0 |   0 |   1 |    1 | ▇▁▁▁▅ |
+
 These airlines were plotted against time to identify any correlations.
 
 ![](proposal_files/figure-gfm/five-highest-ratings-plot-1.png)<!-- -->
