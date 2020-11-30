@@ -27,6 +27,8 @@ library(broom)
 library(readr)
 library(skimr)
 library(tidytext)
+library(corrr)
+theme_set(theme_minimal())
 ```
 
 ```{r setup, include=FALSE}
@@ -111,7 +113,7 @@ airline_nonas %>%
 
 # Overall Rating versus Time
 
-```{r five-highest-ratings-plot, message = FALSE, echo = FALSE}
+```{r five-highest-ratings-plot, message = FALSE, echo = FALSE, eval=FALSE}
 airline_nonas %>%
   group_by(airline_name, date) %>%
   summarise(mean_overall_rating = mean(overall_rating, na.rm = TRUE)) %>%
@@ -149,9 +151,7 @@ Trends in Specific Airlines at the start of 2015:
 
 .pull-right[
 
-```{r ref.label = "five-highest-ratings-plot",  message = FALSE, echo = FALSE, out.width="100%", fig.width=5}
-
-```
+pen
 ]
 
 ---
@@ -255,9 +255,7 @@ ggplot(penguins, aes(x = bill_length_mm, y = species, color = species)) +
 
 If you want to generate a table, make sure it is in the HTML format (instead of Markdown or other formats), e.g.,
 
-```{r iris-table, echo = FALSE}
-kable(head(iris), format = "html")
-```
+
 
 ---
 
@@ -354,91 +352,163 @@ class since fewer passengers chose that cabin type.
 
 ---
 
-# Question 3
-
-```{r}
-rep_rating<-airline%>%
-  mutate(duplicate = duplicated(.$author))%>%
-  filter(duplicate)
-
-rep_rating_airline <-airline%>%
-  group_by(author)%>%
-  mutate(duplicate = duplicated(airline_name))%>%
-  filter(duplicate)%>%
-  arrange(date)
-
-rep_rating_airline%>%
-  summarize(count = n())%>%
-  ggplot(aes(x=count))+
-  geom_histogram()
-```
-We can see that not may reviewers review the same airline more than once 
-```{r}
-rep_rating_airline%>%
-  group_by(author)%>%
-  summarize(count = n())%>%
-  filter(count == max(count))
-```
-
-```{r}
+# Do airline improve their rating with a particular customer over time
+First we need to filter out all the reviewers who didn't rate a airline twice
+```{r filter-repeated-authors}
 author_more_than_once <-airline%>%
   mutate(duplicate_auth = duplicated(.$author))%>%
   filter(duplicate_auth)%>%
-  
   group_by(airline_name,author)%>%
   mutate(count = n())%>%
   filter(count>1)%>%
   ungroup()
-  
+```
+after filtering out the reviewers who didn't rate a single airline more than once we are left with `r nrow(author_more_than_once)` and `r length(unique(author_more_than_once$author))` unique authors
+---
+```{r repeated-rating-distribution, echo=FALSE,  message=FALSE}  
 author_more_than_once%>%
   group_by(author)%>%
   summarize(count = n())%>%
   ggplot(aes(x=count))+
-  geom_histogram()
+  geom_histogram()+
+  labs(
+    title = "Repeated rating of one airline",
+    subtitle = "by one customer",
+    x = "times rated",
+    y = "number of reviewers"
+  )
   
 ```
-we can see that not many people rate a singe airline more than once
+- significantly right skewed
+- most rate only twice
+- hardly any people rate one airline more than 10 times
+---
+# Definition of improvement
+- slope of linear fit
+- 3 levels 
+  - -1 - got worse
+  - 0 - no improvement
+  - 1 - improvement
+  
+.pull-left[
+```{r postive-slope, echo=FALSE, message=FALSE}
+airline%>%
+  filter(author == "A Krummacher",
+         airline_name == "srilankan-airlines")%>%
+  ggplot(aes(x=date, y=overall_rating))+
+  geom_point()+
+  geom_smooth(method = "lm", se = FALSE)+
+  labs(
+    title = "Rating of srilanka airlines over time",
+    subtitle = "by one reviewer",
+    x = "Date",
+    y = "Overal rating"
+  )
 
-```{r}
-slopes <- function(data) {
-  fited <- linear_reg()%>%
-  set_engine("lm")%>%
-  fit(overall_rating ~ date, data= data)
-  return(tidy(fited)$estimate[2])  #return the slope
+
+```
+]
+.pull-right[
+```{r negative-slope, echo=FALSE, message=FALSE}
+airline%>%
+  filter(author == "A Clarke",
+         airline_name == "ryanair")%>%
+  ggplot(aes(x=date, y=overall_rating))+
+  geom_point()+
+  geom_smooth(method = "lm", se = FALSE)+
+  labs(
+    title = "Rating of united airlines over time",
+    subtitle = "by one reviewer",
+    x = "Date",
+    y = "Overal rating"
+  )
+```
+]
+---
+
+
+
+
+
+```{r slopes-function, echo=FALSE}
+#https://stackoverflow.com/a/31874484
+slopes <- function(response) {
+  return(
+    author_more_than_once %>% 
+  select(airline_name, author, y = response,X = date)%>%
+  group_by(author,airline_name) %>%
+  filter(!is.na(X),!is.na(y))%>%
+  do(data.frame(model = tidy(lm(y~X, data=.)))) %>%
+  ungroup
+  )
 }
 ```
-```{r}
-(slopes(author_more_than_once))
 
+```{r map-slope-responses, eval=FALSE}
+responses = c("overall_rating",
+              "seat_comfort_rating",
+              "cabin_staff_rating",
+              "food_beverages_rating",
+              "inflight_entertainment_rating",
+              "wifi_connectivity_rating",
+              "value_money_rating")
+
+list_slopes <- map(responses,slopes)
 ```
-```{r}
-df2 <- author_more_than_once %>% 
-  group_by(author,airline_name) %>% # group by variable state
-  filter(!is.na(date),!is.na(overall_rating))%>%
-  do(data.frame(model = tidy(lm(overall_rating~date, data=.)))) %>% # for each group run a linear fit and save the output as a date table
-  ungroup # forget about your initial grouping
-df2
-```
-
-```{r}
-df2 <- df2%>%
-  filter(model.term == "date")%>%
-  mutate(improvement=sign(model.estimate))%>%  #did they improve or not
-  group_by(airline_name)%>%
-  mutate(mean_improvement = mean(improvement))
-
-df2$airline_name = reorder(df2$airline_name, df2$mean_improvement)
-
-df2%>%
-  filter(!is.na(mean_improvement))%>%
-  ggplot(aes(x = mean_improvement))+
-  geom_histogram(bins = 10)
-
+```{r eval=FALSE}
+data.frame(list_slopes[1])%>%
+  filter(model.estimate<0)
+  
 ```
 
 
-We can see that most airlines don't improve from flight to flight but with the improvement mean being `r mean(df2$mean_improvement,na.rm=TRUE)`
 
+---
+```{r eval=FALSE}
+transform <- function(df, response){
+    working_df <- df%>%
+    filter(model.term == "X")%>%
+    select(author,airline_name, slope = model.estimate)%>%
+    mutate(improvement = sign(slope))%>%
+    group_by(airline_name)%>%
+      mutate(mean_improvement = mean(improvement))%>%
+    ungroup
+    names(working_df)[3] <- paste(response,"slope",sep = "_")
+    names(working_df)[4] <- paste(response,"improvement",sep = "_")
+    return(working_df)
+}
+```
+
+
+```{r eval=FALSE}
+list_slopes_trans <- map2(list_slopes,responses,transform)
+
+joint_improvements <- list_slopes_trans %>% reduce(left_join, by = c("author","airline_name"))
+joint_improvements
+```
+---
+```{r eval=FALSE}
+joint_improvements%>%
+  select(overall_rating_improvement,
+         cabin_staff_rating_improvement,
+         food_beverages_rating_improvement,
+         seat_comfort_rating_improvement,
+         inflight_entertainment_rating_improvement,
+         wifi_connectivity_rating_improvement,
+         value_money_rating_improvement)%>%
+  correlate()
+  
+```
+
+```{r eval=FALSE}
+joint_improvements%>%
+ggplot(aes(y = overall_rating_improvement, x = value_money_rating_improvement))+
+  geom_jitter()
+
+map(responses, cors)
+```
+
+We can see that most airlines don't improve from flight to flight but with the improvement mean being 
 
 
 
