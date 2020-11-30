@@ -168,6 +168,8 @@ submissions was imposed to increase the number of data points.
     ## 10 airasia-x                         7.71   246
     ## # … with 96 more rows
 
+![](proposal_files/figure-gfm/number%20of%20observations%20vs%20date-1.png)<!-- -->
+
 These airlines were plotted against time to identify any correlations.
 
 ![](proposal_files/figure-gfm/five-highest-ratings-plot-1.png)<!-- -->
@@ -407,3 +409,243 @@ overall\_rating (in seat and lounge data set )
 
 Hypothesis: we expect seat rating to have a stronger correlation than
 the lounge rating because not everyone uses the lounge.
+
+To answer this question, only the authors that have rated the airline,
+lounge and seat will be selected to see if rating either the lounge or
+seat positively will result in the airline being rated positively.
+
+To start only the relevant columns are chosen, then the data sets are
+joined into one and any NAs are removed so that only the authors wanted
+remain.
+
+``` r
+airline_rating <- airline %>%
+select(airline_name, overall_rating, author, date) %>%
+  rename(airline_rating = "overall_rating",
+         date_airline = "date")
+
+lounge_rating <- lounge %>%
+select(airline_name, overall_rating, author, date) %>%
+  rename(lounge_rating = "overall_rating",
+         date_lounge = "date")
+
+seat_rating <- seat %>%
+select(airline_name, overall_rating, author, date) %>%
+  rename(seat_rating = "overall_rating",
+         date_seat = "date")
+```
+
+``` r
+airline_lounge <- full_join(lounge_rating, airline_rating) %>%
+  na.omit()
+```
+
+    ## Joining, by = c("airline_name", "author")
+
+``` r
+airline_lounge
+```
+
+    ## # A tibble: 1,058 x 6
+    ##    airline_name lounge_rating author     date_lounge airline_rating date_airline
+    ##    <chr>                <dbl> <chr>      <date>               <dbl> <date>      
+    ##  1 aer-lingus               4 Alan Wan   2014-10-28               7 2014-10-31  
+    ##  2 aer-lingus               2 Sean Leon… 2013-11-15               9 2015-01-14  
+    ##  3 aer-lingus               2 Sean Leon… 2013-11-15               5 2013-10-16  
+    ##  4 aer-lingus               2 Sean Leon… 2013-11-15               9 2013-01-22  
+    ##  5 aer-lingus               3 F Hogan    2013-04-04               6 2013-04-01  
+    ##  6 aer-lingus               4 Alan Wan   2012-09-10               7 2014-10-31  
+    ##  7 aer-lingus               3 Alan Wan   2012-09-10               7 2014-10-31  
+    ##  8 aer-lingus               4 Patrick J… 2011-09-13              10 2013-03-21  
+    ##  9 aer-lingus               2 Patrick J… 2009-03-18              10 2013-03-21  
+    ## 10 aer-lingus               2 Patrick J… 2009-03-18              10 2013-03-21  
+    ## # … with 1,048 more rows
+
+``` r
+airline_lounge_seat <- full_join(airline_lounge, seat_rating) %>%
+  na.omit()
+```
+
+    ## Joining, by = c("airline_name", "author")
+
+``` r
+airline_lounge_seat <- airline_lounge_seat[, c(1, 3, 5, 2, 7, 4, 6, 8)]
+
+airline_lounge_seat
+```
+
+    ## # A tibble: 81 x 8
+    ##    airline_name author airline_rating lounge_rating seat_rating date_lounge
+    ##    <chr>        <chr>           <dbl>         <dbl>       <dbl> <date>     
+    ##  1 air-france   C Waj…              2             4           3 2014-03-11 
+    ##  2 air-france   C Waj…              3             4           3 2014-03-11 
+    ##  3 air-france   C Waj…              9             4           3 2014-03-11 
+    ##  4 air-france   C Waj…              2             3           3 2013-12-23 
+    ##  5 air-france   C Waj…              3             3           3 2013-12-23 
+    ##  6 air-france   C Waj…              9             3           3 2013-12-23 
+    ##  7 air-france   C Waj…              2             4           3 2013-05-29 
+    ##  8 air-france   C Waj…              3             4           3 2013-05-29 
+    ##  9 air-france   C Waj…              9             4           3 2013-05-29 
+    ## 10 air-france   C Waj…              2             3           3 2012-09-10 
+    ## # … with 71 more rows, and 2 more variables: date_airline <date>,
+    ## #   date_seat <date>
+
+Next I created an overall rating column and a column that tells from
+which data set that rating came from, and created a new date column so
+that the dates from the corresponding rating is in that column. Then any
+duplicate ratings that occured whilst joining have been taken out.
+
+``` r
+als_overall_rating <- airline_lounge_seat %>%
+  pivot_longer(cols = c("airline_rating", "seat_rating", "lounge_rating"), values_to = ("overall_rating")) %>%
+   rename(rating_type = "name") %>%
+  mutate(
+    date = case_when(
+      rating_type == "airline_rating" ~ date_airline,
+      rating_type == "seat_rating"    ~ date_seat,
+      rating_type == "lounge_rating"  ~ date_lounge
+    )) %>%
+  select(airline_name, author, rating_type, overall_rating, date) %>%
+  distinct()
+
+als_overall_rating
+```
+
+    ## # A tibble: 75 x 5
+    ##    airline_name author     rating_type    overall_rating date      
+    ##    <chr>        <chr>      <chr>                   <dbl> <date>    
+    ##  1 air-france   C Wajsberg airline_rating              2 2014-05-05
+    ##  2 air-france   C Wajsberg seat_rating                 3 2014-01-10
+    ##  3 air-france   C Wajsberg lounge_rating               4 2014-03-11
+    ##  4 air-france   C Wajsberg airline_rating              3 2014-04-21
+    ##  5 air-france   C Wajsberg airline_rating              9 2013-10-22
+    ##  6 air-france   C Wajsberg lounge_rating               3 2013-12-23
+    ##  7 air-france   C Wajsberg lounge_rating               4 2013-05-29
+    ##  8 air-france   C Wajsberg lounge_rating               3 2012-09-10
+    ##  9 air-france   C Wajsberg lounge_rating               3 2012-01-30
+    ## 10 air-france   C Wajsberg lounge_rating               2 2012-01-25
+    ## # … with 65 more rows
+
+Next the mean is calculated for each type of rating for each author as
+some authors have provided multiple ratings for each type. Then any
+duplicates were removed.
+
+``` r
+als_with_mean <- als_overall_rating %>%
+  group_by(author, rating_type) %>%
+  mutate(mean_overall_rating = mean(overall_rating)) %>%
+  select(airline_name, author, rating_type, mean_overall_rating) %>%
+  distinct()
+
+als_with_mean
+```
+
+    ## # A tibble: 39 x 4
+    ## # Groups:   author, rating_type [39]
+    ##    airline_name           author     rating_type    mean_overall_rating
+    ##    <chr>                  <chr>      <chr>                        <dbl>
+    ##  1 air-france             C Wajsberg airline_rating                4.67
+    ##  2 air-france             C Wajsberg seat_rating                   3   
+    ##  3 air-france             C Wajsberg lounge_rating                 3.17
+    ##  4 asiana-airlines        J Min      airline_rating                8.92
+    ##  5 asiana-airlines        J Min      seat_rating                  10   
+    ##  6 asiana-airlines        J Min      lounge_rating                 4   
+    ##  7 british-airways        B Harrison airline_rating                2   
+    ##  8 british-airways        B Harrison seat_rating                   2   
+    ##  9 british-airways        B Harrison lounge_rating                 1   
+    ## 10 cathay-pacific-airways S Howard   airline_rating                9.57
+    ## # … with 29 more rows
+
+Next the difference between the airline ratings and louge ratings, and
+the difference between the airline and seat ratings were calculated as a
+percentage of the the maximum rating that could have been given (10) and
+the absolute value was taken from each percentage to avoid negative
+percentages.
+
+``` r
+ als_with_mean_difference <- als_with_mean %>%
+pivot_wider(names_from = rating_type, values_from = mean_overall_rating) %>%
+mutate(percentage_difference_in_airline_and_lounge_rating = (airline_rating-lounge_rating)/10*100,
+       percentage_difference_in_airline_and_seat_rating = (airline_rating-seat_rating)/10*100)
+
+als_with_mean_difference
+```
+
+    ## # A tibble: 13 x 7
+    ## # Groups:   author [13]
+    ##    airline_name author airline_rating seat_rating lounge_rating percentage_diff…
+    ##    <chr>        <chr>           <dbl>       <dbl>         <dbl>            <dbl>
+    ##  1 air-france   C Waj…           4.67           3          3.17             15. 
+    ##  2 asiana-airl… J Min            8.92          10          4                49.2
+    ##  3 british-air… B Har…           2              2          1                10  
+    ##  4 cathay-paci… S How…           9.57           1          1                85.7
+    ##  5 british-air… K Lee            5              3          4                10  
+    ##  6 cathay-paci… Jerem…           7.67           9          4                36.7
+    ##  7 malaysia-ai… Colin…           8              7          3                50  
+    ##  8 qantas-airw… Craig…           7              2          4.17             28.3
+    ##  9 qantas-airw… Jim A…           9.5            4          5                45  
+    ## 10 qatar-airwa… Willy…           9              9          4                50  
+    ## 11 singapore-a… P Bor…           3              1          2                10  
+    ## 12 singapore-a… Caspe…           6              5          4                20  
+    ## 13 singapore-a… Micha…           6              3          3                30  
+    ## # … with 1 more variable:
+    ## #   percentage_difference_in_airline_and_seat_rating <dbl>
+
+``` r
+abs_data <- als_with_mean_difference %>%
+  mutate(abs_percentage_difference_in_airline_and_seat_rating = abs(percentage_difference_in_airline_and_seat_rating)) %>%
+  select(airline_name, author, airline_rating, seat_rating, lounge_rating, percentage_difference_in_airline_and_lounge_rating, abs_percentage_difference_in_airline_and_seat_rating)
+
+abs_data
+```
+
+    ## # A tibble: 13 x 7
+    ## # Groups:   author [13]
+    ##    airline_name author airline_rating seat_rating lounge_rating percentage_diff…
+    ##    <chr>        <chr>           <dbl>       <dbl>         <dbl>            <dbl>
+    ##  1 air-france   C Waj…           4.67           3          3.17             15. 
+    ##  2 asiana-airl… J Min            8.92          10          4                49.2
+    ##  3 british-air… B Har…           2              2          1                10  
+    ##  4 cathay-paci… S How…           9.57           1          1                85.7
+    ##  5 british-air… K Lee            5              3          4                10  
+    ##  6 cathay-paci… Jerem…           7.67           9          4                36.7
+    ##  7 malaysia-ai… Colin…           8              7          3                50  
+    ##  8 qantas-airw… Craig…           7              2          4.17             28.3
+    ##  9 qantas-airw… Jim A…           9.5            4          5                45  
+    ## 10 qatar-airwa… Willy…           9              9          4                50  
+    ## 11 singapore-a… P Bor…           3              1          2                10  
+    ## 12 singapore-a… Caspe…           6              5          4                20  
+    ## 13 singapore-a… Micha…           6              3          3                30  
+    ## # … with 1 more variable:
+    ## #   abs_percentage_difference_in_airline_and_seat_rating <dbl>
+
+To visualize the results a graph of each of the differences between
+ratings was created to try and see if there was a correlation.
+
+``` r
+abs_data %>%
+  ggplot(mapping = aes(x = author, 
+                      y = percentage_difference_in_airline_and_lounge_rating )) + 
+  geom_bar(stat = "identity") +
+  labs(title = "Difference in the Ratings between Airline and Lounge",
+       x = "Author",
+       y = "% Difference") 
+```
+
+![](proposal_files/figure-gfm/graph-airline-and-lounge-ratings-1.png)<!-- -->
+
+``` r
+abs_data %>%
+  ggplot(mapping = aes(x = author, 
+                      y = abs_percentage_difference_in_airline_and_seat_rating )) + 
+  geom_bar(stat = "identity") +
+  labs(title = "Difference in the Ratings between Airline and Seat",
+       x = "Author",
+       y = "% Difference") 
+```
+
+![](proposal_files/figure-gfm/graph-airline-and-seat-ratings-1.png)<!-- -->
+
+Hypothesis: we expect both the seat rating and the lounge rating to have
+a correlation to the airline rating because both are provided by the
+airline

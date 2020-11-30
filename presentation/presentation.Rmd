@@ -27,11 +27,13 @@ library(broom)
 library(readr)
 library(skimr)
 library(tidytext)
+library(corrr)
+theme_set(theme_minimal())
 ```
 
 ```{r setup, include=FALSE}
 # For better figure resolution
-knitr::opts_chunk$set(fig.retina = 3, dpi = 300, fig.width = 6, fig.asp = 0.618, out.width = "80%")
+knitr::opts_chunk$set(fig.retina = 3, dpi = 300, fig.width = 8, fig.asp = 0.618, out.width = "80%")
 ```
 
 ```{r load-data, include=FALSE}
@@ -45,7 +47,7 @@ seat <- read_csv("/cloud/project/data/seat.csv")
 
 class: center, middle
 
-## A statement of the overall goal / research question
+## Main Goal: To find the amenities that impact a flight's overall rating (Cabin, Seat, Lounge & Over Time) 
 
 ---
 
@@ -78,7 +80,7 @@ include_graphics("https://www.researchgate.net/profile/Hak_Seon_Kim/publication/
 class: inverse, center, middle
 
 ## Question 1
-# How does the overall ratings for airlines change depending of the time of year?
+# How does the overall ratings for airlines change depending on the time of the year?
 
 ---
 
@@ -109,9 +111,9 @@ airline_nonas %>%
 
 ---
 
-# Overall Rating versus Time
+class: inverse, center, middle
 
-```{r five-highest-ratings-plot, message = FALSE, echo = FALSE}
+```{r five-highest-ratings-plots, message = FALSE, echo = FALSE, out.width = "100%"}
 airline_nonas %>%
   group_by(airline_name, date) %>%
   summarise(mean_overall_rating = mean(overall_rating, na.rm = TRUE)) %>%
@@ -125,34 +127,43 @@ airline_nonas %>%
     x = "Date",
     y = "Overall Rating"
   ) +
-  guides(color = guide_legend(title = "Airline Name")) +
-  theme_minimal()
-  
+  guides(color = guide_legend(title = "Airline Name")) 
 ```
-
 ---
-# Overall Rating versus Time Explained 
+
+# How does time affect the overall rating?
+
+Main Finding: There is no significant pattern in between years or at certain times of the year. 
+- One would expect airlines to offer the same service throughout each year. 
+
+# Limitations
 
 .pull-left[
-General Trends: 
+There are some limitations that influenced the exploration of time variable.
 
-- Passengers that fill out the survey tend to give high overall ratings
-- There is no significant pattern in the overall ratings when comparing different years
-
-
-Trends in Specific Airlines at the start of 2015: 
-
-- Air Astana -> higher ratings in comparison to 2014
-- Garuda Indonesia -> similar ratings in comparison to the last year
-- Asiana Airlines, Bangkok Airways, and Indigo Airlines -> lower ratings in comparison to 2014.
+- Uncertainty in geom_smooth function (high)
+- Limited time period (2 years)
 ]
 
 .pull-right[
-
-```{r ref.label = "five-highest-ratings-plot",  message = FALSE, echo = FALSE, out.width="100%", fig.width=5}
-
+```{r five-highest-ratings-plots-with-error, message = FALSE, echo = FALSE, out.width = "100%"}
+airline_nonas %>%
+  group_by(airline_name, date) %>%
+  summarise(mean_overall_rating = mean(overall_rating, na.rm = TRUE)) %>%
+  filter(airline_name %in% c("asiana-airlines", "garuda-indonesia", "air-astana", "bangkok-airways", "indigo-airlines"),
+         date >= "2014-01-01") %>%
+  ggplot(aes(x = date, y = mean_overall_rating, color = airline_name)) +
+  geom_smooth(se = TRUE) +
+  labs(
+    title = "Overall ratings of five highest ranked airlines",
+    subtitle = "From 2014 to 2015",
+    x = "Date",
+    y = "Overall Rating"
+  ) +
+  guides(color = guide_legend(title = "Airline Name")) 
 ```
 ]
+
 
 ---
 
@@ -255,9 +266,7 @@ ggplot(penguins, aes(x = bill_length_mm, y = species, color = species)) +
 
 If you want to generate a table, make sure it is in the HTML format (instead of Markdown or other formats), e.g.,
 
-```{r iris-table, echo = FALSE}
-kable(head(iris), format = "html")
-```
+
 
 ---
 
@@ -354,94 +363,166 @@ class since fewer passengers chose that cabin type.
 
 ---
 
-# Question 3
-
-```{r}
-rep_rating<-airline%>%
-  mutate(duplicate = duplicated(.$author))%>%
-  filter(duplicate)
-
-rep_rating_airline <-airline%>%
-  group_by(author)%>%
-  mutate(duplicate = duplicated(airline_name))%>%
-  filter(duplicate)%>%
-  arrange(date)
-
-rep_rating_airline%>%
-  summarize(count = n())%>%
-  ggplot(aes(x=count))+
-  geom_histogram()
-```
-We can see that not may reviewers review the same airline more than once 
-```{r}
-rep_rating_airline%>%
-  group_by(author)%>%
-  summarize(count = n())%>%
-  filter(count == max(count))
-```
-
-```{r}
+# Do airline improve their rating with a particular customer over time
+First we need to filter out all the reviewers who didn't rate a airline twice
+```{r filter-repeated-authors}
 author_more_than_once <-airline%>%
   mutate(duplicate_auth = duplicated(.$author))%>%
   filter(duplicate_auth)%>%
-  
   group_by(airline_name,author)%>%
   mutate(count = n())%>%
   filter(count>1)%>%
   ungroup()
-  
+```
+after filtering out the reviewers who didn't rate a single airline more than once we are left with `r nrow(author_more_than_once)` and `r length(unique(author_more_than_once$author))` unique authors
+---
+```{r repeated-rating-distribution, echo=FALSE,  message=FALSE}  
 author_more_than_once%>%
   group_by(author)%>%
   summarize(count = n())%>%
   ggplot(aes(x=count))+
-  geom_histogram()
+  geom_histogram()+
+  labs(
+    title = "Repeated rating of one airline",
+    subtitle = "by one customer",
+    x = "times rated",
+    y = "number of reviewers"
+  )
   
 ```
-we can see that not many people rate a singe airline more than once
+- significantly right skewed
+- most rate only twice
+- hardly any people rate one airline more than 10 times
+---
+# Definition of improvement
+- sign of linear fit slope
+- 3 levels 
+  - -1 - got worse
+  - 0 - no improvement
+  - 1 - improvement
+  
+.pull-left[
+```{r postive-slope, echo=FALSE, message=FALSE}
+airline%>%
+  filter(author == "A Krummacher",
+         airline_name == "srilankan-airlines")%>%
+  ggplot(aes(x=date, y=overall_rating))+
+  geom_point()+
+  geom_smooth(method = "lm", se = FALSE)+
+  labs(
+    title = "Rating of srilanka airlines over time",
+    subtitle = "by one reviewer",
+    x = "Date",
+    y = "Overal rating"
+  )
 
-```{r}
-slopes <- function(data) {
-  fited <- linear_reg()%>%
-  set_engine("lm")%>%
-  fit(overall_rating ~ date, data= data)
-  return(tidy(fited)$estimate[2])  #return the slope
+
+```
+]
+.pull-right[
+```{r negative-slope, echo=FALSE, message=FALSE}
+airline%>%
+  filter(author == "A Clarke",
+         airline_name == "ryanair")%>%
+  ggplot(aes(x=date, y=overall_rating))+
+  geom_point()+
+  geom_smooth(method = "lm", se = FALSE)+
+  labs(
+    title = "Rating of united airlines over time",
+    subtitle = "by one reviewer",
+    x = "Date",
+    y = "Overal rating"
+  )
+```
+]
+---
+
+
+
+
+
+```{r slopes-function, echo=FALSE, message=FALSE, warning=FALSE}
+#https://stackoverflow.com/a/31874484
+slopes <- function(response) {
+  return(
+    author_more_than_once %>% 
+  select(airline_name, author, y = response,X = date)%>%
+  group_by(author,airline_name) %>%
+  filter(!is.na(X),!is.na(y))%>%
+  do(data.frame(model = tidy(lm(y~X, data=.)))) %>%
+  ungroup
+  )
 }
 ```
-```{r}
-(slopes(author_more_than_once))
 
-```
-```{r}
-df2 <- author_more_than_once %>% 
-  group_by(author,airline_name) %>% # group by variable state
-  filter(!is.na(date),!is.na(overall_rating))%>%
-  do(data.frame(model = tidy(lm(overall_rating~date, data=.)))) %>% # for each group run a linear fit and save the output as a date table
-  ungroup # forget about your initial grouping
-df2
+```{r map-slope-responses, echo=FALSE, message=FALSE, warning=FALSE}
+responses = c("overall_rating",
+              "seat_comfort_rating",
+              "cabin_staff_rating",
+              "food_beverages_rating",
+              "inflight_entertainment_rating",
+              "value_money_rating")
+
+list_slopes <- map(responses,slopes)
 ```
 
-```{r}
-df2 <- df2%>%
-  filter(model.term == "date")%>%
-  mutate(improvement=sign(model.estimate))%>%  #did they improve or not
+```{r echo=FALSE, message=FALSE}
+transform <- function(df, response){
+    working_df <- df%>%
+    filter(model.term == "X")%>%
+    select(author,airline_name, slope = model.estimate)%>%
+    mutate(improvement = ifelse((-0.000001<slope & slope<0.000001), 0, sign(slope)))
+    
+    
+    names(working_df)[3] <- paste(response,"slope",sep = "_")
+    names(working_df)[4] <- paste(response,"improvement",sep = "_")
+    return(working_df)
+}
+```
+
+
+```{r echo=FALSE, message=FALSE}
+list_slopes_trans <- map2(list_slopes,responses,transform)
+
+joint_improvements <- list_slopes_trans %>% reduce(left_join, by = c("author","airline_name"))
+```
+
+```{r echo=FALSE, warning=FALSE ,message=FALSE,error=FALSE }
+joint_improvements%>%
   group_by(airline_name)%>%
-  mutate(mean_improvement = mean(improvement))
-
-df2$airline_name = reorder(df2$airline_name, df2$mean_improvement)
-
-df2%>%
-  filter(!is.na(mean_improvement))%>%
-  ggplot(aes(x = mean_improvement))+
-  geom_histogram(bins = 10)
-
+  summarise(airline_name = airline_name, means = mean(overall_rating_improvement, na.rm= TRUE))%>%
+  ggplot(aes(x=fct_reorder(airline_name,means),y=means))+
+  geom_point()+
+  labs(title = "Mean improvement for airlines",
+       y = "Mean improvement")+
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        panel.grid.major.x = element_blank())
+  
+```
+- we are not interested in the particular airlines but in what drives the improvement
+---
+Comparing the correlation coefficients between improvements in various ratings and improvements in overall rating gives a comprehensive overview of how strongly do various factors impact the overall rating
+```{r message=FALSE, echo=FALSE}
+rating_cols <- c("overall_rating_improvement",
+         "cabin_staff_rating_improvement",
+         "food_beverages_rating_improvement",
+         "seat_comfort_rating_improvement",
+         "inflight_entertainment_rating_improvement",
+         "value_money_rating_improvement")
 ```
 
 
-We can see that most airlines don't improve from flight to flight but with the improvement mean being `r mean(df2$mean_improvement,na.rm=TRUE)`
-
-
-
-
+```{r warning=FALSE ,message=FALSE,error=FALSE}
+joint_improvements%>%
+  select(rating_cols)%>%
+  correlate()%>%
+  select(term, overall_rating_improvement)
+  
+```
+- cabin staff rating correlates the strongest with the improvement in overall rating
+- inflight entartainement rating correlates the least
 
 
 ---
