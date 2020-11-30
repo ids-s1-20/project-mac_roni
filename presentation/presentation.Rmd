@@ -80,7 +80,7 @@ include_graphics("https://www.researchgate.net/profile/Hak_Seon_Kim/publication/
 class: inverse, center, middle
 
 ## Question 1
-# How does the overall ratings for airlines change depending of the time of year?
+# How does the overall ratings for airlines change depending on the time of the year?
 
 ---
 
@@ -130,58 +130,40 @@ airline_nonas %>%
   guides(color = guide_legend(title = "Airline Name")) 
 ```
 ---
-class: inverse, center, middle
-
-```{r all-airlines-ratings-breakdown, message = FALSE, echo = FALSE, warning = FALSE, out.width = "100%"}
-airline_nonas %>%
-  group_by(airline_name, date) %>%
-  summarise(mean_seat_comfort_rating = mean(seat_comfort_rating, na.rm = TRUE),
-            mean_cabin_staff_rating = mean(cabin_staff_rating, na.rm = TRUE),
-            mean_food_beverages_rating = mean(food_beverages_rating, na.rm = TRUE),
-            mean_inflight_entertainment_rating = mean(inflight_entertainment_rating, na.rm = TRUE),
-            mean_value_money_rating = mean(value_money_rating, na.rm = TRUE),
-            ) %>%
-  filter(airline_name %in% c("asiana-airlines", "garuda-indonesia", "air-astana", "bangkok-airways", "indigo-airlines"),
-         date >= "2014-01-01") %>%
-  ggplot(aes(x = date)) +
-  geom_smooth(aes(y = mean_seat_comfort_rating, color = "red"), se = FALSE) +
-  geom_smooth(aes(y = mean_cabin_staff_rating, color = "green"), se = FALSE) +
-  geom_smooth(aes(y = mean_food_beverages_rating, color = "blue"), se = FALSE) +
-  geom_smooth(aes(y = mean_inflight_entertainment_rating, color = "yellow"), se = FALSE) +
-  geom_smooth(aes(y = mean_value_money_rating, color = "black"), se = FALSE) +
-  labs(
-    title = "Seat Comfort, Cabin Staff, Food Beverages, Inflight Entertainment and 
-Money Value Ratings for Top Five Airlines",
-    subtitle = "From 2014 to 2015",
-    x = "Date",
-    y = "Rating"
-  ) +
-  scale_color_identity(name = "Type of Rating (Mean)",
-                          breaks = c("red", "green", "blue", "yellow", "black"),
-                          labels = c("Seat Comfort", "Cabin Staff", "Food Beverages", "Inflight Entertainment", "Money Value"),
-                          guide = "legend") +
-  facet_wrap(~airline_name, ncol = 3)
-  
-```
----
 
 # How does time affect the overall rating?
 
 Main Finding: There is no significant pattern in between years or at certain times of the year. 
 - One would expect airlines to offer the same service throughout each year. 
 
-#### Findings within the amenity of time
-For an overall rating to increase over time, all contributors have to increase. 
-- Passengers receive a good experience in every perspective
+# Limitations
 
-For an overall rating to decrease over time, there are two possibilities:
-- Contributor gets lower ratings consistently
-- Contributor starts to decrease 
-
-#### Limitations
+.pull-left[
+There are some limitations that influenced the exploration of time variable.
 
 - Uncertainty in geom_smooth function (high)
 - Limited time period (2 years)
+]
+
+.pull-right[
+```{r five-highest-ratings-plots-with-error, message = FALSE, echo = FALSE, out.width = "100%"}
+airline_nonas %>%
+  group_by(airline_name, date) %>%
+  summarise(mean_overall_rating = mean(overall_rating, na.rm = TRUE)) %>%
+  filter(airline_name %in% c("asiana-airlines", "garuda-indonesia", "air-astana", "bangkok-airways", "indigo-airlines"),
+         date >= "2014-01-01") %>%
+  ggplot(aes(x = date, y = mean_overall_rating, color = airline_name)) +
+  geom_smooth(se = TRUE) +
+  labs(
+    title = "Overall ratings of five highest ranked airlines",
+    subtitle = "From 2014 to 2015",
+    x = "Date",
+    y = "Overall Rating"
+  ) +
+  guides(color = guide_legend(title = "Airline Name")) 
+```
+]
+
 
 ---
 
