@@ -4,7 +4,7 @@
     <title>How do the amenities impact the flight’s overall rating?</title>
     <meta charset="utf-8" />
     <meta name="author" content="macaRoni   Sophie Kerfoot, Ben Thamm, Henrich Hegedus, Purvi Harwani" />
-    <meta name="date" content="2020-11-29" />
+    <meta name="date" content="2020-11-30" />
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/default-fonts.css" rel="stylesheet" />
   </head>
@@ -16,7 +16,7 @@ class: center, middle, inverse, title-slide
 ## By cabin, seat, lounge and over time
 ### macaRoni <br> Sophie Kerfoot, Ben Thamm, Henrich Hegedus, Purvi Harwani
 ### University of Edinburgh
-### 2020-11-29
+### 2020-11-30
 
 ---
 
@@ -350,7 +350,7 @@ after filtering out the reviewers who didn't rate a single airline more than onc
 - hardly any people rate one airline more than 10 times
 ---
 # Definition of improvement
-- slope of linear fit
+- sign of linear fit slope
 - 3 levels 
   - -1 - got worse
   - 0 - no improvement
@@ -371,77 +371,40 @@ after filtering out the reviewers who didn't rate a single airline more than onc
 
 
 
-```r
-responses = c("overall_rating",
-              "seat_comfort_rating",
-              "cabin_staff_rating",
-              "food_beverages_rating",
-              "inflight_entertainment_rating",
-              "wifi_connectivity_rating",
-              "value_money_rating")
-
-list_slopes &lt;- map(responses,slopes)
-```
-
-```r
-data.frame(list_slopes[1])%&gt;%
-  filter(model.estimate&gt;0)
-```
 
 
 
+
+
+
+&lt;img src="presentation_files/figure-html/unnamed-chunk-6-1.png" width="80%" /&gt;
+- we are not interested in the particular airlines but in what drives the improvement
 ---
-
-```r
-transform &lt;- function(df, response){
-    working_df &lt;- df%&gt;%
-    filter(model.term == "X")%&gt;%
-    select(author,airline_name, slope = model.estimate)%&gt;%
-    mutate(improvement = sign(slope))%&gt;%
-    group_by(airline_name)%&gt;%
-      mutate(mean_improvement = mean(improvement))%&gt;%
-    ungroup
-    names(working_df)[3] &lt;- paste(response,"slope",sep = "_")
-    names(working_df)[4] &lt;- paste(response,"improvement",sep = "_")
-    return(working_df)
-}
-```
+Comparing the correlation coefficients between improvements in various ratings and improvements in overall rating gives a comprehensive overview of how strongly do various factors impact the overall rating
 
 
-
-```r
-list_slopes_trans &lt;- map2(list_slopes,responses,transform)
-
-joint_improvements &lt;- list_slopes_trans %&gt;% reduce(left_join, by = c("author","airline_name"))
-joint_improvements
-```
----
-
-```r
-joint_improvements%&gt;%
-  select(overall_rating_improvement,
-         cabin_staff_rating_improvement,
-         food_beverages_rating_improvement,
-         seat_comfort_rating_improvement,
-         inflight_entertainment_rating_improvement,
-         wifi_connectivity_rating_improvement,
-         value_money_rating_improvement)%&gt;%
-  correlate()
-```
 
 
 ```r
 joint_improvements%&gt;%
-ggplot(aes(y = overall_rating_improvement, x = value_money_rating_improvement))+
-  geom_jitter()
-
-map(responses, cors)
+  select(rating_cols)%&gt;%
+  correlate()%&gt;%
+  select(term, overall_rating_improvement)
 ```
 
-We can see that most airlines don't improve from flight to flight but with the improvement mean being 
-
-
-
+```
+## # A tibble: 6 x 2
+##   term                                      overall_rating_improvement
+##   &lt;chr&gt;                                                          &lt;dbl&gt;
+## 1 overall_rating_improvement                                    NA    
+## 2 cabin_staff_rating_improvement                                 0.464
+## 3 food_beverages_rating_improvement                              0.378
+## 4 seat_comfort_rating_improvement                                0.310
+## 5 inflight_entertainment_rating_improvement                      0.166
+## 6 value_money_rating_improvement                                 0.442
+```
+- cabin staff rating correlates the strongest with the improvement in overall rating
+- inflight entartainement rating correlates the least
 
 
 ---

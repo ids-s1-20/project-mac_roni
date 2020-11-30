@@ -384,7 +384,7 @@ author_more_than_once%>%
 - hardly any people rate one airline more than 10 times
 ---
 # Definition of improvement
-- slope of linear fit
+- sign of linear fit slope
 - 3 levels 
   - -1 - got worse
   - 0 - no improvement
@@ -430,7 +430,7 @@ airline%>%
 
 
 
-```{r slopes-function, echo=FALSE}
+```{r slopes-function, echo=FALSE, message=FALSE, warning=FALSE}
 #https://stackoverflow.com/a/31874484
 slopes <- function(response) {
   return(
@@ -444,35 +444,25 @@ slopes <- function(response) {
 }
 ```
 
-```{r map-slope-responses, eval=FALSE}
+```{r map-slope-responses, echo=FALSE, message=FALSE, warning=FALSE}
 responses = c("overall_rating",
               "seat_comfort_rating",
               "cabin_staff_rating",
               "food_beverages_rating",
               "inflight_entertainment_rating",
-              "wifi_connectivity_rating",
               "value_money_rating")
 
 list_slopes <- map(responses,slopes)
 ```
-```{r eval=FALSE}
-data.frame(list_slopes[1])%>%
-  filter(model.estimate<0)
-  
-```
 
-
-
----
-```{r eval=FALSE}
+```{r echo=FALSE, message=FALSE}
 transform <- function(df, response){
     working_df <- df%>%
     filter(model.term == "X")%>%
     select(author,airline_name, slope = model.estimate)%>%
-    mutate(improvement = sign(slope))%>%
-    group_by(airline_name)%>%
-      mutate(mean_improvement = mean(improvement))%>%
-    ungroup
+    mutate(improvement = ifelse((-0.000001<slope & slope<0.000001), 0, sign(slope)))
+    
+    
     names(working_df)[3] <- paste(response,"slope",sep = "_")
     names(working_df)[4] <- paste(response,"improvement",sep = "_")
     return(working_df)
@@ -480,38 +470,48 @@ transform <- function(df, response){
 ```
 
 
-```{r eval=FALSE}
+```{r echo=FALSE, message=FALSE}
 list_slopes_trans <- map2(list_slopes,responses,transform)
 
 joint_improvements <- list_slopes_trans %>% reduce(left_join, by = c("author","airline_name"))
-joint_improvements
 ```
----
-```{r eval=FALSE}
+
+```{r echo=FALSE, warning=FALSE ,message=FALSE,error=FALSE }
 joint_improvements%>%
-  select(overall_rating_improvement,
-         cabin_staff_rating_improvement,
-         food_beverages_rating_improvement,
-         seat_comfort_rating_improvement,
-         inflight_entertainment_rating_improvement,
-         wifi_connectivity_rating_improvement,
-         value_money_rating_improvement)%>%
-  correlate()
+  group_by(airline_name)%>%
+  summarise(airline_name = airline_name, means = mean(overall_rating_improvement, na.rm= TRUE))%>%
+  ggplot(aes(x=fct_reorder(airline_name,means),y=means))+
+  geom_point()+
+  labs(title = "Mean improvement for airlines",
+       y = "Mean improvement")+
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        panel.grid.major.x = element_blank())
   
 ```
-
-```{r eval=FALSE}
-joint_improvements%>%
-ggplot(aes(y = overall_rating_improvement, x = value_money_rating_improvement))+
-  geom_jitter()
-
-map(responses, cors)
+- we are not interested in the particular airlines but in what drives the improvement
+---
+Comparing the correlation coefficients between improvements in various ratings and improvements in overall rating gives a comprehensive overview of how strongly do various factors impact the overall rating
+```{r message=FALSE, echo=FALSE}
+rating_cols <- c("overall_rating_improvement",
+         "cabin_staff_rating_improvement",
+         "food_beverages_rating_improvement",
+         "seat_comfort_rating_improvement",
+         "inflight_entertainment_rating_improvement",
+         "value_money_rating_improvement")
 ```
 
-We can see that most airlines don't improve from flight to flight but with the improvement mean being 
 
-
-
+```{r warning=FALSE ,message=FALSE,error=FALSE}
+joint_improvements%>%
+  select(rating_cols)%>%
+  correlate()%>%
+  select(term, overall_rating_improvement)
+  
+```
+- cabin staff rating correlates the strongest with the improvement in overall rating
+- inflight entartainement rating correlates the least
 
 
 ---
