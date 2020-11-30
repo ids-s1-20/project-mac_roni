@@ -526,7 +526,12 @@ joint_improvements%>%
 
 
 ---
-# Question 4
+# 4: Do positive reviews on an airline and positive reviews on lounge and seat have a correlation?
+
+Hypothesis: we expect both the seat rating and the lounge rating to both have a positive correlation to the airline rating because both are provided by the airline so this would affect the authors overall rating of the airline.
+
+- looked at authors rated all three
+- 
 
 
 
@@ -613,21 +618,26 @@ abs_data
 
 ```{r graph-airline-and-lounge-ratings}
 abs_data %>%
-  ggplot(mapping = aes(x = author, 
-                      y = percentage_difference_in_airline_and_lounge_rating )) + 
+  ggplot(mapping = aes(y = author, 
+                      x = percentage_difference_in_airline_and_lounge_rating )) + 
   geom_bar(stat = "identity") +
-  labs(title = "Difference in the Ratings between Airline and Lounge",
-       x = "Author",
-       y = "% Difference") 
+  labs(title = "Percentage Difference in the Ratings between Airline and Lounge",
+       y = "Author",
+       x = "% Difference") 
 ```
 
 ```{r graph-airline-and-seat-ratings}
 abs_data %>%
-  ggplot(mapping = aes(x = author, 
-                      y = abs_percentage_difference_in_airline_and_seat_rating )) + 
+  ggplot(mapping = aes(y = author, 
+                      x = abs_percentage_difference_in_airline_and_seat_rating )) + 
   geom_bar(stat = "identity") +
-  labs(title = "Difference in the Ratings between Airline and Seat",
-       x = "Author",
-       y = "% Difference") 
+  labs(title = "Percentage Difference in the Ratings between Airline and Seat",
+       y = "Author",
+       x = "% Difference") 
+```
+```{r}
+abs_data %>%
+  select(percentage_difference_in_airline_and_lounge_rating, abs_percentage_difference_in_airline_and_seat_rating, author) %>%
+summary()
 ```
 

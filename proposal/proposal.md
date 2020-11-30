@@ -407,8 +407,10 @@ Do positive reviews on an airline and positive reviews on lounge and
 seat have a correlation? Y: a graph showing correlation X:
 overall\_rating (in seat and lounge data set )
 
-Hypothesis: we expect seat rating to have a stronger correlation than
-the lounge rating because not everyone uses the lounge.
+Hypothesis: we expect both the seat rating and the lounge rating to both
+have a positive correlation to the airline rating because both are
+provided by the airline so this would affect the authors overall rating
+of the airline.
 
 To answer this question, only the authors that have rated the airline,
 lounge and seat will be selected to see if rating either the lounge or
@@ -624,28 +626,54 @@ ratings was created to try and see if there was a correlation.
 
 ``` r
 abs_data %>%
-  ggplot(mapping = aes(x = author, 
-                      y = percentage_difference_in_airline_and_lounge_rating )) + 
+  ggplot(mapping = aes(y = author, 
+                      x = percentage_difference_in_airline_and_lounge_rating )) + 
   geom_bar(stat = "identity") +
   labs(title = "Difference in the Ratings between Airline and Lounge",
-       x = "Author",
-       y = "% Difference") 
+       y = "Author",
+       x = "% Difference") 
 ```
 
 ![](proposal_files/figure-gfm/graph-airline-and-lounge-ratings-1.png)<!-- -->
 
 ``` r
 abs_data %>%
-  ggplot(mapping = aes(x = author, 
-                      y = abs_percentage_difference_in_airline_and_seat_rating )) + 
+  ggplot(mapping = aes(y = author, 
+                      x = abs_percentage_difference_in_airline_and_seat_rating )) + 
   geom_bar(stat = "identity") +
-  labs(title = "Difference in the Ratings between Airline and Seat",
-       x = "Author",
-       y = "% Difference") 
+  labs(title = "Percentage Difference in the Ratings between Airline and Seat",
+       y = "Author",
+       x = "% Difference")
 ```
 
 ![](proposal_files/figure-gfm/graph-airline-and-seat-ratings-1.png)<!-- -->
+From the graphs we can see that the majority of the percentage
+differences between ratings is quite low, to look closer into detail a
+summary table can be produced to find the mean percentage difference
+which will show how much the ratings differed
 
-Hypothesis: we expect both the seat rating and the lounge rating to have
-a correlation to the airline rating because both are provided by the
-airline
+``` r
+abs_data %>%
+  select(percentage_difference_in_airline_and_lounge_rating, abs_percentage_difference_in_airline_and_seat_rating, author) %>%
+summary()
+```
+
+    ##  percentage_difference_in_airline_and_lounge_rating
+    ##  Min.   :10.00                                     
+    ##  1st Qu.:15.00                                     
+    ##  Median :30.00                                     
+    ##  Mean   :33.84                                     
+    ##  3rd Qu.:49.23                                     
+    ##  Max.   :85.71                                     
+    ##  abs_percentage_difference_in_airline_and_seat_rating    author         
+    ##  Min.   : 0.00                                        Length:13         
+    ##  1st Qu.:10.00                                        Class :character  
+    ##  Median :16.67                                        Mode  :character  
+    ##  Mean   :24.73                                                          
+    ##  3rd Qu.:30.00                                                          
+    ##  Max.   :85.71
+
+Hypothesis: we expect both the seat rating and the lounge rating to both
+individualy have a positive correlation to the airline rating because
+both are provided by the airline so this would affect the authors
+overall rating of the airline.
