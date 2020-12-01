@@ -530,12 +530,12 @@ joint_improvements%>%
 
 Hypothesis: we expect both the seat rating and the lounge rating to both have a positive correlation to the airline rating because both are provided by the airline so this would affect the authors overall rating of the airline.
 
-- looked at authors rated all three
-- 
+- looked at authors that rated all three
+- calculated the difference in ratings 
 
 
 
-```{r - selecting-relevant-columns}
+```{r - selecting-relevant-columns, include = FALSE}
 airline_rating <- airline %>%
 select(airline_name, overall_rating, author, date) %>%
   rename(airline_rating = "overall_rating",
@@ -552,25 +552,21 @@ select(airline_name, overall_rating, author, date) %>%
          date_seat = "date")
 ```
 
-```{r - joining-lounge-and-airline}
+```{r - joining-lounge-and-airline, include = FALSE}
 airline_lounge <- full_join(lounge_rating, airline_rating) %>%
   na.omit()
-
-airline_lounge
 ```
 
 
-```{r joining-seat-to-lounge-and-airline}
+```{r joining-seat-to-lounge-and-airline, include = FALSE}
 airline_lounge_seat <- full_join(airline_lounge, seat_rating) %>%
   na.omit()
 
 airline_lounge_seat <- airline_lounge_seat[, c(1, 3, 5, 2, 7, 4, 6, 8)]
-
-airline_lounge_seat
 ```
 
 
-```{r creating-overall-column}
+```{r creating-overall-column, include = FALSE}
 als_overall_rating <- airline_lounge_seat %>%
   pivot_longer(cols = c("airline_rating", "seat_rating", "lounge_rating"), values_to = ("overall_rating")) %>%
    rename(rating_type = "name") %>%
@@ -587,7 +583,7 @@ als_overall_rating
   
 ```
 
-```{r calculating-mean-where-authors-have-multiple-ratings-for-one-type}
+```{r calculating-mean-where-authors-have-multiple-ratings-for-one-type, include = FALSE}
 als_with_mean <- als_overall_rating %>%
   group_by(author, rating_type) %>%
   mutate(mean_overall_rating = mean(overall_rating)) %>%
@@ -598,7 +594,7 @@ als_with_mean
 ```
 
 
-```{r calculating-the-difference-between-the-means-of-different-rating-types}
+```{r calculating-the-difference-between-the-means-of-different-rating-types, include = FALSE}
  als_with_mean_difference <- als_with_mean %>%
 pivot_wider(names_from = rating_type, values_from = mean_overall_rating) %>%
 mutate(percentage_difference_in_airline_and_lounge_rating = (airline_rating-lounge_rating)/10*100,
@@ -607,7 +603,7 @@ mutate(percentage_difference_in_airline_and_lounge_rating = (airline_rating-loun
 als_with_mean_difference
 ```
 
-```{r changing-values-to-absolute}
+```{r changing-values-to-absolute, include = FALSE}
 abs_data <- als_with_mean_difference %>%
   mutate(abs_percentage_difference_in_airline_and_seat_rating = abs(percentage_difference_in_airline_and_seat_rating)) %>%
   select(airline_name, author, airline_rating, seat_rating, lounge_rating, percentage_difference_in_airline_and_lounge_rating, abs_percentage_difference_in_airline_and_seat_rating)
@@ -615,8 +611,8 @@ abs_data <- als_with_mean_difference %>%
 abs_data
 ```
 
-
-```{r graph-airline-and-lounge-ratings}
+.pull-left[
+```{r graph-airline-and-lounge-ratings, echo = FALSE}
 abs_data %>%
   ggplot(mapping = aes(y = author, 
                       x = percentage_difference_in_airline_and_lounge_rating )) + 
@@ -625,8 +621,11 @@ abs_data %>%
        y = "Author",
        x = "% Difference") 
 ```
+]
 
-```{r graph-airline-and-seat-ratings}
+
+.pull-right[
+```{r graph-airline-and-seat-ratings, echo = FALSE}
 abs_data %>%
   ggplot(mapping = aes(y = author, 
                       x = abs_percentage_difference_in_airline_and_seat_rating )) + 
@@ -635,9 +634,19 @@ abs_data %>%
        y = "Author",
        x = "% Difference") 
 ```
-```{r}
+]
+
+---
+
+#Observing Overall Differences
+
+- Mean calculated to find overall difference in ratings
+
+```{r, echo = FALSE}
 abs_data %>%
   select(percentage_difference_in_airline_and_lounge_rating, abs_percentage_difference_in_airline_and_seat_rating, author) %>%
 summary()
 ```
 
+
+We can see here more clearly than from the graphs that the seat rating had a stronger correlation to the airline rating as the mean difference between the  seat and airline ratings is slightly lower than lounge and airline ratings suggesting that the ratings were more similar. The mean difference in percentage isn't too high either which suggests our hypothesis was correct and that they do have a correlation. This then suggests the seat and lounge will have an affect on the authors rating of the airline and flight even though there was only a proportion of authors that rated all three.
