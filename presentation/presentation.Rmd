@@ -29,6 +29,7 @@ library(skimr)
 library(tidytext)
 library(corrr)
 theme_set(theme_minimal())
+library(here)
 ```
 
 ```{r setup, include=FALSE}
@@ -37,10 +38,10 @@ knitr::opts_chunk$set(fig.retina = 3, dpi = 300, fig.width = 8, fig.asp = 0.618,
 ```
 
 ```{r load-data, include=FALSE}
-airline <- read_csv("/cloud/project/data/airline.csv")
-airport <- read_csv("/cloud/project/data/airport.csv")
-lounge <- read_csv("/cloud/project/data/lounge.csv")
-seat <- read_csv("/cloud/project/data/seat.csv")
+airline <- read_csv(here::here("data/airline.csv"))
+airport <- read_csv(here::here("data/airport.csv"))
+lounge <- read_csv(here::here("data/lounge.csv"))
+seat <- read_csv(here::here("data/seat.csv"))
 
 ```
 
