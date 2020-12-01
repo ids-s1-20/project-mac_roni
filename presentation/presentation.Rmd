@@ -319,7 +319,7 @@ Note: There are 4 different cabins in this dataset ( First class, Business Class
 Let's look at the average overall rating the passengers gave for each of the classes. 
 Hypothesis: We expect first class to have a higher rating since, as per the norm, first class is considered to be the most preferable one.
 
-```{r, echo = FALSE, message = FALSE}
+```{r, echo = FALSE, message = FALSE, eval = FALSE}
 airline %>%
   filter(!is.na(overall_rating), !is.na(cabin_flown) ) %>%
   group_by(cabin_flown) %>%
@@ -338,7 +338,7 @@ Let's find out!
 
 
 
-```{r echo = FALSE, message = FALSE}
+```{r echo = FALSE, message = FALSE, eval = FALSE}
 airline %>%
   filter(!is.na(overall_rating), !is.na(cabin_flown) ) %>%
   group_by(cabin_flown) %>%
