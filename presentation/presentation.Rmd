@@ -208,7 +208,12 @@ class since fewer passengers chose that cabin type.
 
 ---
 
-# Do airline improve their rating with a particular customer over time
+class: inverse, center, middle
+
+## Question 1
+# Improvements in what amenities correlate to improvement in the overal rating the most
+
+---
 First we need to filter out all the reviewers who didn't rate a airline twice
 ```{r filter-repeated-authors}
 author_more_than_once <-airline%>%
