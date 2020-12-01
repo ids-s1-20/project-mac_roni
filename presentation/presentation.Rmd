@@ -29,25 +29,26 @@ library(skimr)
 library(tidytext)
 library(corrr)
 theme_set(theme_minimal())
+library(here)
 ```
 
 ```{r setup, include=FALSE}
 # For better figure resolution
-knitr::opts_chunk$set(fig.retina = 3, dpi = 300, fig.width = 6, fig.asp = 0.618, out.width = "80%")
+knitr::opts_chunk$set(fig.retina = 3, dpi = 300, fig.width = 8, fig.asp = 0.618, out.width = "80%")
 ```
 
 ```{r load-data, include=FALSE}
-airline <- read_csv("/cloud/project/data/airline.csv")
-airport <- read_csv("/cloud/project/data/airport.csv")
-lounge <- read_csv("/cloud/project/data/lounge.csv")
-seat <- read_csv("/cloud/project/data/seat.csv")
+airline <- read_csv(here::here("data/airline.csv"))
+airport <- read_csv(here::here("data/airport.csv"))
+lounge <- read_csv(here::here("data/lounge.csv"))
+seat <- read_csv(here::here("data/seat.csv"))
 
 ```
 
 
 class: center, middle
 
-## A statement of the overall goal / research question
+## Main Goal: To find the amenities that impact a flight's overall rating (Cabin, Seat, Lounge & Over Time) 
 
 ---
 
@@ -80,7 +81,7 @@ include_graphics("https://www.researchgate.net/profile/Hak_Seon_Kim/publication/
 class: inverse, center, middle
 
 ## Question 1
-# How does the overall ratings for airlines change depending of the time of year?
+# How does the overall ratings for airlines change depending on the time of the year?
 
 ---
 
@@ -111,9 +112,9 @@ airline_nonas %>%
 
 ---
 
-# Overall Rating versus Time
+class: inverse, center, middle
 
-```{r five-highest-ratings-plot, message = FALSE, echo = FALSE, eval=FALSE}
+```{r five-highest-ratings-plots, message = FALSE, echo = FALSE, out.width = "100%"}
 airline_nonas %>%
   group_by(airline_name, date) %>%
   summarise(mean_overall_rating = mean(overall_rating, na.rm = TRUE)) %>%
@@ -127,183 +128,42 @@ airline_nonas %>%
     x = "Date",
     y = "Overall Rating"
   ) +
-  guides(color = guide_legend(title = "Airline Name")) +
-  theme_minimal()
-  
+  guides(color = guide_legend(title = "Airline Name")) 
 ```
-
 ---
-# Overall Rating versus Time Explained 
+
+# How does time affect the overall rating?
+
+Main Finding: There is no significant pattern in between years or at certain times of the year. 
+- One would expect airlines to offer the same service throughout each year. 
+
+# Limitations
 
 .pull-left[
-General Trends: 
+There are some limitations that influenced the exploration of time variable.
 
-- Passengers that fill out the survey tend to give high overall ratings
-- There is no significant pattern in the overall ratings when comparing different years
-
-
-Trends in Specific Airlines at the start of 2015: 
-
-- Air Astana -> higher ratings in comparison to 2014
-- Garuda Indonesia -> similar ratings in comparison to the last year
-- Asiana Airlines, Bangkok Airways, and Indigo Airlines -> lower ratings in comparison to 2014.
+- Uncertainty in geom_smooth function (high)
+- Limited time period (2 years)
 ]
 
 .pull-right[
-
-pen
-]
-
----
-
-# Hello World
-
-- Click the `Knit` button to compile your presentation
-
-- Make sure to commit and push all resulting files to your GitHub repo
-
----
-
-class: inverse, middle, center
-
-# Using xaringan
-
----
-
-# xaringan
-
-- The presentation is created using the `xaringan` package
-
-- Use `---` to separate slides and `--` for incremental builds
-
---
-
-- Like this
-
----
-
-# Layouts
-
-You can use plain text
-
-- or bullet points
-
-.pull-left[
-or text in two columns $^*$
-]
-.pull-right[
-- like
-- this
-]
-
-.footnote[
-[*] And add footnotes
-]
-
----
-
-# Code
-
-```{r boring-regression}
-# a boring regression
-model <- lm(dist ~ speed, data = cars)
-tidy(model)
-glance(model)
-```
-
----
-
-# Plots
-
-```{r recode-species, echo = FALSE}
-# In this chunk I'm doing a bunch of analysis that I don't want to present 
-# in my slides. But I need the resulting data frame for a plot I want to present.
-iris_modified <- iris %>%
-  mutate(Species = fct_other(Species, keep = "setosa"))
-```
-
-```{r plot-iris, echo = FALSE}
-# Code hidden with echo = FALSE
-# Uses modified iris dataset from previous chunk
-# Play around with height and width until you're happy with the look
-ggplot(data = iris_modified, mapping = aes(x = Sepal.Width, y = Sepal.Length, color = Species)) +
-  geom_point() + 
-  theme_minimal() # theme options: https://ggplot2.tidyverse.org/reference/ggtheme.html
-```
-
----
-
-## Plot and text
-
-.pull-left[
-- Some text
-- goes here
-]
-.pull-right[
-```{r warning=FALSE, out.width="100%", fig.width=4, echo=FALSE}
-# see how I changed out.width and fig.width from defaults
-# to make the figure bigger
-ggplot(penguins, aes(x = bill_length_mm, y = species, color = species)) +
-  geom_boxplot() +
-  theme_minimal()
+```{r five-highest-ratings-plots-with-error, message = FALSE, echo = FALSE, out.width = "100%"}
+airline_nonas %>%
+  group_by(airline_name, date) %>%
+  summarise(mean_overall_rating = mean(overall_rating, na.rm = TRUE)) %>%
+  filter(airline_name %in% c("asiana-airlines", "garuda-indonesia", "air-astana", "bangkok-airways", "indigo-airlines"),
+         date >= "2014-01-01") %>%
+  ggplot(aes(x = date, y = mean_overall_rating, color = airline_name)) +
+  geom_smooth(se = TRUE) +
+  labs(
+    title = "Overall ratings of five highest ranked airlines",
+    subtitle = "From 2014 to 2015",
+    x = "Date",
+    y = "Overall Rating"
+  ) +
+  guides(color = guide_legend(title = "Airline Name")) 
 ```
 ]
-
----
-
-# Tables
-
-If you want to generate a table, make sure it is in the HTML format (instead of Markdown or other formats), e.g.,
-
-
-
----
-
-# Images
-
-```{r castle, echo = FALSE, out.width = "60%", fig.align = "center", fig.cap = "Image credit: Photo by Jörg Angeli on Unsplash."}
-include_graphics("https://images.unsplash.com/photo-1535448033526-c0e85c9e6968?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1650&q=80")
-```
-
-Or you can also include a full page image. See next slide.
-
----
-
-background-image: url(https://images.unsplash.com/photo-1535448033526-c0e85c9e6968?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1650&q=80)
-
----
-
-# Math Expressions
-
-You can write LaTeX math expressions inside a pair of dollar signs, e.g. &#36;\alpha+\beta$ renders $\alpha+\beta$. You can use the display style with double dollar signs:
-
-```
-$$\bar{X}=\frac{1}{n}\sum_{i=1}^nX_i$$
-```
-
-$$\bar{X}=\frac{1}{n}\sum_{i=1}^nX_i$$
-
-Limitations:
-
-1. The source code of a LaTeX math expression must be in one line, unless it is inside a pair of double dollar signs, in which case the starting `$$` must appear in the very beginning of a line, followed immediately by a non-space character, and the ending `$$` must be at the end of a line, led by a non-space character;
-
-1. There should not be spaces after the opening `$` or before the closing `$`.
-
-1. Math does not work on the title slide (see [#61](https://github.com/yihui/xaringan/issues/61) for a workaround).
-
----
-
-# Feeling adventurous?
-
-- Want to find out more about `xaringan`? See https://slides.yihui.name/xaringan/#1.
-
-- You are welcomed to use the default styling of the slides. In fact, that's what I expect majority of you will do. You will differentiate yourself with the content of your presentation.
-
-- But some of you might want to play around with slide styling. The 
-`xaringanthemer` provides some solutions for this that: https://pkg.garrickadenbuie.com/xaringanthemer.
-
-- And if you want more bells and whistles, there is also `xaringanExtra`: https://pkg.garrickadenbuie.com/xaringanExtra.
-
 ---
 # Question 1
 
@@ -384,7 +244,7 @@ author_more_than_once%>%
 - hardly any people rate one airline more than 10 times
 ---
 # Definition of improvement
-- slope of linear fit
+- sign of linear fit slope
 - 3 levels 
   - -1 - got worse
   - 0 - no improvement
@@ -430,7 +290,7 @@ airline%>%
 
 
 
-```{r slopes-function, echo=FALSE}
+```{r slopes-function, echo=FALSE, message=FALSE, warning=FALSE}
 #https://stackoverflow.com/a/31874484
 slopes <- function(response) {
   return(
@@ -444,35 +304,25 @@ slopes <- function(response) {
 }
 ```
 
-```{r map-slope-responses, eval=FALSE}
+```{r map-slope-responses, echo=FALSE, message=FALSE, warning=FALSE}
 responses = c("overall_rating",
               "seat_comfort_rating",
               "cabin_staff_rating",
               "food_beverages_rating",
               "inflight_entertainment_rating",
-              "wifi_connectivity_rating",
               "value_money_rating")
 
 list_slopes <- map(responses,slopes)
 ```
-```{r eval=FALSE}
-data.frame(list_slopes[1])%>%
-  filter(model.estimate<0)
-  
-```
 
-
-
----
-```{r eval=FALSE}
+```{r echo=FALSE, message=FALSE}
 transform <- function(df, response){
     working_df <- df%>%
     filter(model.term == "X")%>%
     select(author,airline_name, slope = model.estimate)%>%
-    mutate(improvement = sign(slope))%>%
-    group_by(airline_name)%>%
-      mutate(mean_improvement = mean(improvement))%>%
-    ungroup
+    mutate(improvement = ifelse((-0.000001<slope & slope<0.000001), 0, sign(slope)))
+    
+    
     names(working_df)[3] <- paste(response,"slope",sep = "_")
     names(working_df)[4] <- paste(response,"improvement",sep = "_")
     return(working_df)
@@ -480,40 +330,172 @@ transform <- function(df, response){
 ```
 
 
-```{r eval=FALSE}
+```{r echo=FALSE, message=FALSE}
 list_slopes_trans <- map2(list_slopes,responses,transform)
 
 joint_improvements <- list_slopes_trans %>% reduce(left_join, by = c("author","airline_name"))
-joint_improvements
 ```
----
-```{r eval=FALSE}
+
+```{r echo=FALSE, warning=FALSE ,message=FALSE,error=FALSE }
 joint_improvements%>%
-  select(overall_rating_improvement,
-         cabin_staff_rating_improvement,
-         food_beverages_rating_improvement,
-         seat_comfort_rating_improvement,
-         inflight_entertainment_rating_improvement,
-         wifi_connectivity_rating_improvement,
-         value_money_rating_improvement)%>%
-  correlate()
+  group_by(airline_name)%>%
+  summarise(airline_name = airline_name, means = mean(overall_rating_improvement, na.rm= TRUE))%>%
+  ggplot(aes(x=fct_reorder(airline_name,means),y=means))+
+  geom_point()+
+  labs(title = "Mean improvement for airlines",
+       y = "Mean improvement")+
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        panel.grid.major.x = element_blank())
+  
+```
+- we are not interested in the particular airlines but in what drives the improvement
+---
+Comparing the correlation coefficients between improvements in various ratings and improvements in overall rating gives a comprehensive overview of how strongly do various factors impact the overall rating
+```{r message=FALSE, echo=FALSE}
+rating_cols <- c("overall_rating_improvement",
+         "cabin_staff_rating_improvement",
+         "food_beverages_rating_improvement",
+         "seat_comfort_rating_improvement",
+         "inflight_entertainment_rating_improvement",
+         "value_money_rating_improvement")
+```
+
+
+```{r warning=FALSE ,message=FALSE,error=FALSE}
+joint_improvements%>%
+  select(rating_cols)%>%
+  correlate()%>%
+  select(term, overall_rating_improvement)
+  
+```
+- cabin staff rating correlates the strongest with the improvement in overall rating
+- inflight entartainement rating correlates the least
+
+
+---
+# 4: Do positive reviews on an airline and positive reviews on lounge and seat have a correlation?
+
+Hypothesis: we expect both the seat rating and the lounge rating to both have a positive correlation to the airline rating because both are provided by the airline so this would affect the authors overall rating of the airline.
+
+- looked at authors that rated all three
+- calculated the difference in ratings 
+
+
+
+```{r - selecting-relevant-columns, include = FALSE}
+airline_rating <- airline %>%
+select(airline_name, overall_rating, author, date) %>%
+  rename(airline_rating = "overall_rating",
+         date_airline = "date")
+
+lounge_rating <- lounge %>%
+select(airline_name, overall_rating, author, date) %>%
+  rename(lounge_rating = "overall_rating",
+         date_lounge = "date")
+
+seat_rating <- seat %>%
+select(airline_name, overall_rating, author, date) %>%
+  rename(seat_rating = "overall_rating",
+         date_seat = "date")
+```
+
+```{r - joining-lounge-and-airline, include = FALSE}
+airline_lounge <- full_join(lounge_rating, airline_rating) %>%
+  na.omit()
+```
+
+
+```{r joining-seat-to-lounge-and-airline, include = FALSE}
+airline_lounge_seat <- full_join(airline_lounge, seat_rating) %>%
+  na.omit()
+
+airline_lounge_seat <- airline_lounge_seat[, c(1, 3, 5, 2, 7, 4, 6, 8)]
+```
+
+
+```{r creating-overall-column, include = FALSE}
+als_overall_rating <- airline_lounge_seat %>%
+  pivot_longer(cols = c("airline_rating", "seat_rating", "lounge_rating"), values_to = ("overall_rating")) %>%
+   rename(rating_type = "name") %>%
+  mutate(
+    date = case_when(
+      rating_type == "airline_rating" ~ date_airline,
+      rating_type == "seat_rating"    ~ date_seat,
+      rating_type == "lounge_rating"  ~ date_lounge
+    )) %>%
+  select(airline_name, author, rating_type, overall_rating, date) %>%
+  distinct()
+
+als_overall_rating
   
 ```
 
-```{r eval=FALSE}
-joint_improvements%>%
-ggplot(aes(y = overall_rating_improvement, x = value_money_rating_improvement))+
-  geom_jitter()
+```{r calculating-mean-where-authors-have-multiple-ratings-for-one-type, include = FALSE}
+als_with_mean <- als_overall_rating %>%
+  group_by(author, rating_type) %>%
+  mutate(mean_overall_rating = mean(overall_rating)) %>%
+  select(airline_name, author, rating_type,mean_overall_rating) %>%
+  distinct()
 
-map(responses, cors)
+als_with_mean
 ```
 
-We can see that most airlines don't improve from flight to flight but with the improvement mean being 
+
+```{r calculating-the-difference-between-the-means-of-different-rating-types, include = FALSE}
+ als_with_mean_difference <- als_with_mean %>%
+pivot_wider(names_from = rating_type, values_from = mean_overall_rating) %>%
+mutate(percentage_difference_in_airline_and_lounge_rating = (airline_rating-lounge_rating)/10*100,
+       percentage_difference_in_airline_and_seat_rating = (airline_rating-seat_rating)/10*100)
+
+als_with_mean_difference
+```
+
+```{r changing-values-to-absolute, include = FALSE}
+abs_data <- als_with_mean_difference %>%
+  mutate(abs_percentage_difference_in_airline_and_seat_rating = abs(percentage_difference_in_airline_and_seat_rating)) %>%
+  select(airline_name, author, airline_rating, seat_rating, lounge_rating, percentage_difference_in_airline_and_lounge_rating, abs_percentage_difference_in_airline_and_seat_rating)
+
+abs_data
+```
+
+.pull-left[
+```{r graph-airline-and-lounge-ratings, echo = FALSE}
+abs_data %>%
+  ggplot(mapping = aes(y = author, 
+                      x = percentage_difference_in_airline_and_lounge_rating )) + 
+  geom_bar(stat = "identity") +
+  labs(title = "Percentage Difference in the Ratings between Airline and Lounge",
+       y = "Author",
+       x = "% Difference") 
+```
+]
 
 
-
-
+.pull-right[
+```{r graph-airline-and-seat-ratings, echo = FALSE}
+abs_data %>%
+  ggplot(mapping = aes(y = author, 
+                      x = abs_percentage_difference_in_airline_and_seat_rating )) + 
+  geom_bar(stat = "identity") +
+  labs(title = "Percentage Difference in the Ratings between Airline and Seat",
+       y = "Author",
+       x = "% Difference") 
+```
+]
 
 ---
-# Question 4
 
+#Observing Overall Differences
+
+- Mean calculated to find overall difference in ratings
+
+```{r, echo = FALSE}
+abs_data %>%
+  select(percentage_difference_in_airline_and_lounge_rating, abs_percentage_difference_in_airline_and_seat_rating, author) %>%
+summary()
+```
+
+
+We can see here more clearly than from the graphs that the seat rating had a stronger correlation to the airline rating as the mean difference between the  seat and airline ratings is slightly lower than lounge and airline ratings suggesting that the ratings were more similar. The mean difference in percentage isn't too high either which suggests our hypothesis was correct and that they do have a correlation. This then suggests the seat and lounge will have an affect on the authors rating of the airline and flight even though there was only a proportion of authors that rated all three.

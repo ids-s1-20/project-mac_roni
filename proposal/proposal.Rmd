@@ -307,4 +307,126 @@ Do positive reviews on an airline and positive reviews on lounge and seat have a
 Y: a graph showing correlation 
 X: overall_rating (in seat and lounge data set )
 
-Hypothesis: we expect seat rating to have a stronger correlation than the lounge rating because not everyone uses the lounge. 
+Hypothesis: we expect both the seat rating and the lounge rating to both have a positive correlation to the airline rating because both are provided by the airline so this would affect the authors overall rating of the airline.
+
+To answer this question, only the authors that have rated the airline, lounge and seat will be selected to see if rating either the lounge or seat positively will result in the airline being rated positively. 
+
+To start only the relevant columns are chosen, then the data sets are joined into one and any NAs are removed so that only the authors wanted remain.
+
+```{r - selecting-relevant-columns}
+airline_rating <- airline %>%
+select(airline_name, overall_rating, author, date) %>%
+  rename(airline_rating = "overall_rating",
+         date_airline = "date")
+
+lounge_rating <- lounge %>%
+select(airline_name, overall_rating, author, date) %>%
+  rename(lounge_rating = "overall_rating",
+         date_lounge = "date")
+
+seat_rating <- seat %>%
+select(airline_name, overall_rating, author, date) %>%
+  rename(seat_rating = "overall_rating",
+         date_seat = "date")
+```
+
+```{r - joining-lounge-and-airline}
+airline_lounge <- full_join(lounge_rating, airline_rating) %>%
+  na.omit()
+
+airline_lounge
+```
+
+
+```{r joining-seat-to-lounge-and-airline}
+airline_lounge_seat <- full_join(airline_lounge, seat_rating) %>%
+  na.omit()
+
+airline_lounge_seat <- airline_lounge_seat[, c(1, 3, 5, 2, 7, 4, 6, 8)]
+
+airline_lounge_seat
+```
+
+Next I created an overall rating column and a column that tells from which data set that rating came from, and created a new date column so that the dates from the corresponding rating is in that column. Then any duplicate ratings that occured whilst joining have been taken out.
+
+```{r creating-overall-column}
+als_overall_rating <- airline_lounge_seat %>%
+  pivot_longer(cols = c("airline_rating", "seat_rating", "lounge_rating"), values_to = ("overall_rating")) %>%
+   rename(rating_type = "name") %>%
+  mutate(
+    date = case_when(
+      rating_type == "airline_rating" ~ date_airline,
+      rating_type == "seat_rating"    ~ date_seat,
+      rating_type == "lounge_rating"  ~ date_lounge
+    )) %>%
+  select(airline_name, author, rating_type, overall_rating, date) %>%
+  distinct()
+
+als_overall_rating
+  
+```
+
+Next the mean is calculated for each type of rating for each author as some authors have provided multiple ratings for each type. Then any duplicates were removed.
+
+```{r calculating-mean-where-authors-have-multiple-ratings-for-one-type}
+als_with_mean <- als_overall_rating %>%
+  group_by(author, rating_type) %>%
+  mutate(mean_overall_rating = mean(overall_rating)) %>%
+  select(airline_name, author, rating_type, mean_overall_rating) %>%
+  distinct()
+
+als_with_mean
+```
+
+Next the difference between the airline ratings and louge ratings, and the difference between the airline and seat ratings were calculated as a percentage of the the maximum rating that could have been given (10) and the absolute value was taken from each percentage to avoid negative percentages.
+
+```{r calculating-the-difference-between-the-means-of-different-rating-types}
+ als_with_mean_difference <- als_with_mean %>%
+pivot_wider(names_from = rating_type, values_from = mean_overall_rating) %>%
+mutate(percentage_difference_in_airline_and_lounge_rating = (airline_rating-lounge_rating)/10*100,
+       percentage_difference_in_airline_and_seat_rating = (airline_rating-seat_rating)/10*100)
+
+als_with_mean_difference
+```
+
+```{r changing-values-to-absolute}
+abs_data <- als_with_mean_difference %>%
+  mutate(abs_percentage_difference_in_airline_and_seat_rating = abs(percentage_difference_in_airline_and_seat_rating)) %>%
+  select(airline_name, author, airline_rating, seat_rating, lounge_rating, percentage_difference_in_airline_and_lounge_rating, abs_percentage_difference_in_airline_and_seat_rating)
+
+abs_data
+```
+
+To visualize the results a graph of each of the differences between ratings was created to try and see if there was a correlation.
+
+```{r graph-airline-and-lounge-ratings}
+abs_data %>%
+  ggplot(mapping = aes(y = author, 
+                      x = percentage_difference_in_airline_and_lounge_rating )) + 
+  geom_bar(stat = "identity") +
+  labs(title = "Difference in the Ratings between Airline and Lounge",
+       y = "Author",
+       x = "% Difference") 
+```
+
+```{r graph-airline-and-seat-ratings}
+abs_data %>%
+  ggplot(mapping = aes(y = author, 
+                      x = abs_percentage_difference_in_airline_and_seat_rating )) + 
+  geom_bar(stat = "identity") +
+  labs(title = "Percentage Difference in the Ratings between Airline and Seat",
+       y = "Author",
+       x = "% Difference")
+```
+From the graphs we can see that the majority of the percentage differences between ratings is quite low, to look closer into detail a summary table can be produced to find the mean percentage difference which will show how much the ratings differed  
+
+```{r}
+abs_data %>%
+  select(percentage_difference_in_airline_and_lounge_rating, abs_percentage_difference_in_airline_and_seat_rating, author) %>%
+summary()
+
+```
+
+Hypothesis: we expect both the seat rating and the lounge rating to both individualy have a positive correlation to the airline rating because both are provided by the airline so this would affect the authors overall rating of the airline.
+
+
