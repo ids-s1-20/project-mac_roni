@@ -60,7 +60,21 @@ Question 2: To what extent do passengers in first class give better
 ratings than passengers in other cabin types?
 
 Question 3: Improvements in what amenities correlate to improvement in
-the overal rating the most
+the overal rating the most We defined improvement of a airline as the
+sign of the slope of the overall rating vs date fit. The same definition
+of improvement was used to find the improvement of cabin staff, food and
+beverage, seat comfort inflight entertainment and value for money
+rating. We omitted wifi rating because of a lack of data points. The
+improvement was calculated separately for every distinct airline
+reviewer pair. This yields an answer to the question has the airline
+improved over time in the eyes of a particular reviewer? (yes, no, it
+got worse)
+
+Our findings
+
+  - cabin staff rating correlates the strongest with the improvement in
+    overall rating
+  - inflight entertainment rating correlates the least
 
 Question 4: Do positive reviews on an airline and positive reviews on
 lounge and seat have a correlation?
