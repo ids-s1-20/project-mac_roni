@@ -368,7 +368,7 @@ rating_cols <- c("overall_rating_improvement",
 ```
 
 
-```{r warning=FALSE ,message=FALSE,error=FALSE}
+```{r warning=FALSE ,message=FALSE,error=FALSE, echo=FALSE}
 joint_improvements%>%
   select(rating_cols)%>%
   correlate()%>%
