@@ -137,9 +137,11 @@ airline_nonas %>%
 Main Finding: There is no significant pattern in between years or at certain times of the year. 
 - One would expect airlines to offer the same service throughout each year. 
 
+There is a subtle decrease in all airlines around the winter months -> decrease in passengers -> poor ratings have a greater effect on overall rating
+.pull-left[
 # Limitations
 
-.pull-left[
+
 There are some limitations that influenced the exploration of time variable.
 
 - Uncertainty in geom_smooth function (high)
@@ -151,23 +153,19 @@ There are some limitations that influenced the exploration of time variable.
 airline_nonas %>%
   group_by(airline_name, date) %>%
   summarise(mean_overall_rating = mean(overall_rating, na.rm = TRUE)) %>%
-  filter(airline_name %in% c("asiana-airlines", "garuda-indonesia", "air-astana", "bangkok-airways", "indigo-airlines"),
+  filter(airline_name %in% c("asiana-airlines"),
          date >= "2014-01-01") %>%
-  ggplot(aes(x = date, y = mean_overall_rating, color = airline_name)) +
+  ggplot(aes(x = date, y = mean_overall_rating)) +
   geom_smooth(se = TRUE) +
   labs(
-    title = "Overall ratings of five highest ranked airlines",
+    title = "Uncertainty in overall ratings of Asiana Airlines",
     subtitle = "From 2014 to 2015",
     x = "Date",
     y = "Overall Rating"
-  ) +
-  guides(color = guide_legend(title = "Airline Name")) 
+  )
 ```
 ]
-
 ---
-
-# Question 2
 
 To what extent do passengers in first class give better ratings
 than passengers in other cabin types? 
@@ -209,7 +207,12 @@ class since fewer passengers chose that cabin type.
 
 ---
 
-# Do airline improve their rating with a particular customer over time
+class: inverse, center, middle
+
+## Question 1
+# Improvements in what amenities correlate to improvement in the overal rating the most
+
+---
 First we need to filter out all the reviewers who didn't rate a airline twice
 ```{r filter-repeated-authors}
 author_more_than_once <-airline%>%
@@ -360,7 +363,7 @@ rating_cols <- c("overall_rating_improvement",
 ```
 
 
-```{r warning=FALSE ,message=FALSE,error=FALSE}
+```{r warning=FALSE ,message=FALSE,error=FALSE, echo=FALSE}
 joint_improvements%>%
   select(rating_cols)%>%
   correlate()%>%
