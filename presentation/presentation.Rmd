@@ -1,5 +1,5 @@
 ---
-title: "How do the amenities impact the flight's overall rating?"
+title: "How do the amenities offered impact the flight's overall rating?"
 subtitle: "By cabin, seat, lounge and over time"
 author: "macaRoni <br> Sophie Kerfoot, Ben Thamm, Henrich Hegedus, Purvi Harwani"
 institute: "University of Edinburgh"
@@ -29,7 +29,7 @@ library(skimr)
 library(tidytext)
 library(corrr)
 theme_set(theme_minimal())
-library(here)
+#library(here)
 ```
 
 ```{r setup, include=FALSE}
@@ -48,7 +48,7 @@ seat <- read_csv(here::here("data/seat.csv"))
 
 class: center, middle
 
-## Main Goal: To find the amenities that impact a flight's overall rating (Cabin, Seat, Lounge & Over Time) 
+## Main Goal: To find the amenities that impact a flight's overall rating (in terms of Cabin, Seat, Lounge & Over Time) 
 
 ---
 
@@ -164,12 +164,9 @@ airline_nonas %>%
   guides(color = guide_legend(title = "Airline Name")) 
 ```
 ]
----
-# Question 1
-
-Question: How does the overall ratings for airlines change depending of the time of year? Do these patterns repeat every year? Which traveller type is present during which time of the year?
 
 ---
+
 # Question 2
 
 To what extent do passengers in first class give better ratings
