@@ -137,9 +137,11 @@ airline_nonas %>%
 Main Finding: There is no significant pattern in between years or at certain times of the year. 
 - One would expect airlines to offer the same service throughout each year. 
 
+There is a subtle decrease in all airlines around the winter months -> decrease in passengers -> poor ratings have a greater effect on overall rating
+.pull-left[
 # Limitations
 
-.pull-left[
+
 There are some limitations that influenced the exploration of time variable.
 
 - Uncertainty in geom_smooth function (high)
@@ -151,24 +153,18 @@ There are some limitations that influenced the exploration of time variable.
 airline_nonas %>%
   group_by(airline_name, date) %>%
   summarise(mean_overall_rating = mean(overall_rating, na.rm = TRUE)) %>%
-  filter(airline_name %in% c("asiana-airlines", "garuda-indonesia", "air-astana", "bangkok-airways", "indigo-airlines"),
+  filter(airline_name %in% c("asiana-airlines"),
          date >= "2014-01-01") %>%
-  ggplot(aes(x = date, y = mean_overall_rating, color = airline_name)) +
+  ggplot(aes(x = date, y = mean_overall_rating)) +
   geom_smooth(se = TRUE) +
   labs(
-    title = "Overall ratings of five highest ranked airlines",
+    title = "Uncertainty in overall ratings of Asiana Airlines",
     subtitle = "From 2014 to 2015",
     x = "Date",
     y = "Overall Rating"
-  ) +
-  guides(color = guide_legend(title = "Airline Name")) 
+  )
 ```
 ]
----
-# Question 1
-
-Question: How does the overall ratings for airlines change depending of the time of year? Do these patterns repeat every year? Which traveller type is present during which time of the year?
-
 ---
 # Question 2
 

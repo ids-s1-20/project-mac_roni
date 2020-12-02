@@ -106,9 +106,11 @@ class: inverse, center, middle
 Main Finding: There is no significant pattern in between years or at certain times of the year. 
 - One would expect airlines to offer the same service throughout each year. 
 
+There is a subtle decrease in all airlines around the winter months -&gt; decrease in passengers -&gt; poor ratings have a greater effect on overall rating
+.pull-left[
 # Limitations
 
-.pull-left[
+
 There are some limitations that influenced the exploration of time variable.
 
 - Uncertainty in geom_smooth function (high)
@@ -118,11 +120,6 @@ There are some limitations that influenced the exploration of time variable.
 .pull-right[
 &lt;img src="presentation_files/figure-html/five-highest-ratings-plots-with-error-1.png" width="100%" /&gt;
 ]
----
-# Question 1
-
-Question: How does the overall ratings for airlines change depending of the time of year? Do these patterns repeat every year? Which traveller type is present during which time of the year?
-
 ---
 # Question 2
 
@@ -173,7 +170,12 @@ class since fewer passengers chose that cabin type.
 
 ---
 
-# Do airline improve their rating with a particular customer over time
+class: inverse, center, middle
+
+## Question 1
+# Improvements in what amenities correlate to improvement in the overal rating the most
+
+---
 First we need to filter out all the reviewers who didn't rate a airline twice
 
 ```r

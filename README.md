@@ -1,8 +1,72 @@
-Which amenities impact the airline rating the most?
+How do the amenities impact the flight’s overall rating?
 ================
-macaRoni
+by macaRoni
 
 ## Summary
+
+We will be investigating the question: How do the amenities impact the
+flight’s overall rating? In our case, the amenities we will be looking
+at are cabin, seat, lounge and time.
+
+A brief introduction to the dataset: In short, the website Skytrax
+allows passengers to fill out a survey on certain aspects of their
+flight. The answers to these surveys were scraped and compiled in three
+dataframes (Airline ratings, Seat ratings and Lounge Ratings) using a
+Github Repository by quankiquanki.
+
+Each dataset has 20 variables, and the number of observations vary
+depending on the dataset (approx. 40000 for Airline Ratings, approx.
+2000 for Seat and Lounge).
+
+  - Columns: Airline Information, Author Information, Overall Rating,
+    Contributors to the overall rating.
+
+  - Observations: each observation is a passenger that filled out a
+    survey based on their experience of the airline, lounge or seat.
+
+Question 1: How does the overall ratings for airlines change depending
+on the time of the year?
+
+Assumptions:
+
+  - Time only ranges from 2014 - 2015 due to lack of data points for
+    other years
+
+  - Overall ratings averaged by date and airline name to avoid multiple
+    data points for the same day
+
+  - Focus was put on the top five airlines that had the highest overall
+    ratings as we are trying to understand why some airlines get higher
+    overall ratings than others.
+
+These are Asiana Airlines, Garuda Indonesia, Air Astana, Bangkok
+Airways, and Indigo Airlines.
+
+Main finding from the visualization: no significant pattern in between
+years or at certain times of the year as airlines to offer the same
+service throughout each year. Slight dip in overall ratings during the
+winter months due to less survey submissions and therefore negative
+surveys having more weight.
+
+Finally, some limitations:
+
+  - Uncertainty in geom\_smooth function (high). Highlights the
+    variability of ratings.
+
+  - Limited time period (2 years) – 10 years would allow any patterns to
+    be observed more reliably.
+
+Question 2: To what extent do passengers in first class give better
+ratings than passengers in other cabin types?
+
+Question 3: Improvements in what amenities correlate to improvement in
+the overal rating the most
+
+Question 4: Do positive reviews on an airline and positive reviews on
+lounge and seat have a correlation?
+
+Conclusions: 1. Time does not affect the overall ratings as airlines
+give same service on all flights. 2. 3. 4.
 
 Write-up of your project and findings go here. Think of this as the text
 of your presentation. The length should be roughly 5 minutes when read
