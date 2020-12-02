@@ -1,4 +1,4 @@
-Which amenities impact the airline rating the most?
+How do the amenities impact the flight’s overall rating?
 ================
 by macaRoni
 

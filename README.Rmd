@@ -1,5 +1,5 @@
 ---
-title: Which amenities impact the airline rating the most? 
+title: How do the amenities impact the flight's overall rating?
 author: by macaRoni
 output: github_document
 ---
