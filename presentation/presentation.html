@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="" xml:lang="">
   <head>
-    <title>How do the amenities impact the flight’s overall rating?</title>
+    <title>How do the amenities offered impact the flight’s overall rating?</title>
     <meta charset="utf-8" />
     <meta name="author" content="macaRoni   Sophie Kerfoot, Ben Thamm, Henrich Hegedus, Purvi Harwani" />
-    <meta name="date" content="2020-12-02" />
+    <meta name="date" content="2020-12-03" />
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/default-fonts.css" rel="stylesheet" />
   </head>
@@ -12,11 +12,11 @@
     <textarea id="source">
 class: center, middle, inverse, title-slide
 
-# How do the amenities impact the flight’s overall rating?
+# How do the amenities offered impact the flight’s overall rating?
 ## By cabin, seat, lounge and over time
 ### macaRoni <br> Sophie Kerfoot, Ben Thamm, Henrich Hegedus, Purvi Harwani
 ### University of Edinburgh
-### 2020-12-02
+### 2020-12-03
 
 ---
 
@@ -69,7 +69,7 @@ class: inverse, center, middle
 
 ---
 
-# Assumptions
+# Parameters
 
 
 
@@ -121,7 +121,6 @@ There are some limitations that influenced the exploration of time variable.
 &lt;img src="presentation_files/figure-html/five-highest-ratings-plots-with-error-1.png" width="100%" /&gt;
 ]
 ---
-# Question 2
 
 To what extent do passengers in first class give better ratings
 than passengers in other cabin types? 
@@ -153,7 +152,7 @@ class since fewer passengers chose that cabin type.
 
 class: inverse, center, middle
 
-## Question 1
+## Question 3
 # Improvements in what amenities correlate to improvement in the overal rating the most
 
 ---
@@ -210,13 +209,6 @@ Comparing the correlation coefficients between improvements in various ratings a
 
 
 
-
-```r
-joint_improvements%&gt;%
-  select(rating_cols)%&gt;%
-  correlate()%&gt;%
-  select(term, overall_rating_improvement)
-```
 
 ```
 ## # A tibble: 6 x 2

@@ -85,7 +85,7 @@ class: inverse, center, middle
 
 ---
 
-# Assumptions
+# Parameters
 
 ```{r mean-ratings-airlines, message = FALSE, echo = FALSE}
 airline_nonas <- airline %>%
@@ -209,7 +209,7 @@ class since fewer passengers chose that cabin type.
 
 class: inverse, center, middle
 
-## Question 1
+## Question 3
 # Improvements in what amenities correlate to improvement in the overal rating the most
 
 ---
