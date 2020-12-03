@@ -357,26 +357,6 @@ airline%>%
 ```
 ]
 ---
-```{r repeated-rating-distribution, echo=FALSE,  message=FALSE}  
-author_more_than_once%>%
-  group_by(author)%>%
-  summarize(count = n())%>%
-  ggplot(aes(x=count))+
-  geom_histogram()+
-  labs(
-    title = "Repeated rating of one airline",
-    subtitle = "by one customer",
-    x = "times rated",
-    y = "number of reviewers"
-  )
-  
-```
-- significantly right skewed
-- most rate only twice
-- hardly any people rate one airline more than 10 times
-- we are left with `r nrow(author_more_than_once)` rows and `r length(unique(author_more_than_once$author))` unique authors
-
----
 
 ```{r slopes-function, echo=FALSE, message=FALSE, warning=FALSE}
 #https://stackoverflow.com/a/31874484
