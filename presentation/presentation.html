@@ -130,9 +130,13 @@ class: inverse, center, middle
 
 
 ---
-There are 4 different cabins in this dataset ( First class, Business Class, Premium Economy, Economy)
+# Different cabins classes
+There are 4 different cabins in this dataset:
+First class, Business Class, Premium Economy, Economy
+
 Let's look at the average overall rating the passengers gave for each of the classes. 
-Hypothesis: We expect first class to give the highest rating since it's generally known for offering the most plush services. 
+#Hypothesis
+We expect first class to give the highest rating since it's generally known for offering the most plush services. 
 
 
 ```
@@ -145,16 +149,12 @@ Hypothesis: We expect first class to give the highest rating since it's generall
 ## 4 Premium Economy                5.86
 ```
 
-But,this doesn't match our hypothesis. It is the Business Class that tops the list, closely followed by First Class.
+But, this doesn't match our hypothesis! It is the Business Class that tops the list, closely followed by First Class.
 
 Is this because few number of passengers were seeking the first class services in the first place and instead chose to travel by another cabin class?
-
-Let's find out!
-
 ---
 
-After looking into it, that is probably the case! Out of all travelers ( for whom we do have observations),
-least number of them chose to fly in the first class cabin. 
+#Passenegrs in each cabin class
 
 
 ```
@@ -168,6 +168,8 @@ least number of them chose to fly in the first class cabin.
 ## 4 First Class       846
 ```
 
+Out of all travelers (for whom we do have observations), least number of them chose to fly in the first class cabin. 
+
 ---
 
 Let's look into which amenities the first class cabin passengers mentioned the most about in their comments and how did they rate them? 
@@ -176,10 +178,29 @@ Let's look into which amenities the first class cabin passengers mentioned the m
 
 
 
+```
+## # A tibble: 65 x 2
+##    word            n
+##    &lt;chr&gt;       &lt;int&gt;
+##  1 first class   936
+##  2 on the        386
+##  3 of the        314
+##  4 in the        306
+##  5 in first      274
+##  6 the flight    271
+##  7 to the        271
+##  8 and the       261
+##  9 i was         257
+## 10 it was        200
+## # … with 55 more rows
+```
 
-The results reveal phrases like "wifi connectivity", "flight entertainment"  don't appear commonly, so I will choose to not look  into the amenity variable associated with those words as it is not ***highly*** spoken about by the first class passengers.
+The results reveal phrases like "wifi connectivity", "flight entertainment"  don't appear commonly, so we chose not to look into the amenity variable associated with those words as it is not ***highly*** spoken about by the first class passengers.
 
 So, after narrowing the search using text analysis, seat, cabin staff and food were used to explore the ratings.
+---
+#Summary Statistics
+
 
 
 
@@ -192,14 +213,22 @@ So, after narrowing the search using text analysis, seat, cabin staff and food w
 ## 1                 3.80                3.84                3.40              6.63
 ```
 
+The summary statistics reveal that the mean overall rating is 6.63 out of 10 and the flight services frequently commented about are given a similar rating (which are rated out of 5) proportionately. So, there the amenities do affect the overall rating. 
+
+# Further verification
+
+To verify the connection drawn, looking at the density of observations for each 
+level of rating may serve as a good idea!
+
+
 ---
+#Variability in ratings
 
 
 
-&lt;img src="presentation_files/figure-html/variability-1.png" width="80%" /&gt;
+&lt;img src="presentation_files/figure-html/variability-1.png" width="65%" /&gt;
 
 This runs in line with the average statistics visualized in the tibble before.
-
 ---
 
 class: inverse, center, middle
