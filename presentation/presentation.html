@@ -156,23 +156,7 @@ class: inverse, center, middle
 # Improvements in what amenities correlate to improvement in the overal rating the most
 
 ---
-First we need to filter out all the reviewers who didn't rate a airline twice
 
-```r
-author_more_than_once &lt;-airline%&gt;%
-  mutate(duplicate_auth = duplicated(.$author))%&gt;%
-  filter(duplicate_auth)%&gt;%
-  group_by(airline_name,author)%&gt;%
-  mutate(count = n())%&gt;%
-  filter(count&gt;1)%&gt;%
-  ungroup()
-```
-after filtering out the reviewers who didn't rate a single airline more than once we are left with 3640 and 871 unique authors
----
-&lt;img src="presentation_files/figure-html/repeated-rating-distribution-1.png" width="80%" /&gt;
-- significantly right skewed
-- most rate only twice
-- hardly any people rate one airline more than 10 times
 ---
 # Definition of improvement
 - sign of linear fit slope
@@ -187,6 +171,13 @@ after filtering out the reviewers who didn't rate a single airline more than onc
 .pull-right[
 &lt;img src="presentation_files/figure-html/negative-slope-1.png" width="80%" /&gt;
 ]
+---
+&lt;img src="presentation_files/figure-html/repeated-rating-distribution-1.png" width="80%" /&gt;
+- significantly right skewed
+- most rate only twice
+- hardly any people rate one airline more than 10 times
+- we are left with 3640 rows and 871 unique authors
+
 ---
 
 
@@ -229,8 +220,10 @@ Comparing the correlation coefficients between improvements in various ratings a
 
 class: inverse, center, middle
 # Question 4
-#Do positive reviews on an airline and positive reviews on lounge and seat have a correlation?
+#Do positive ratings on an airline and positive ratings on lounge and seat have a correlation?
 ---
+
+#Difference in Ratings
 
 Hypothesis: we expect both the seat rating and the lounge rating to both have a positive correlation to the airline rating because both are provided by the airline so this would affect the authors overall rating of the airline.
 
@@ -290,20 +283,8 @@ select(c(3:5)) %&gt;%
 ## lounge_rating       0.4426391   0.5211874     1.0000000
 ```
 
-airline_rating and seat_rating correlation coefficient : 0.522 (3dp)
-airline_rating and lounge_rating correlation coefficient: 0.443 (3dp)
-
-
-
-
-
-To further look into what affects the authors' ratings we decided to see if the seat and lounge ratings had any correlation to airline ratings. Our hypothesis for this was that we would expect both the seat rating and the lounge rating to have a positive correlation to the airline rating because both are provided by the airline - so this would affect the authors overall rating of the airline.
-
-To do this, the authors that rated all three were selected and a table was compiled of the ratings so that duplicates were filtered out. Then the difference in the ratings were compared. The graphs show the percentage difference between the authors ratings of lounge and airline, and seat and airline. We can see that in general the percentage differences are quite low despite there being a few exceptions.
-
-To try and see more clearly what the correlations were like we found the correlation coefficient was found and from this we can determine that the seat rating had a slightly stronger correlation to the airline rating as the correlation coefficient is slightly higher than lounge and airline.
-
-Both values are above 0 and closer to 1 than -1 suggesting that both that lounge and seat ratings have a positive correlation to the airline rating which proves our hypothesis to be correct. This then suggests the seat and lounge will have an affect on the authors rating of the airline and flight even though there was only a proportion of authors that rated all three.
+- airline_rating and seat_rating correlation coefficient : 0.522 (3dp)
+- airline_rating and lounge_rating correlation coefficient: 0.443 (3dp)
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
