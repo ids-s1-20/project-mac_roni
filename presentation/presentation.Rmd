@@ -375,13 +375,22 @@ joint_improvements%>%
 
 
 ---
-# 4: Do positive reviews on an airline and positive reviews on lounge and seat have a correlation?
+
+class: inverse, center, middle
+# Question 4
+#Do positive reviews on an airline and positive reviews on lounge and seat have a correlation?
+---
 
 Hypothesis: we expect both the seat rating and the lounge rating to both have a positive correlation to the airline rating because both are provided by the airline so this would affect the authors overall rating of the airline.
 
 - looked at authors that rated all three
+
 - calculated the difference in ratings 
+
 - shown as a percentage difference
+
+- generally low
+
 
 ```{r - selecting-relevant-columns, include = FALSE}
 airline_rating <- airline %>%
@@ -414,7 +423,7 @@ airline_lounge_seat <- airline_lounge_seat[, c(1, 3, 5, 2, 7, 4, 6, 8)]
 ```
 
 
-```{r creating-overall-column, include = FALSE}
+```{r creating-overall-column, include=FALSE}
 als_overall_rating <- airline_lounge_seat %>%
   pivot_longer(cols = c("airline_rating", "seat_rating", "lounge_rating"), values_to = ("overall_rating")) %>%
    rename(rating_type = "name") %>%
@@ -431,18 +440,20 @@ als_overall_rating
   
 ```
 
-```{r calculating-mean-where-authors-have-multiple-ratings-for-one-type, include = FALSE}
+```{r calculating-mean-where-authors-have-multiple-ratings-for-one-type, include=FALSE}
 als_with_mean <- als_overall_rating %>%
-  group_by(author, rating_type) %>%
+      group_by(author, rating_type) %>%
   mutate(mean_overall_rating = mean(overall_rating)) %>%
   select(airline_name, author, rating_type,mean_overall_rating) %>%
-  distinct()
+  distinct() %>%
+  ungroup()
+
 
 als_with_mean
 ```
 
 
-```{r calculating-the-difference-between-the-means-of-different-rating-types, include = FALSE}
+```{r calculating-the-difference-between-the-means-of-different-rating-types, include=FALSE}
  als_with_mean_difference <- als_with_mean %>%
 pivot_wider(names_from = rating_type, values_from = mean_overall_rating) %>%
 mutate(percentage_difference_in_airline_and_lounge_rating = (airline_rating-lounge_rating)/10*100,
@@ -459,6 +470,7 @@ abs_data <- als_with_mean_difference %>%
 abs_data
 ```
 
+
 .pull-left[
 ```{r graph-airline-and-lounge-ratings, echo = FALSE}
 abs_data %>%
@@ -470,7 +482,6 @@ abs_data %>%
        x = "% Difference") 
 ```
 ]
-
 
 .pull-right[
 ```{r graph-airline-and-seat-ratings, echo = FALSE}
@@ -486,27 +497,31 @@ abs_data %>%
 
 ---
 
-#Observing Overall Differences
+#Observing Overall Correlation
 
-- Mean calculated to find overall percentage difference in ratings
+- correlation calculated
+- found a positive correlation
 
-```{r, echo = FALSE}
+```{r calculating the correlation}
 abs_data %>%
-  select(percentage_difference_in_airline_and_lounge_rating, abs_percentage_difference_in_airline_and_seat_rating, author) %>%
-summary()
+select(c(3:5)) %>%
+  cor()
 ```
 
-From Table
-- mean percentage difference in lounge and airline ratings: 33.84 %
-- mean percentage difference in seat and airline ratings: 24.73 %
+airline_rating and seat_rating correlation coefficient : 0.522 (3dp)
+airline_rating and lounge_rating correlation coefficient: 0.443 (3dp)
 
-To further look into what affects the authors' ratings we decided to see if the seat and lounge ratings had any correlation to airline ratings. Our hypothesis for this was that we would expect both the seat rating and the lounge rating to have a positive correlation to the airline rating because both are provided by the airline so this would affect the authors overall rating of the airline.
 
-To do this, the authors that rated all three were selected and a table was compiled of the ratings so that  with duplicates being filtered out. Then the difference in the ratings were compared. The graphs show the percentage difference between the authors ratings of lounge and airline, and seat and airline. We can see that in general the percentage differences are quite low despite there being a few exceptions.
 
-To try and see more clearly what the percentage differences were like we found the mean percentage difference and found that the seat rating had a stronger correlation to the airline rating as the mean percentage difference between the seat and airline ratings is slightly lower than lounge and airline suggesting that the ratings were more similar. 
 
-The value of the mean percentage difference is quite low  which suggests our hypothesis was correct and that they do have a correlation. This then suggests the seat and lounge will have an affect on the authors rating of the airline and flight even though there was only a proportion of authors that rated all three.
+
+To further look into what affects the authors' ratings we decided to see if the seat and lounge ratings had any correlation to airline ratings. Our hypothesis for this was that we would expect both the seat rating and the lounge rating to have a positive correlation to the airline rating because both are provided by the airline - so this would affect the authors overall rating of the airline.
+
+To do this, the authors that rated all three were selected and a table was compiled of the ratings so that duplicates were filtered out. Then the difference in the ratings were compared. The graphs show the percentage difference between the authors ratings of lounge and airline, and seat and airline. We can see that in general the percentage differences are quite low despite there being a few exceptions.
+
+To try and see more clearly what the correlations were like we found the correlation coefficient was found and from this we can determine that the seat rating had a slightly stronger correlation to the airline rating as the correlation coefficient is slightly higher than lounge and airline.
+
+Both values are above 0 and closer to 1 than -1 suggesting that both that lounge and seat ratings have a positive correlation to the airline rating which proves our hypothesis to be correct. This then suggests the seat and lounge will have an affect on the authors rating of the airline and flight even though there was only a proportion of authors that rated all three.
 
 
 
