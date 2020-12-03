@@ -8,6 +8,7 @@ library(broom)
 library(readr)
 library(skimr)
 library(tidytext)
+library(patchwork)
 ```
 
 ## 1\. Introduction
@@ -235,10 +236,7 @@ airline %>%
     ## 4 Premium Economy                5.86
 
 Business class has received the highest amount of rating. It is closely
-followed by First class. This doesn’t match our hypothesis.
-
-Is this because passengers feel the business class services are better
-or fewer people choose to travel in first class? Let’s find out\!
+followed by First class.
 
 ``` r
 airline %>%
@@ -256,9 +254,6 @@ airline %>%
     ## 2 Business Class   6133
     ## 3 Premium Economy  1445
     ## 4 First Class       846
-
-Now, it is obvious that first class has a lower rating compared to
-business class since fewer passengers chose that cabin type.
 
 Let’s look into what type of travelers opt for first class cabin which
 may be able to explain the above.
@@ -312,10 +307,10 @@ two_words <- airline_amen_nonas %>%
 ```
 
 The results reveal phrases like “wifi connectivity”, “flight
-entertainment” don’t appear commonly, so I will choose to not look into
+entertainment” don’t appear commonly, so I will not choose to look into
 the amenity variable associated with those words as it is not
-***highly*** reviewed by the first class passengers. To be thorough, I
-have unnested the sentences into two tokens instead of just words.
+***highly*** spoken about by the first class passengers. To be thorough,
+I have unnested the sentences into two tokens instead of just words.
 
 So, after narrowing my search using text analysis, I will filter for
 seat, cabin staff and food and, explore the ratings given for these. The
@@ -387,7 +382,11 @@ ggplot( mapping = aes(x = mean_food_beverages_rating)) +
 overall_var <-y %>%
   ggplot( mapping = aes(x = mean_overall_rating)) +
   geom_density()
+
+overall_var
 ```
+
+![](proposal_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
 
 This runs in line with the average statistics visualized in the tibble
 before.

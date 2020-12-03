@@ -10,6 +10,7 @@ library(broom)
 library(readr)
 library(skimr)
 library(tidytext)
+library(patchwork)
 ```
 
 ## 1. Introduction
@@ -148,9 +149,9 @@ Also, how satisfied are the first class passengers with the services they mentio
 
 
 Let's look at the average overall rating the passengers gave for each of the classes. 
-Hypothesis: We expect first class to have a higher rating since, as per the norm, first class is considered to be the most preferable one.
+Hypothesis: We expect first class to give the highest rating since it's generally known for offering the most plush services. 
 
-```{r}
+```{r-cabin_ratings, echo = FALSE, message = FALSE, out.width = "100%"}
 airline %>%
   filter(!is.na(overall_rating), !is.na(cabin_flown) ) %>%
   group_by(cabin_flown) %>%
@@ -193,7 +194,7 @@ The distribution of travelers also reveals why first class has the smallest numb
 
 Let's look into which amenities did the first class cabin passengers mention the most about in their comments and how did they rate them? 
  
-Filtered for NAs for variables that I am entirely sure of looking into.
+I filtered for NAs for variables that I am entirely sure of looking into.
 
 ```{r}
 airline_amen_nonas <- airline %>%
@@ -211,16 +212,11 @@ two_words <- airline_amen_nonas %>%
   count(word, sort = TRUE) %>% 
   slice_max(n, n = 65)
 
-#single_word <- airline_amen_nonas %>%
- # filter( cabin_flown == "First Class" ) %>%
- # unnest_tokens(word, content) %>%
- # anti_join(get_stopwords(), by = "word") %>%
- # count(word, sort = TRUE) %>% 
- # slice_max(n, n = 20)
+two_words
 
 ```
 
-The results reveal phrases like "wifi connectivity", "flight entertainment"  don't appear commonly, so I will choose to not look  into the amenity variable associated with those words as it is not ***highly*** reviewed by the first class passengers.
+The results reveal phrases like "wifi connectivity", "flight entertainment"  don't appear commonly, so I will not choose to look  into the amenity variable associated with those words as it is not ***highly*** spoken about by the first class passengers.
 To be thorough, I have unnested the sentences into two tokens instead of just words. 
 
 So, after narrowing my search using text analysis, I will filter for seat, cabin staff and food and, explore the ratings given for these. 
@@ -264,23 +260,30 @@ But, let's see the variability to reaffirm our claim.
             mean_overall_rating = mean(overall_rating))
 ```
 
-```{r}
+```{r_variability}
 
 seat_var <- y %>%
 ggplot( mapping = aes(x = mean_seat_comfort_rating)) +
-  geom_density() 
+  geom_density() +
+  labs( x = "Seat comfort rating")
 
 cabin_var <- y %>%
 ggplot( mapping = aes(x = mean_cabin_staff_rating)) +
-  geom_density() 
+  geom_density() +
+  labs( x = "Cabin staff rating")
 
 food_var <- y %>%
 ggplot( mapping = aes(x = mean_food_beverages_rating)) +
-  geom_density()
+  geom_density() +
+  labs( x = "Food and beverages rating")
 
 overall_var <-y %>%
   ggplot( mapping = aes(x = mean_overall_rating)) +
-  geom_density()
+  geom_density() +
+  labs( x = "Overall rating")
+
+collection <- seat_var + cabin_var + food_var + overall_var
+collection
 
 ```
 

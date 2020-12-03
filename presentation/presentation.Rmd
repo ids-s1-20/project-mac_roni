@@ -167,14 +167,18 @@ airline_nonas %>%
 ]
 ---
 
-To what extent do passengers in first class give better ratings
-than passengers in other cabin types? 
-Note: There are 4 different cabins in this dataset ( First class, Business Class, Premium Economy, Economy)
+class: inverse, center, middle
+
+## Question 2
+# To what extent do passengers in first class give better ratings than passengers in other cabin types? 
+# Note: There are 4 different cabins in this dataset ( First class, Business Class, Premium Economy, Economy)
+
+---
 
 Let's look at the average overall rating the passengers gave for each of the classes. 
-Hypothesis: We expect first class to have a higher rating since, as per the norm, first class is considered to be the most preferable one.
+Hypothesis: We expect first class to give the highest rating since it's generally known for offering the most plush services. 
 
-```{r, echo = FALSE, message = FALSE, eval = FALSE}
+```{r-cabin_ratings, echo = FALSE, message = FALSE, out.width = "100%"}
 airline %>%
   filter(!is.na(overall_rating), !is.na(cabin_flown) ) %>%
   group_by(cabin_flown) %>%
@@ -182,18 +186,18 @@ airline %>%
   arrange(desc(mean_overall_rating))
 ```
 
-Business class has received the highest amount of rating. It is closely followed by 
-First class. This doesn't match our hypothesis. 
+But,this doesn't match our hypothesis. It is the Business Class that tops the list, closely followed by First Class.
 
-Is this because passengers feel the business class services are better or fewer people choose
-to travel in first class?
+Is this because few number of passengers were seeking the first class services in the first place and instead chose to travel by another cabin class?
+
 Let's find out!
 
 ---
 
+After looking into it, that is probably the case! Out of all travelers ( for whom we do have observations),
+least number of them chose to fly in the first class cabin. 
 
-
-```{r echo = FALSE, message = FALSE, eval = FALSE}
+```{r-no-of-passengers, echo = FALSE, message = FALSE}
 airline %>%
   filter(!is.na(overall_rating), !is.na(cabin_flown) ) %>%
   group_by(cabin_flown) %>%
@@ -201,9 +205,86 @@ airline %>%
   arrange(desc(n))
 ```
 
-Now, it is obvious that first class has a lower rating compared to business 
-class since fewer passengers chose that cabin type. 
+---
 
+Let's look into which amenities the first class cabin passengers mentioned the most about in their comments and how did they rate them? 
+
+```{r-filter}
+# I filtered for NAs for variables that I am entirely sure of looking into.
+airline_amen_nonas <- airline %>%
+  drop_na(overall_rating, value_money_rating, cabin_flown)  
+
+```
+
+Text analysis:
+
+```{r-text-analysis-for-filter, echo = FALSE, message = FALSE }
+
+two_words <- airline_amen_nonas %>%
+  filter( cabin_flown == "First Class" ) %>%
+  unnest_tokens(word, content, token = "ngrams", n = 2) %>%
+  count(word, sort = TRUE) %>% 
+  slice_max(n, n = 65)
+#To be thorough, I have unnested the sentences into two tokens instead of just words.
+
+two_words
+
+```
+
+The results reveal phrases like "wifi connectivity", "flight entertainment"  don't appear commonly, so I will choose to not look  into the amenity variable associated with those words as it is not ***highly*** spoken about by the first class passengers.
+
+So, after narrowing the search using text analysis, seat, cabin staff and food were used to explore the ratings.
+
+---
+
+```{r-filter-post-text-analysis}
+
+amen_filtered <- airline %>%
+  drop_na(overall_rating, cabin_flown, seat_comfort_rating,
+          cabin_staff_rating, food_beverages_rating)  
+
+```
+
+```{r-summary-statistics, message = FALSE, echo = FALSE, out.width = "100%"}
+amen_filtered %>%
+  filter( cabin_flown == "First Class" ) %>%
+  select(overall_rating, value_money_rating, seat_comfort_rating,
+          cabin_staff_rating, food_beverages_rating) %>%
+  summarise(mean_seat_comfort_rating = mean(seat_comfort_rating),
+            mean_cabin_staff_rating = mean(cabin_staff_rating),
+            mean_food_beverages_rating = mean(food_beverages_rating),
+            mean_overall_rating = mean(overall_rating))
+```
+
+---
+
+```{r-variability, message= FALSE, echo= FALSE }
+
+seat_var <- y %>%
+ggplot( mapping = aes(x = mean_seat_comfort_rating)) +
+  geom_density() +
+  labs( x = "Seat comfort rating")
+
+cabin_var <- y %>%
+ggplot( mapping = aes(x = mean_cabin_staff_rating)) +
+  geom_density() +
+  labs( x = "Cabin staff rating")
+
+food_var <- y %>%
+ggplot( mapping = aes(x = mean_food_beverages_rating)) +
+  geom_density() +
+  labs( x = "Food and beverages rating")
+
+overall_var <-y %>%
+  ggplot( mapping = aes(x = mean_overall_rating)) +
+  geom_density() +
+  labs( x = "Overall rating")
+
+collection <- seat_var + cabin_var + food_var + overall_var
+collection
+```
+
+This runs in line with the average statistics visualized in the tibble before.
 
 ---
 
