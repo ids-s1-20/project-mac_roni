@@ -1,4 +1,4 @@
-How do the amenities impact the flight’s overall rating?
+How do the amenities offered impact the flight’s overall rating?
 ================
 by macaRoni
 
@@ -104,6 +104,13 @@ your project.
 ## Presentation
 
 Our presentation can be found [here](presentation/presentation.html).
+
+## Pre-Recorded Presentation
+
+Link:
+<https://ed-ac-uk.zoom.us/rec/share/43NlcULVjNAhX_DVJWhQU5OdJjrJmxkdoguh3f152VFfF1Ib4T7jnPI4ceyzR7lu.QPNDBsuoWvOIlYtw?startTime=1607024273000>
+
+Password: MacaR0n\!
 
 ## Data
 
