@@ -173,14 +173,14 @@ class: inverse, center, middle
 
 ## Question 2
 # To what extent do passengers in first class give better ratings than passengers in other cabin types? 
-# Note: There are 4 different cabins in this dataset ( First class, Business Class, Premium Economy, Economy)
+
 
 ---
-
+There are 4 different cabins in this dataset ( First class, Business Class, Premium Economy, Economy)
 Let's look at the average overall rating the passengers gave for each of the classes. 
 Hypothesis: We expect first class to give the highest rating since it's generally known for offering the most plush services. 
 
-```{r cabin_ratings, echo = FALSE, message = FALSE, eval = FALSE}
+```{r cabin_ratings, echo = FALSE, message = FALSE}
 airline %>%
   filter(!is.na(overall_rating), !is.na(cabin_flown) ) %>%
   group_by(cabin_flown) %>%
@@ -199,7 +199,7 @@ Let's find out!
 After looking into it, that is probably the case! Out of all travelers ( for whom we do have observations),
 least number of them chose to fly in the first class cabin. 
 
-```{r no-of-passengers, echo = FALSE, message = FALSE}
+```{r no-of-passengers, echo = FALSE, message = FALSE, out.width="100%"}
 airline %>%
   filter(!is.na(overall_rating), !is.na(cabin_flown) ) %>%
   group_by(cabin_flown) %>%
@@ -211,7 +211,7 @@ airline %>%
 
 Let's look into which amenities the first class cabin passengers mentioned the most about in their comments and how did they rate them? 
 
-```{r filter}
+```{r filter, message= FALSE, echo=FALSE}
 # I filtered for NAs for variables that I am entirely sure of looking into.
 airline_amen_nonas <- airline %>%
   drop_na(overall_rating, value_money_rating, cabin_flown)  
@@ -219,7 +219,7 @@ airline_amen_nonas <- airline %>%
 ```
 
 
-```{r text-analysis-for-filter, echo = FALSE, message = FALSE, eval = FALSE }
+```{r text-analysis-for-filter, echo = FALSE, message = FALSE}
 
 two_words <- airline_amen_nonas %>%
   filter( cabin_flown == "First Class" ) %>%
@@ -235,9 +235,8 @@ The results reveal phrases like "wifi connectivity", "flight entertainment"  don
 
 So, after narrowing the search using text analysis, seat, cabin staff and food were used to explore the ratings.
 
----
 
-```{r filter-post-text-analysis}
+```{r filter-post-text-analysis, echo = FALSE}
 
 amen_filtered <- airline %>%
   drop_na(overall_rating, cabin_flown, seat_comfort_rating,
@@ -258,7 +257,7 @@ amen_filtered %>%
 
 ---
 
-```{r creating-data-set, echo=FALSE}
+```{r creating-data-set, echo=FALSE, , warning=FALSE, message= FALSE}
  y <- amen_filtered %>%
   group_by(airline_name) %>%
   filter( cabin_flown == "First Class" ) %>%
@@ -271,7 +270,7 @@ amen_filtered %>%
             mean_overall_rating = mean(overall_rating))
 ```
 
-```{r variability, message= FALSE, echo= FALSE }
+```{r variability, warning=FALSE, message= FALSE, echo= FALSE }
 
 seat_var <- y %>%
 ggplot( mapping = aes(x = mean_seat_comfort_rating)) +
