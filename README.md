@@ -80,7 +80,8 @@ Question 4: Do positive reviews on an airline and positive reviews on
 lounge and seat have a correlation?
 
 Conclusions: 1. Time does not affect the overall ratings as airlines
-give same service on all flights. 2. 3. 4.
+give same service on all flights. 2. 3. 4. The Seats and lounges will
+affect the airlines overall rating.
 
 Write-up of your project and findings go here. Think of this as the text
 of your presentation. The length should be roughly 5 minutes when read
