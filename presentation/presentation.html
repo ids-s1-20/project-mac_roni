@@ -233,8 +233,7 @@ class: inverse, center, middle
 ---
 
 #Difference in Ratings
-
-Hypothesis: we expect both the seat rating and the lounge rating to both have a positive correlation to the airline rating because both are provided by the airline so this would affect the authors overall rating of the airline.
+Hypothesis: we expect both the seat rating and the lounge rating to  have a positive correlation to the airline rating because both are provided by the airline.
 
 - looked at authors that rated all three
 
@@ -276,14 +275,10 @@ Hypothesis: we expect both the seat rating and the lounge rating to both have a 
 #Observing Overall Correlation
 
 - correlation calculated
+
 - found a positive correlation
 
 
-```r
-abs_data %&gt;%
-select(c(3:5)) %&gt;%
-  cor()
-```
 
 ```
 ##                airline_rating seat_rating lounge_rating
@@ -292,7 +287,9 @@ select(c(3:5)) %&gt;%
 ## lounge_rating       0.4426391   0.5211874     1.0000000
 ```
 
+
 - airline_rating and seat_rating correlation coefficient : 0.522 (3dp)
+
 - airline_rating and lounge_rating correlation coefficient: 0.443 (3dp)
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
