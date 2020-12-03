@@ -159,11 +159,7 @@ airline %>%
 ```
 
 Business class has received the highest amount of rating. It is closely followed by 
-First class. This doesn't match our hypothesis. 
-
-Is this because passengers feel the business class services are better or fewer people choose
-to travel in first class?
-Let's find out!
+First class.  
 
 ```{r}
 airline %>%
@@ -173,8 +169,6 @@ airline %>%
   arrange(desc(n))
 ```
 
-Now, it is obvious that first class has a lower rating compared to business 
-class since fewer passengers chose that cabin type. 
 
 Let's look into what type of travelers opt for first class cabin which may be able to explain the above. 
 

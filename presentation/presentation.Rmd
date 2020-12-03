@@ -1,5 +1,5 @@
 ---
-title: "How do the amenities impact the flight's overall rating?"
+title: "How do the amenities offered impact the flight's overall rating?"
 subtitle: "By cabin, seat, lounge and over time"
 author: "macaRoni <br> Sophie Kerfoot, Ben Thamm, Henrich Hegedus, Purvi Harwani"
 institute: "University of Edinburgh"
@@ -29,7 +29,7 @@ library(skimr)
 library(tidytext)
 library(corrr)
 theme_set(theme_minimal())
-library(here)
+#library(here)
 ```
 
 ```{r setup, include=FALSE}
@@ -48,7 +48,7 @@ seat <- read_csv(here::here("data/seat.csv"))
 
 class: center, middle
 
-## Main Goal: To find the amenities that impact a flight's overall rating (Cabin, Seat, Lounge & Over Time) 
+## Main Goal: To find the amenities that impact a flight's overall rating (in terms of Cabin, Seat, Lounge & Over Time) 
 
 ---
 
@@ -137,9 +137,11 @@ airline_nonas %>%
 Main Finding: There is no significant pattern in between years or at certain times of the year. 
 - One would expect airlines to offer the same service throughout each year. 
 
+There is a subtle decrease in all airlines around the winter months -> decrease in passengers -> poor ratings have a greater effect on overall rating
+.pull-left[
 # Limitations
 
-.pull-left[
+
 There are some limitations that influenced the exploration of time variable.
 
 - Uncertainty in geom_smooth function (high)
@@ -151,26 +153,19 @@ There are some limitations that influenced the exploration of time variable.
 airline_nonas %>%
   group_by(airline_name, date) %>%
   summarise(mean_overall_rating = mean(overall_rating, na.rm = TRUE)) %>%
-  filter(airline_name %in% c("asiana-airlines", "garuda-indonesia", "air-astana", "bangkok-airways", "indigo-airlines"),
+  filter(airline_name %in% c("asiana-airlines"),
          date >= "2014-01-01") %>%
-  ggplot(aes(x = date, y = mean_overall_rating, color = airline_name)) +
+  ggplot(aes(x = date, y = mean_overall_rating)) +
   geom_smooth(se = TRUE) +
   labs(
-    title = "Overall ratings of five highest ranked airlines",
+    title = "Uncertainty in overall ratings of Asiana Airlines",
     subtitle = "From 2014 to 2015",
     x = "Date",
     y = "Overall Rating"
-  ) +
-  guides(color = guide_legend(title = "Airline Name")) 
+  )
 ```
 ]
 ---
-# Question 1
-
-Question: How does the overall ratings for airlines change depending of the time of year? Do these patterns repeat every year? Which traveller type is present during which time of the year?
-
----
-# Question 2
 
 To what extent do passengers in first class give better ratings
 than passengers in other cabin types? 
@@ -179,7 +174,7 @@ Note: There are 4 different cabins in this dataset ( First class, Business Class
 Let's look at the average overall rating the passengers gave for each of the classes. 
 Hypothesis: We expect first class to have a higher rating since, as per the norm, first class is considered to be the most preferable one.
 
-```{r, echo = FALSE, message = FALSE}
+```{r, echo = FALSE, message = FALSE, eval = FALSE}
 airline %>%
   filter(!is.na(overall_rating), !is.na(cabin_flown) ) %>%
   group_by(cabin_flown) %>%
@@ -198,7 +193,7 @@ Let's find out!
 
 
 
-```{r echo = FALSE, message = FALSE}
+```{r echo = FALSE, message = FALSE, eval = FALSE}
 airline %>%
   filter(!is.na(overall_rating), !is.na(cabin_flown) ) %>%
   group_by(cabin_flown) %>%
@@ -212,7 +207,12 @@ class since fewer passengers chose that cabin type.
 
 ---
 
-# Do airline improve their rating with a particular customer over time
+class: inverse, center, middle
+
+## Question 1
+# Improvements in what amenities correlate to improvement in the overal rating the most
+
+---
 First we need to filter out all the reviewers who didn't rate a airline twice
 ```{r filter-repeated-authors}
 author_more_than_once <-airline%>%
@@ -363,7 +363,7 @@ rating_cols <- c("overall_rating_improvement",
 ```
 
 
-```{r warning=FALSE ,message=FALSE,error=FALSE}
+```{r warning=FALSE ,message=FALSE,error=FALSE, echo=FALSE}
 joint_improvements%>%
   select(rating_cols)%>%
   correlate()%>%
