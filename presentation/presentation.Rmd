@@ -258,6 +258,19 @@ amen_filtered %>%
 
 ---
 
+```{r creating-data-set, echo=FALSE}
+ y <- amen_filtered %>%
+  group_by(airline_name) %>%
+  filter( cabin_flown == "First Class" ) %>%
+  select(overall_rating, value_money_rating, seat_comfort_rating,
+          cabin_staff_rating, food_beverages_rating) %>%
+  summarise(mean_seat_comfort_rating = mean(seat_comfort_rating),
+            mean_cabin_staff_rating = mean(cabin_staff_rating),
+            mean_food_beverages_rating = mean(food_beverages_rating),
+            mean_value_money_rating = mean(value_money_rating),
+            mean_overall_rating = mean(overall_rating))
+```
+
 ```{r variability, message= FALSE, echo= FALSE }
 
 seat_var <- y %>%
