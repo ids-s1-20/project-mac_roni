@@ -498,7 +498,7 @@ abs_data %>%
 
 ---
 
-#Observing Overall Correlation
+#Observing Correlation
 
 - correlation calculated
 
