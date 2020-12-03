@@ -293,9 +293,7 @@ class: inverse, center, middle
 ## Question 3
 # Improvements in what amenities correlate to improvement in the overal rating the most
 
----
-First we need to filter out all the reviewers who didn't rate a airline twice
-```{r filter-repeated-authors}
+```{r filter-repeated-authors, echo=FALSE}
 author_more_than_once <-airline%>%
   mutate(duplicate_auth = duplicated(.$author))%>%
   filter(duplicate_auth)%>%
@@ -304,25 +302,6 @@ author_more_than_once <-airline%>%
   filter(count>1)%>%
   ungroup()
 ```
-after filtering out the reviewers who didn't rate a single airline more than once we are left with `r nrow(author_more_than_once)` and `r length(unique(author_more_than_once$author))` unique authors
----
-```{r repeated-rating-distribution, echo=FALSE,  message=FALSE}  
-author_more_than_once%>%
-  group_by(author)%>%
-  summarize(count = n())%>%
-  ggplot(aes(x=count))+
-  geom_histogram()+
-  labs(
-    title = "Repeated rating of one airline",
-    subtitle = "by one customer",
-    x = "times rated",
-    y = "number of reviewers"
-  )
-  
-```
-- significantly right skewed
-- most rate only twice
-- hardly any people rate one airline more than 10 times
 ---
 # Definition of improvement
 - sign of linear fit slope
@@ -365,6 +344,26 @@ airline%>%
   )
 ```
 ]
+---
+```{r repeated-rating-distribution, echo=FALSE,  message=FALSE}  
+author_more_than_once%>%
+  group_by(author)%>%
+  summarize(count = n())%>%
+  ggplot(aes(x=count))+
+  geom_histogram()+
+  labs(
+    title = "Repeated rating of one airline",
+    subtitle = "by one customer",
+    x = "times rated",
+    y = "number of reviewers"
+  )
+  
+```
+- significantly right skewed
+- most rate only twice
+- hardly any people rate one airline more than 10 times
+- we are left with `r nrow(author_more_than_once)` rows and `r length(unique(author_more_than_once$author))` unique authors
+
 ---
 
 ```{r slopes-function, echo=FALSE, message=FALSE, warning=FALSE}
@@ -413,23 +412,6 @@ list_slopes_trans <- map2(list_slopes,responses,transform)
 joint_improvements <- list_slopes_trans %>% reduce(left_join, by = c("author","airline_name"))
 ```
 
-```{r echo=FALSE, warning=FALSE ,message=FALSE,error=FALSE }
-joint_improvements%>%
-  group_by(airline_name)%>%
-  summarise(airline_name = airline_name, means = mean(overall_rating_improvement, na.rm= TRUE))%>%
-  ggplot(aes(x=fct_reorder(airline_name,means),y=means))+
-  geom_point()+
-  labs(title = "Mean improvement for airlines",
-       y = "Mean improvement")+
-  theme(axis.title.x=element_blank(),
-        axis.text.x=element_blank(),
-        axis.ticks.x=element_blank(),
-        panel.grid.major.x = element_blank())
-  
-```
-- we are not interested in the particular airlines but in what drives the improvement
-
----
 
 Comparing the correlation coefficients between improvements in various ratings and improvements in overall rating gives a comprehensive overview of how strongly do various factors impact the overall rating
 ```{r message=FALSE, echo=FALSE}
@@ -577,7 +559,7 @@ abs_data %>%
 
 ---
 
-#Observing Overall Correlation
+#Observing Correlation
 
 - correlation calculated
 

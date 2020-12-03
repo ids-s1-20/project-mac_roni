@@ -249,23 +249,7 @@ class: inverse, center, middle
 # Improvements in what amenities correlate to improvement in the overal rating the most
 
 ---
-First we need to filter out all the reviewers who didn't rate a airline twice
 
-```r
-author_more_than_once &lt;-airline%&gt;%
-  mutate(duplicate_auth = duplicated(.$author))%&gt;%
-  filter(duplicate_auth)%&gt;%
-  group_by(airline_name,author)%&gt;%
-  mutate(count = n())%&gt;%
-  filter(count&gt;1)%&gt;%
-  ungroup()
-```
-after filtering out the reviewers who didn't rate a single airline more than once we are left with 3640 and 871 unique authors
----
-&lt;img src="presentation_files/figure-html/repeated-rating-distribution-1.png" width="80%" /&gt;
-- significantly right skewed
-- most rate only twice
-- hardly any people rate one airline more than 10 times
 ---
 # Definition of improvement
 - sign of linear fit slope
@@ -280,6 +264,13 @@ after filtering out the reviewers who didn't rate a single airline more than onc
 .pull-right[
 &lt;img src="presentation_files/figure-html/negative-slope-1.png" width="80%" /&gt;
 ]
+---
+&lt;img src="presentation_files/figure-html/repeated-rating-distribution-1.png" width="80%" /&gt;
+- significantly right skewed
+- most rate only twice
+- hardly any people rate one airline more than 10 times
+- we are left with 3640 rows and 871 unique authors
+
 ---
 
 
@@ -326,7 +317,11 @@ class: inverse, center, middle
 ---
 
 #Difference in Ratings
+
+Hypothesis: we expect both the seat rating and the lounge rating to both have a positive correlation to the airline rating because both are provided by the airline so this would affect the authors overall rating of the airline.
+
 Hypothesis: we expect both the seat rating and the lounge rating to  have a positive correlation to the airline rating because both are provided by the airline.
+
 
 - looked at authors that rated all three
 
@@ -365,7 +360,7 @@ Hypothesis: we expect both the seat rating and the lounge rating to  have a posi
 
 ---
 
-#Observing Overall Correlation
+#Observing Correlation
 
 - correlation calculated
 
@@ -380,9 +375,13 @@ Hypothesis: we expect both the seat rating and the lounge rating to  have a posi
 ## lounge_rating       0.4426391   0.5211874     1.0000000
 ```
 
+<<<<<<< HEAD
+- airline_rating and seat_rating correlation coefficient : 0.522 (3dp)
+=======
 
 - airline_rating and seat_rating correlation coefficient : 0.522 (3dp)
 
+>>>>>>> 09976c4ba7e472b8e9c35deeecd96f4e92d01e59
 - airline_rating and lounge_rating correlation coefficient: 0.443 (3dp)
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
