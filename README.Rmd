@@ -29,7 +29,7 @@ Assumptions:
 
 These are Asiana Airlines, Garuda Indonesia, Air Astana, Bangkok Airways, and Indigo Airlines.
 
-Main finding from the visualization: no significant pattern in between years or at certain times of the year as airlines to offer the same service throughout each year. Slight dip in overall ratings during the winter months due to less survey submissions and therefore negative surveys having more weight. 
+Main finding from the visualization: no significant pattern in over years as airlines offer the same service throughout each year.There's slight dip in ratings during winter months due to less survey submissions and therefore negative surveys having more weight. 
 
 Finally, some limitations:
 
@@ -40,7 +40,7 @@ Finally, some limitations:
 Question 2: To what extent do passengers in First Class(FC) give better ratings
 than passengers in other cabin types? 
 
-We looked at different cabin classes in a flight, specifically the FC cabin since we assume it offers the greatest number of services which other classes may not offer. The passengers’ experience was measured in terms of the overall rating.  
+We looked at different cabin classes in a flight, specifically the FC cabin since we assume it offers the greatest number of services which others may not offer. The passengers’ experience was measured in terms of the overall rating.  
 
 Hypothesis: FC gives the highest overall (flight) rating since its generally known for offering the plushest services. 
 
@@ -48,13 +48,14 @@ Result: Business Class, followed by FC
 
 Suggested claim: Fewer people were seeking first class amenities. 
 
-Further analysis affirms our claim. This limitation is important to note, since, out of all the travelers, least number of them chose to fly in the FC cabin. 
+Further analysis affirms our claim. This limitation is important to note because out of all the travelers, least number of them chose to fly in the FC cabin. 
 
-With the aid of text analysis, we’ve only looked at the facilities mentioned commonly in the comments submitted under the assumption that, if the passenger decided to mention it in the feedback, then it may have been a stronger factor contributing to the overall rating submitted than the other facilities offered.  
+Using text analysis, we only looked at facilities mentioned commonly in the comments submitted assuming, if the passenger decided to mention it in the feedback, then it may be a stronger factor contributing to the overall rating submitted than the other facilities offered.  
 
-To conclude a connection between amenities and overall rating, we looked at summary statistics and visualized  variability using the density plots. The overall rating (1-10) and amenities (1-5) have a similar rating proportionately (between 65-70%)    
+To conclude a connection between amenities and overall rating, we looked at summary statistics and visualized  variability using density plots. The overall rating (1-10) and amenities (1-5) have a similar rating proportionately (between 65-70%)    
 
- The density plots confirm those values. Handful of passengers rated food 1/5 which explains why the average food rating is not in the same range of seat and cabin staff. 
+ The density plots confirm those values. Few passengers rated food 1/5 which explains why the average food rating is not in the same range as others.
+ 
 
 Question 3: Improvements in what amenities correlate to improvement in the overal rating the most
 Airline’s improvement is defined as the sign of the slope of the overall rating vs date fit.
