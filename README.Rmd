@@ -52,10 +52,7 @@ Further analysis affirms our claim. This limitation is important to note because
 
 Using text analysis, we only looked at facilities mentioned commonly in the comments submitted assuming, if the passenger decided to mention it in the feedback, then it may be a stronger factor contributing to the overall rating submitted than the other facilities offered.  
 
-To conclude a connection between amenities and overall rating, we looked at summary statistics and visualized  variability using density plots. The overall rating (1-10) and amenities (1-5) have a similar rating proportionately (between 65-70%)    
-
- The density plots confirm those values. Few passengers rated food 1/5 which explains why the average food rating is not in the same range as others.
- 
+To conclude a connection between amenities and overall rating, we looked at summary statistics and visualized  variability using density plots which confirmed the values obtained. The overall rating (1-10) and amenities (1-5) have a similar rating proportionately (between 65-70%). Few passengers rated food 1/5 which explains why the average food rating is not in the similar range as others.
 
 Question 3: Improvements in what amenities correlate to improvement in the overal rating the most
 Airline’s improvement is defined as the sign of the slope of the overall rating vs date fit.
